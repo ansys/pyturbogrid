@@ -1,108 +1,119 @@
 name: GitHub CI
+
+# 'on' controls when this script is run.
 on:
-  pull_request:
-  push:
+  pull_request: # This means every time a PR is made, the script runs.
+  workflow_dispatch: # This means when looking at the repo, you can click 'actions' then 'GitHub CI', and select 'Run Workflow' on any targets branch .
+  push: # This means after a push (to main branch) This script also runs, just to be sure everything is fine.
     tags:
       - "*"
     branches:
       - main
 
+# Environment Variables
 env:
-  MAIN_PYTHON_VERSION: '3.9'
-  DOCUMENTATION_CNAME: 'turbogrid.docs.pyansys.com'
-  LIBRARY_NAME: 'ansys-turbogrid-core'
+  MAIN_PYTHON_VERSION: '3.9' # We need 3.9 for building sphinx
+  LIBRARY_NAME: 'ansys-turbogrid-core' # The repo name
   LIBRARY_NAMESPACE: 'ansys.turbogrid.core'
+  DOCUMENTATION_CNAME: 'turbogrid.docs.pyansys.com'
 
+# This deals with concurrent runs of this script.
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
-  cancel-in-progress: true
+  cancel-in-progress: true # This means multiple runs of the same script on the same branch will cancel the oldest ones.
 
+# Under here we have the scheduler graph of all the jobs, each being a vertex, directed by the 'needs:' fields (needs describes a child node).
 jobs:
 
+# The style job will fail if any changes are needed by any styler. 
+# The best way to avoid these failures is to install the styler on your vscode, with format-on-save.
+# There are numerous internet tutorials to follow for all the installation and settings configurations.
   code-style:
-    name: "Code style"
+    name: "Code Style Checks"
     runs-on: ubuntu-latest
     steps:
-      - uses: pyansys/actions/code-style@v2
+      - name: "PyAnsys code style checks"
+        uses: pyansys/actions/code-style@v2 #  v3 ? This action looks in .pre-commit-config.yaml for code check tasks.
         with:
           python-version: ${{ env.MAIN_PYTHON_VERSION }}
 
-  doc-style:
-    name: "Documentation style"
-    runs-on: ubuntu-latest
-    steps:
-      - uses: pyansys/actions/doc-style@v2
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
+#  doc-style:
+#    name: "Documentation Style Check"
+#    runs-on: ubuntu-latest
+#    steps:
+#      - name: "PyAnsys documentation style checks"
+#        uses: pyansys/actions/doc-style@v2 # v3 ?
+#        with:
+#          token: ${{ secrets.GITHUB_TOKEN }}
 
-  smoke-tests:
-    name: "Build and Smoke tests"
-    runs-on: ${{ matrix.os }}
-    needs: [code-style]
-    strategy:
-      fail-fast: false
-      matrix:
-        os: [ubuntu-latest, windows-latest]
-        python-version: ['3.9', '3.10']
-    steps:
-      - uses: pyansys/actions/build-wheelhouse@v2
-        with:
-          library-name: ${{ env.LIBRARY_NAME }}
-          library-namespace: ${{ env.LIBRARY_NAMESPACE }}
-          operating-system: ${{ matrix.os }}
-          python-version: ${{ matrix.python-version }}
+#  smoke-tests:
+#    name: "Build and Smoke tests"
+#    runs-on: ${{ matrix.os }}
+#    needs: [code-style]
+#    strategy:
+#      fail-fast: false
+#      matrix:
+#        os: [ubuntu-latest, windows-latest]
+#        python-version: ['3.9', '3.10']
+#    steps:
+#      - uses: pyansys/actions/build-wheelhouse@v2
+#        with:
+#          library-name: ${{ env.LIBRARY_NAME }}
+#          library-namespace: ${{ env.LIBRARY_NAMESPACE }}
+#          operating-system: ${{ matrix.os }}
+#          python-version: ${{ matrix.python-version }}
 
-  tests:
-    name: "Tests"
-    runs-on: ${{ matrix.os }}
-    needs: [smoke-tests]
-    strategy:
-      matrix:
-       os: [ubuntu-latest, windows-latest]
-       python-version: ['3.9', '3.10']
-      fail-fast: false
-    steps:
-      - uses: pyansys/actions/tests-pytest@v2
-        with:
-          pytest-extra-args: "--cov=ansys --cov-report=term --cov-report=html:.cov/html"
+#  tests:
+#    name: "Tests"
+#    runs-on: ${{ matrix.os }}
+#    needs: [smoke-tests]
+#    strategy:
+#      matrix:
+#       os: [ubuntu-latest, windows-latest]
+#       python-version: ['3.9', '3.10']
+#      fail-fast: false
+#    steps:
+#      - uses: pyansys/actions/tests-pytest@v2
+#        with:
+#          pytest-extra-args: "--cov=ansys --cov-report=term --cov-report=html:.cov/html"
+#
+#  doc-build:
+#    name: "Build documentation"
+#    runs-on: ubuntu-latest
+#    needs: [doc-style]
+#    steps:
+#      - uses: pyansys/actions/doc-build@v2
+#        with:
+#          python-version: ${{ env.MAIN_PYTHON_VERSION }}
 
-  doc-build:
-    name: "Build documentation"
-    runs-on: ubuntu-latest
-    needs: [doc-style]
-    steps:
-      - uses: pyansys/actions/doc-build@v2
-        with:
-          python-version: ${{ env.MAIN_PYTHON_VERSION }}
+#  doc-deploy-dev:
+#    name: "Deploy development documentation"
+#    runs-on: ubuntu-latest
+#    needs: [doc-build]
+#    if: github.event_name == 'push'
+#    steps:
+#      - uses: pyansys/actions/doc-deploy-dev@v2
+#        with:
+#          cname: ${{ env.DOCUMENTATION_CNAME }}
+#          token: ${{ secrets.GITHUB_TOKEN }}
 
-  doc-deploy-dev:
-    name: "Deploy development documentation"
-    runs-on: ubuntu-latest
-    needs: [doc-build]
-    if: github.event_name == 'push'
-    steps:
-      - uses: pyansys/actions/doc-deploy-dev@v2
-        with:
-          cname: ${{ env.DOCUMENTATION_CNAME }}
-          token: ${{ secrets.GITHUB_TOKEN }}
+#  doc-deploy-stable:
+#    name: "Deploy stable documentation"
+#    runs-on: ubuntu-latest
+#    needs: [doc-deploy-dev]
+#    if: github.event_name == 'push' && contains(github.ref, 'refs/tags')
+#    steps:
+#      - uses: pyansys/actions/doc-deploy-stable@v2
+#        with:
+#          cname: ${{ env.DOCUMENTATION_CNAME }}
+#          token: ${{ secrets.GITHUB_TOKEN }}
 
-  doc-deploy-stable:
-    name: "Deploy stable documentation"
-    runs-on: ubuntu-latest
-    needs: [doc-deploy-dev]
-    if: github.event_name == 'push' && contains(github.ref, 'refs/tags')
-    steps:
-      - uses: pyansys/actions/doc-deploy-stable@v2
-        with:
-          cname: ${{ env.DOCUMENTATION_CNAME }}
-          token: ${{ secrets.GITHUB_TOKEN }}
-
-  build-library:
-    name: "Build library basic example"
-    runs-on: ubuntu-latest
-    needs: [tests, doc-deploy-stable]
-    steps:
-      - uses: pyansys/actions/build-library@v2
-        with:
-          library-name: ${{ env.LIBRARY_NAME }}
-          python-version: ${{ env.MAIN_PYTHON_VERSION }}
+#  build-library:
+#    name: "Build library basic example"
+#    runs-on: ubuntu-latest
+#    needs: [tests, doc-deploy-stable]
+#    steps:
+#      - uses: pyansys/actions/build-library@v2
+#        with:
+#          library-name: ${{ env.LIBRARY_NAME }}
+#          python-version: ${{ env.MAIN_PYTHON_VERSION }}
