@@ -33,7 +33,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: "PyAnsys code style checks"
-        uses: pyansys/actions/code-style@v2 #  v3 ? This action looks in .pre-commit-config.yaml for code check tasks.
+        uses: pyansys/actions/code-style@v3 # This action looks in .pre-commit-config.yaml for code check tasks.
         with:
           python-version: ${{ env.MAIN_PYTHON_VERSION }}
 
