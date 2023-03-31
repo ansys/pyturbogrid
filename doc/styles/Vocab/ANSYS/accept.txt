@@ -1,3 +1,17 @@
 ANSYS
 Ansys
 ansys
+turbomachinery
+
+# Function names
+queryMeshStatistics
+queryValidTopologyChoices
+quit
+readinf
+readsession
+readstate
+savestate
+setGlobalSizeFactor
+setTopologyChoice
+setTopologyList
+unsuspend
