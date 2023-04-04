@@ -37,7 +37,7 @@ jobs:
         with:
           python-version: ${{ env.MAIN_PYTHON_VERSION }}
 
-# ====    Deafult settings based on pyansys flint template 
+# ====    Default settings based on pyansys flint template 
 #  doc-style:
 #    name: "Documentation Style Check"
 #    runs-on: ubuntu-latest
