@@ -43,9 +43,20 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: "PyAnsys documentation style checks"
-        uses: pyansys/actions/doc-style@v3 # v3 ?
+        uses: pyansys/actions/doc-style@v3 
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
+
+  doc-build:
+# Documentation is built in the environment of this script run,
+# it is uploaded as a build artifact, then sent to the doc website.
+    name: "Build documentation"
+    runs-on: ubuntu-latest
+    needs: [doc-style]
+    steps:
+      - uses: pyansys/actions/doc-build@v2
+        with:
+          python-version: ${{ env.MAIN_PYTHON_VERSION }}
 
 #  smoke-tests:
 #    name: "Build and Smoke tests"
@@ -78,14 +89,7 @@ jobs:
 #        with:
 #          pytest-extra-args: "--cov=ansys --cov-report=term --cov-report=html:.cov/html"
 #
-#  doc-build:
-#    name: "Build documentation"
-#    runs-on: ubuntu-latest
-#    needs: [doc-style]
-#    steps:
-#      - uses: pyansys/actions/doc-build@v2
-#        with:
-#          python-version: ${{ env.MAIN_PYTHON_VERSION }}
+
 
 #  doc-deploy-dev:
 #    name: "Deploy development documentation"
