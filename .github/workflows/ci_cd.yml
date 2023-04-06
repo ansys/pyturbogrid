@@ -38,14 +38,14 @@ jobs:
           python-version: ${{ env.MAIN_PYTHON_VERSION }}
 
 # ====    Default settings based on pyansys flint template 
-#  doc-style:
-#    name: "Documentation Style Check"
-#    runs-on: ubuntu-latest
-#    steps:
-#      - name: "PyAnsys documentation style checks"
-#        uses: pyansys/actions/doc-style@v2 # v3 ?
-#        with:
-#          token: ${{ secrets.GITHUB_TOKEN }}
+  doc-style:
+    name: "Documentation Style Check"
+    runs-on: ubuntu-latest
+    steps:
+      - name: "PyAnsys documentation style checks"
+        uses: pyansys/actions/doc-style@v3 # v3 ?
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
 
 #  smoke-tests:
 #    name: "Build and Smoke tests"
