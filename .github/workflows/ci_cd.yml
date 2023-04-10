@@ -37,7 +37,29 @@ jobs:
         with:
           python-version: ${{ env.MAIN_PYTHON_VERSION }}
 
+  docs-style:
+    name: Documentation Style Check
+    runs-on: ubuntu-latest
+    steps:
+      - name: PyAnsys documentation style checks
+        uses: pyansys/actions/doc-style@v3
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}  
+  
+  doc-build:
+# Documentation is built in the environment of this script run,
+# it is uploaded as a build artifact, then sent to the doc website.
+    name: Documentation
+    needs: [doc-style]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3 # This checks out the repo, with the base directory being the base repo directory.
 
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.9' # 3.9 is required for Sphinx
+          
 #  smoke-tests:
 #    name: "Build and Smoke tests"
 #    runs-on: ${{ matrix.os }}
