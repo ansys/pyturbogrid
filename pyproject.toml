@@ -26,9 +26,9 @@ classifiers = [
 dependencies = [
     "importlib-metadata >=4.0",
 ]
-#
+
 # We may need to comment out what we do not use
-#
+
 doc = [
     "ansys-sphinx-theme==0.9.5",
     "ipyvtklink==0.2.3",
