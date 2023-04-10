@@ -59,6 +59,22 @@ jobs:
         uses: actions/setup-python@v4
         with:
           python-version: '3.9' # 3.9 is required for Sphinx
+
+# Using the newest version of pip, install all the dependencies.
+# The syntax .[NAME] refers to the project.optional-dependencies in pyproject.toml
+      - name: Install packages for documentation build
+        run: |
+          python -m venv ./.venv
+          source ./.venv/bin/activate
+          python -m pip install -U pip
+          python -m pip install .
+          python -m pip install .[doc]
+
+      - name: Build the documentation (HTML)
+        run: |
+          source ./.venv/bin/activate
+          cd doc
+          make html
           
 #  smoke-tests:
 #    name: "Build and Smoke tests"
