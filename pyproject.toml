@@ -14,7 +14,7 @@ authors = [
     {name = "ANSYS, Inc.", email = "pyansys.support@ansys.com"},
 ]
 maintainers = [
-    {name = "PyAnsys developers", email = "pyansys.maintainers@ansys.com"},
+    {name = "PyTurboGrid developers", email = "pyturbogrid.maintainers@ansys.com"},
 ]
 
 classifiers = [
@@ -96,14 +96,14 @@ default_section = "THIRDPARTY"
 src_paths = ["doc", "src", "tests"]
 
 # [tool.coverage.run]
-# source = ["ansys.geometry"]
+# source = ["ansys.turbogrid"]
 
 # [tool.coverage.report]
 # show_missing = true
 
 # [tool.pytest.ini_options]
 # minversion = "7.1"
-# addopts = "-ra --cov=ansys.geometry --cov-report html:.cov/html --cov-report xml:.cov/xml --cov-report term -vv --image_cache_dir tests/integration/image_cache"
+# addopts = "-ra --cov=ansys.turbogrid --cov-report html:.cov/html --cov-report xml:.cov/xml --cov-report term -vv --image_cache_dir tests/integration/image_cache"
 # testpaths = [
 #     "tests",
 # ]
