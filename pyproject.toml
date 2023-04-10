@@ -28,7 +28,7 @@ dependencies = [
 ]
 
 [tool.flit.module]
-name = "ansys.turbogrid"
+name = "ansys.turbogrid.core"
 
 [project.urls]
 Source = "https://github.com/pyansys/pyturbogrid"
