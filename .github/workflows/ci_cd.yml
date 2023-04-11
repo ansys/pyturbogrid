@@ -38,7 +38,7 @@ jobs:
           python-version: ${{ env.MAIN_PYTHON_VERSION }}
 
   doc-style:
-    name: "Documentation Style Check"
+    name: "Documentation Style Checks"
     runs-on: ubuntu-latest
     steps:
       - name: PyAnsys documentation style checks
