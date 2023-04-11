@@ -1,4 +1,4 @@
-name: GitHub CI
+name: GitHub CI2
 
 # 'on' controls when this script is run.
 on:
