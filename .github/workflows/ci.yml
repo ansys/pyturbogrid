@@ -75,7 +75,16 @@ jobs:
           source ./.venv/bin/activate
           cd doc
           make html
-          
+#  zl - Why is this needed
+# Upload the doc/build/html folder as a build artifact.
+# You can see the artifact on the action page, if the run succeeded.
+      - name: Upload HTML documentation
+        uses: actions/upload-artifact@v3
+        with:
+          name: documentation-html
+          path: doc/_build/html
+          retention-days: 7
+                    
 #  smoke-tests:
 #    name: "Build and Smoke tests"
 #    runs-on: ${{ matrix.os }}
