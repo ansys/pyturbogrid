@@ -93,6 +93,15 @@ jobs:
           doc-artifact-name: 'documentation-html'
           cname: ${{ env.DOCUMENTATION_CNAME }}
           token: ${{ secrets.GITHUB_TOKEN }}
+
+# # Stable doc, which is versioned, but I don't know how yet.
+#      - name: "Deploy release doc"
+#        uses: pyansys/actions/doc-deploy-stable@v3
+#        with:
+#          doc-artifact-name: 'documentation-html'
+#          cname: ${{ env.DOCUMENTATION_CNAME }}
+#          token: ${{ secrets.GITHUB_TOKEN }}
+#          python-version: ${{ env.MAIN_PYTHON_VERSION }}
                     
 #  smoke-tests:
 #    name: "Build and Smoke tests"
