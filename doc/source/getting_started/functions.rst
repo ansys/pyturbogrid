@@ -1,7 +1,7 @@
 .. _functions:
 
 Functions
-#########
+##########
 
 Create an instance of ``PyTurboGrid`` with an available port.
 The PyTurboGrid object connects to your installation of TurboGrid and initializes itself.
