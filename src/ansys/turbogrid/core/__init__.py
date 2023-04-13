@@ -1,12 +1,3 @@
-"""
-TurboGrid.
+__version__ = "0.0.dev0"
 
-core
-"""
-
-try:
-    import importlib.metadata as importlib_metadata
-except ModuleNotFoundError:
-    import importlib_metadata
-
-__version__ = importlib_metadata.version(__name__.replace(".", "-"))
+# from ansys.turbogrid.core.launcher import launch_turbogrid

@@ -33,20 +33,76 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: "PyAnsys code style checks"
-        uses: pyansys/actions/code-style@v3 # This action looks in .pre-commit-config.yaml for code check tasks.
+        uses: pyansys/actions/code-style@v4 # This action looks in .pre-commit-config.yaml for code check tasks.
         with:
           python-version: ${{ env.MAIN_PYTHON_VERSION }}
 
-# ====    Default settings based on pyansys flint template 
-#  doc-style:
-#    name: "Documentation Style Check"
-#    runs-on: ubuntu-latest
-#    steps:
-#      - name: "PyAnsys documentation style checks"
-#        uses: pyansys/actions/doc-style@v2 # v3 ?
-#        with:
-#          token: ${{ secrets.GITHUB_TOKEN }}
+  doc-style:
+    name: "Documentation Style Checks"
+    runs-on: ubuntu-latest
+    steps:
+      - name: PyAnsys documentation style checks
+        uses: pyansys/actions/doc-style@v3
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}  
+  
+  doc-build:
+# Documentation is built in the environment of this script run,
+# it is uploaded as a build artifact, then sent to the doc website.
+    name: "Documentation"
+    needs: [doc-style]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3 # This checks out the repo, with the base directory being the base repo directory.
 
+      - name: "Set up Python"
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.9' # 3.9 is required for Sphinx
+
+# Using the newest version of pip, install all the dependencies.
+# The syntax .[NAME] refers to the project.optional-dependencies in pyproject.toml
+      - name: "Install packages for documentation build"
+        run: |
+          python -m venv ./.venv
+          source ./.venv/bin/activate
+          python -m pip install -U pip
+          python -m pip install .
+          python -m pip install .[doc]
+
+      - name: Build the documentation (HTML)
+        run: |
+          source ./.venv/bin/activate
+          cd doc
+          make html
+ 
+# Upload the doc/build/html folder as a build artifact.
+# You can see the artifact on the action page, if the run succeeded.
+      - name: "Upload HTML documentation"
+        uses: actions/upload-artifact@v3
+        with:
+          name: "documentation-html"
+          path: doc/_build/html
+          retention-days: 7
+
+# Currently, we update the doc on every script run.
+# TODO: we need a better system for controlling when documentation is updated.
+      - name: "Deploy dev doc"
+        uses: pyansys/actions/doc-deploy-dev@v3
+        with:
+          doc-artifact-name: 'documentation-html'
+          cname: ${{ env.DOCUMENTATION_CNAME }}
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+# # Stable doc, which is versioned, but I don't know how yet.
+#      - name: "Deploy release doc"
+#        uses: pyansys/actions/doc-deploy-stable@v3
+#        with:
+#          doc-artifact-name: 'documentation-html'
+#          cname: ${{ env.DOCUMENTATION_CNAME }}
+#          token: ${{ secrets.GITHUB_TOKEN }}
+#          python-version: ${{ env.MAIN_PYTHON_VERSION }}
+                    
 #  smoke-tests:
 #    name: "Build and Smoke tests"
 #    runs-on: ${{ matrix.os }}
@@ -78,14 +134,7 @@ jobs:
 #        with:
 #          pytest-extra-args: "--cov=ansys --cov-report=term --cov-report=html:.cov/html"
 #
-#  doc-build:
-#    name: "Build documentation"
-#    runs-on: ubuntu-latest
-#    needs: [doc-style]
-#    steps:
-#      - uses: pyansys/actions/doc-build@v2
-#        with:
-#          python-version: ${{ env.MAIN_PYTHON_VERSION }}
+
 
 #  doc-deploy-dev:
 #    name: "Deploy development documentation"
