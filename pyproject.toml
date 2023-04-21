@@ -4,7 +4,7 @@ build-backend = "flit_core.buildapi"
 
 [project]
 # Check https://flit.readthedocs.io/en/latest/pyproject_toml.html for all available sections
-name = "ansys-turbogrid"
+name = "pyturbogrid"
 version = "0.1.dev0"
 description = "A python wrapper for ansys turbogrid"
 readme = "README.rst"
