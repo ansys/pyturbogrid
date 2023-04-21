@@ -13,8 +13,8 @@ on:
 # Environment Variables
 env:
   MAIN_PYTHON_VERSION: '3.9' # We need 3.9 for building sphinx
-  LIBRARY_NAME: 'pyturbogrid' # The repo name
-  LIBRARY_NAMESPACE: 'pyturbogrid'
+  PACKAGE_NAME: 'pyturbogrid' # The repo name
+  PACKAGE_NAMESPACE: 'pyturbogrid'
   DOCUMENTATION_CNAME: 'turbogrid.docs.pyansys.com'
 
 # This deals with concurrent runs of this script.
