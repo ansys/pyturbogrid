@@ -145,4 +145,4 @@ jobs:
         with:
           library-name: ${{ env.PACKAGE_NAME }}
           twine-username: "__token__"
-          twine-token: ${{ secrets.PYANSYS_PYPI_PRIVATE_PAT_UPLOAD }}
+          twine-token: ${{ secrets.PYANSYS_PYPI_PRIVATE_PAT }}
