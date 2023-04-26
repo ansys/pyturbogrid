@@ -16,6 +16,7 @@ env:
   PACKAGE_NAME: 'pyturbogrid' # The repo name
   PACKAGE_NAMESPACE: 'pyturbogrid'
   DOCUMENTATION_CNAME: 'turbogrid.docs.pyansys.com'
+  PIP_EXTRA_INDEX_URL: 'https://${{ secrets.PYANSYS_PYPI_PRIVATE_PAT }}@pkgs.dev.azure.com/pyansys/_packaging/pyansys/pypi/simple/'
 
 # This deals with concurrent runs of this script.
 concurrency:
@@ -118,27 +119,22 @@ jobs:
         with:
           python-version: '3.10'
 
-
       - name: Pull PyTurboGrid API Package
         run: |
           python -m pip install ansys-turbogrid-core --index-url https://${{ secrets.PYANSYS_PYPI_PRIVATE_PAT }}@pkgs.dev.azure.com/pyansys/_packaging/pyansys/pypi/simple/ --no-dependencies        
 
-      - name: Build package
-        run: |
-          python -m pip install build
-          python -m build
-
-      - name: Check package
-        run: |
-          pip install twine
-          twine check dist/*
-
-      - name: "Upload wheel and binaries"
-        uses: actions/upload-artifact@v3
+      - name: "Build library source and wheel artifacts"
+        uses: pyansys/actions/build-library@v4
         with:
-          name: ${{ env.PACKAGE_NAME }}-artifacts
-          path: dist/
-          retention-days: 7
+          library-name: ${{ env.PACKAGE_NAME }}
+
+      - name: "Build a wheelhouse of the Python library"
+        uses: pyansys/actions/build-wheelhouse@v4
+        with:
+          library-name: ${{ env.PACKAGE_NAME }}
+          library-namespace: ${{ env.PACKAGE_NAMESPACE }}
+          operating-system: windows-latest
+          python-version: '3.10'
 
       - name: "Release to the private PyPI repository"
         uses: pyansys/actions/release-pypi-private@v1
@@ -146,3 +142,23 @@ jobs:
           library-name: ${{ env.PACKAGE_NAME }}
           twine-username: "__token__"
           twine-token: ${{ secrets.PYANSYS_PYPI_PRIVATE_PAT }}
+
+      # - name: Build package
+      #   run: |
+      #     python -m pip install build
+      #     python -m build
+
+      # - name: Check package
+      #   run: |
+      #     pip install twine
+      #     twine check dist/*
+
+      # - name: "Upload wheel and binaries"
+      #   uses: actions/upload-artifact@v3
+      #   with:
+      #     name: ${{ env.PACKAGE_NAME }}-artifacts
+      #     path: dist/
+      #     retention-days: 7
+
+
+
