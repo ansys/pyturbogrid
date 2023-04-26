@@ -59,7 +59,7 @@ jobs:
       - name: "Set up Python"
         uses: actions/setup-python@v4
         with:
-          python-version: '3.9' # 3.9 is required for Sphinx
+          python-version: '3.10'
 
 # Using the newest version of pip, install all the dependencies.
 # The syntax .[NAME] refers to the project.optional-dependencies in pyproject.toml
