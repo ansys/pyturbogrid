@@ -103,7 +103,7 @@ secondary = true
 
 [tool.poetry.dependencies]
 python = ">=3.7,<4.0"
-ansys-api-turbogrid= {version = "==0.1.0", source = "privatepypi"}
+ansys-turbogrid-core= {version = "==0.1.0", source = "privatepypi"}
 
 
 # [tool.coverage.run]
