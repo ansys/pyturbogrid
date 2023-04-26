@@ -68,7 +68,6 @@ jobs:
           python -m venv ./.venv
           source ./.venv/bin/activate
           python -m pip install -U pip
-          python -m pip install .
           python -m pip install .[doc]
 
       - name: Build the documentation (HTML)
