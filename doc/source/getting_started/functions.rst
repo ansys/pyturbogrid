@@ -49,8 +49,8 @@ read_state
 
 unsuspend
 ---------
-
 Example:
+
 .. code-block:: pycon
 
     >>> turbogrid.unsuspend(object="/TOPOLOGY SET")
@@ -75,11 +75,11 @@ set_topology_list
 
 set_global_size_factor
 -------------------
-
 Example:
+
 .. code-block:: pycon
 
-    >>> turbogrid.set_global_size_factor(2)
+>>> turbogrid.set_global_size_factor(2)
 
 query_mesh_statistics
 -------------------
