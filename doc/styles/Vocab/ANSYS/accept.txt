@@ -1,8 +1,10 @@
 ANSYS
 Ansys
+ansys
 additional_args_str
 additional_kw_args
 ansys-api-turbogrid
+cfxtg
 get_turbogrid_exe_path
 launch_turbogrid
 launcher
