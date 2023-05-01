@@ -1,18 +1,28 @@
 ANSYS
 Ansys
+additional_args_str
+additional_kw_args
+ansys-api-turbogrid
+get_turbogrid_exe_path
+launch_turbogrid
+launcher
+product_version
 Pythonic
+pyturbogrid_core
 PyTurboGrid
+pyturboGrid
+turbogrid_path
 turbomachinery
 
 # Function names
-queryMeshStatistics
-queryValidTopologyChoices
+query_mesh_statistics
+query_valid_topology_choices
 quit
-readinf
-readsession
-readstate
-savestate
-setGlobalSizeFactor
-setTopologyChoice
-setTopologyList
+read_inf
+read_session
+read_state
+save_state
+set_global_size_factor
+set_topology_choice
+set_topology_list
 unsuspend
