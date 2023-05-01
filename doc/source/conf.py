@@ -5,7 +5,7 @@ import os
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#project-information
 from ansys_sphinx_theme import ansys_favicon, ansys_logo_black, get_version_match
 
-from ansys.turbogrid.core import __version__
+from ansys.turbogrid.client import __version__
 
 # Configuration file for the Sphinx documentation builder.
 #
