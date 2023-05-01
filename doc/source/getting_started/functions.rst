@@ -3,7 +3,7 @@
 Modules
 #######
 
-This documentation will list the modules and functions in pyturbogrid repository as well as in ansys-api-turbogrid if those module functions are directly accessible and are needed to be accessed in order to complement the functionalities defined in pyturbogrid repository.
+This documentation lists the modules and functions in pyturbogrid repository as well as in ansys-api-turbogrid if those module functions are directly accessible and are needed to be accessed to complement the functionalities defined in pyturbogrid repository.
 
 launcher
 ========
@@ -14,7 +14,7 @@ launch_turbogrid
 ----------------
 
 Create an instance of ``PyTurboGrid`` with an available port.
-The PyTurboGrid object connects to your installation of TurboGrid and initializes itself.
+The PyTurboGrid object connects to your installation of TurboGrid application and initializes itself.
 
 Parameters
 ^^^^^^^^^^
@@ -47,7 +47,7 @@ Example:
 get_turbogrid_exe_path
 ----------------------
 
-Returns Path object for the location of the Turbogrid executable that will be used by launch_turbogrid function call above.
+Returns Path object for the location of the TurboGrid executable that is used by launch_turbogrid function call.
 
 pyturbogrid_core
 ================
