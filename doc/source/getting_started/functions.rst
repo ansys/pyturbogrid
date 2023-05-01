@@ -29,9 +29,6 @@ Returns Path object for the location of the Turbogrid executable that will be us
 pyturbogrid_core
 ================
 
-Initialization
-**************
-
 read_inf
 --------
 .. code-block:: pycon
@@ -49,9 +46,6 @@ read_state
 .. code-block:: pycon
 
     >>> turbogrid.read_state(path_to_state_file)
-
-Processing
-**********
 
 unsuspend
 ---------
@@ -87,9 +81,6 @@ Example:
 
     >>> turbogrid.set_global_size_factor(2)
 
-Queries
-*******
-
 query_mesh_statistics
 -------------------
 .. code-block:: pycon
@@ -101,9 +92,6 @@ query_valid_topology_choices
 .. code-block:: pycon
 
     >>> choices = turbogrid.query_valid_topology_choices()
-
-Shutting down
-*************
 
 quit
 ----
