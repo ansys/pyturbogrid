@@ -121,7 +121,7 @@ jobs:
 
       - name: Pull PyTurboGrid API Package
         run: |
-          python -m pip install ansys-turbogrid-core --index-url https://${{ secrets.PYANSYS_PYPI_PRIVATE_PAT }}@pkgs.dev.azure.com/pyansys/_packaging/pyansys/pypi/simple/ --no-dependencies        
+          python -m pip install ansys-turbogrid-api --index-url https://${{ secrets.PYANSYS_PYPI_PRIVATE_PAT }}@pkgs.dev.azure.com/pyansys/_packaging/pyansys/pypi/simple/ --no-dependencies        
 
       - name: "Build library source and wheel artifacts"
         uses: pyansys/actions/build-library@v4
