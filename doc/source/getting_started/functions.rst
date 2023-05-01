@@ -93,7 +93,9 @@ set_topology_list
 ---------------
 .. code-block:: pycon
 
-    >>> turbogrid.set_topology_list(topology_list_string) # topology_list_string example: "LECircleHigh_TECircleLow"
+    >>> turbogrid.set_topology_list(
+    ...     topology_list_string
+    ... )  # topology_list_string example: "LECircleHigh_TECircleLow"
 
 set_global_size_factor
 -------------------
@@ -101,7 +103,7 @@ Example:
 
 .. code-block:: pycon
 
->>> turbogrid.set_global_size_factor(2)
+    >>> turbogrid.set_global_size_factor(2)
 
 query_mesh_statistics
 -------------------
