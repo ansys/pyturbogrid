@@ -10,7 +10,7 @@ product_version
 Pythonic
 pyturbogrid_core
 PyTurboGrid
-pyturboGrid
+pyturbogrid
 turbogrid_path
 turbomachinery
 
