@@ -1,89 +1,115 @@
 .. _functions:
 
-Functions
-#########
+Modules
+#######
+
+This documentation will list the modules and functions in pyturbogrid repository as well as in ansys-api-turbogrid if those module functions are directly accessible and are needed to be accessed in order to complement the functionalities defined in pyturbogrid repository.
+
+launcher
+========
+
+A module in ansys-api-turbogrid that has the functions to create a running instance of TurboGrid application and returns a python interface to communicate with the instance.
+
+launch_turbogrid
+----------------
 
 Create an instance of ``PyTurboGrid`` with an available port.
 The PyTurboGrid object connects to your installation of TurboGrid and initializes itself.
 
 .. code-block:: pycon
 
-    >>> socketPort = 5000
-    >>> PyTGInstance = PyTurboGrid(socketPort)
+    >>> from ansys.api.turbogrid.launcher import launch_turbogrid
+    >>> turbogrid = launch_turbogrid()
+
+get_turbogrid_exe_path
+----------------------
+
+Returns Path object for the location of the Turbogrid executable that will be used by launch_turbogrid function call above.
+
+pyturbogrid_core
+================
 
 Initialization
-==============
-readsession
------------    
+**************
+
+read_inf
+--------
 .. code-block:: pycon
 
-    >>> PyTGInstance.readsession(filename="session_filename.extension")
+    >>> turbogrid.read_inf(path_to_inf_file)
 
-readinf
--------
+read_session  
+------------
 .. code-block:: pycon
 
-    >>> PyTGInstance.readinf(filename="inf_filename.extension")
+    >>> turbogrid.read_session(path_to_session_file)
 
-readstate
+read_state
 ---------
 .. code-block:: pycon
 
-    >>> PyTGInstance.readstate(filename="state_filename.extension")
+    >>> turbogrid.read_state(path_to_state_file)
 
 Processing
-==========
+**********
+
 unsuspend
 ---------
+
+Example:
 .. code-block:: pycon
 
-    >>> PyTGInstance.unsuspend(object="/TOPOLOGY SET")
+    >>> turbogrid.unsuspend(object="/TOPOLOGY SET")
 
-savestate
+save_state
 ---------
 .. code-block:: pycon
 
-    >>> PyTGInstance.savestate(filename="state_filename.extension")
+    >>> turbogrid.save_state(path_to_new_state_file)
 
-setTopologyChoice
+set_topology_choice
 -----------------
 .. code-block:: pycon
 
-    >>> PyTGInstance.setTopologyChoice("Single Round Round Refined")
+    >>> turbogrid.set_topology_choice(topology_choice_string)
 
-setTopologyList
+set_topology_list
 ---------------
 .. code-block:: pycon
 
-    >>> PyTGInstance.setTopologyList("LECircleHigh_TECircleLow")
+    >>> turbogrid.set_topology_list(topology_list_string) # topology_list_string example: "LECircleHigh_TECircleLow"
 
-setGlobalSizeFactor
+set_global_size_factor
 -------------------
+
+Example:
 .. code-block:: pycon
 
-    >>> PyTGInstance.setGlobalSizeFactor(2)
+    >>> turbogrid.set_global_size_factor(2)
 
 Queries
-=======
-queryMeshStatistics
+*******
+
+query_mesh_statistics
 -------------------
 .. code-block:: pycon
 
-    >>> PyTGInstance.queryMeshStatistics()
+    >>> stats = turbogrid.query_mesh_statistics()
 
-queryValidTopologyChoices
+query_valid_topology_choices
 -------------------------
 .. code-block:: pycon
 
-    >>> PyTGInstance.queryValidTopologyChoices()
+    >>> choices = turbogrid.query_valid_topology_choices()
 
 Shutting down
-=============
+*************
+
 quit
 ----
 .. code-block:: pycon
 
-    >>> PyTGInstance.quit()
+    >>> turbogrid.quit()
 
 
 
