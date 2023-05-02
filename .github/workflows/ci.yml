@@ -12,7 +12,7 @@ on:
 
 # Environment Variables
 env:
-  MAIN_PYTHON_VERSION: '3.9' # We need 3.9 for building sphinx
+  MAIN_PYTHON_VERSION: '3.10' # We need 3.9 for building sphinx
   LIBRARY_NAME: 'ansys-turbogrid-core' # The repo name
   LIBRARY_NAMESPACE: 'ansys.turbogrid.core'
   DOCUMENTATION_CNAME: 'turbogrid.docs.pyansys.com'
@@ -58,7 +58,7 @@ jobs:
       - name: "Set up Python"
         uses: actions/setup-python@v4
         with:
-          python-version: '3.9' # 3.9 is required for Sphinx
+          python-version: '3.10' # 3.9 is required for Sphinx
 
 # Using the newest version of pip, install all the dependencies.
 # The syntax .[NAME] refers to the project.optional-dependencies in pyproject.toml
