@@ -3,10 +3,21 @@ import ansys.api.turbogrid as pytg
 
 class MeshStatistics:
     """
-    Class for mesh statistics analysis
+    Class for mesh statistics analysis based on the current mesh in a running session of TurboGrid.
     """
 
     def __init__(self, turbogrid_instance: pytg.pyturbogrid_core.PyTurboGrid, domain: str = "ALL"):
+        """
+        Initialize the class using a connection to a running session of TurboGrid.
+
+        Parameters
+        ----------
+        turbogrid_instance: pytg.pyturbogrid_core.PyTurboGrid
+            Running session of TurboGrid.
+        domain : str, optional
+            Domain name to get the initial statistics for. If not specified, statistics for all
+            domains are read.
+        """
         self.interface = turbogrid_instance
         self.mesh_vars = dict()
         self.current_domain = str()
@@ -20,7 +31,7 @@ class MeshStatistics:
         self.current_domain = domain
 
     def get_mesh_statistics(self, variable: str = "ALL") -> dict:
-        """Get the basic mesh statistics
+        """Get the basic mesh statistics.
 
         Parameters
         ----------
@@ -41,6 +52,7 @@ class MeshStatistics:
 
     def update_mesh_statistics(self, domain: str = "ALL") -> None:
         """Re-read the mesh statistics from TurboGrid.
+
         This can be used either to update the cached mesh statistics after TurboGrid has remeshed,
         or to update the cached mesh statistics to use a different domain or domains.
 
@@ -147,22 +159,24 @@ class MeshStatistics:
     def _get_table_rows(self) -> list:
         row_data = list()
         row_data.append(["Mesh Measure", "Value", "% Bad", "% ok", "%OK"])
-        for var in self.mesh_vars:
-            if "Maximum" in self.mesh_vars[var]:
+        for var_name in self.mesh_vars:
+            var_data = self.mesh_vars[var_name]
+            # Exclude variables which only have 'Count' set (e.g. 'Elements')
+            if "Maximum" in var_data:
                 data = list()
-                data.append(var)
-                if self.mesh_vars[var]["Limits Type"] == "Maximum":
-                    value = str(self.mesh_vars[var]["Maximum"])
-                elif self.mesh_vars[var]["Limits Type"] == "Minimum":
-                    value = str(self.mesh_vars[var]["Minimum"])
+                data.append(var_name)
+                if var_data["Limits Type"] == "Maximum":
+                    value = str(var_data["Maximum"])
+                elif var_data["Limits Type"] == "Minimum":
+                    value = str(var_data["Minimum"])
                 else:
                     value = ""
-                if value and self.mesh_vars[var]["Units"]:
-                    value += " [" + self.mesh_vars[var]["Units"] + "]"
+                if value and var_data["Units"]:
+                    value += " [" + var_data["Units"] + "]"
                 data.append(value)
-                data.append(str(self.mesh_vars[var]["Percent Bad"]))
-                data.append(str(self.mesh_vars[var]["Percent ok"]))
-                data.append(str(self.mesh_vars[var]["Percent OK"]))
+                data.append(str(var_data["Percent Bad"]))
+                data.append(str(var_data["Percent ok"]))
+                data.append(str(var_data["Percent OK"]))
                 row_data.append(data)
         return row_data
 
@@ -183,11 +197,9 @@ class MeshStatistics:
             for row in row_data:
                 writer.writerow(row)
 
-    def write_table_to_text(self) -> None:
-        """Write a text version of the mesh statistics table to the terminal"""
-        print("")
-        print(self._get_domain_label(self.current_domain))
-        print("")
+    def get_table_as_text(self) -> str:
+        """Get a text version of the mesh statistics table."""
+        table = "\n" + self._get_domain_label(self.current_domain) + "\n\n"
         row_data = self._get_table_rows()
         row_lengths = [9] * 5
         for row in row_data:
@@ -197,5 +209,6 @@ class MeshStatistics:
             row_string = ""
             for index, value in enumerate(row):
                 row_string += str(value).ljust(row_lengths[index]) + " "
-            print(row_string)
-        print("")
+            table += row_string
+            table += "\n"
+        return table
