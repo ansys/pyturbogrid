@@ -5,9 +5,10 @@ class MeshStatistics:
     """
     Class for mesh statistics analysis based on the current mesh in a running session of TurboGrid.
     """
-    interface : pytg.pyturbogrid_core.PyTurboGrid = 0
-    mesh_vars : dict = dict()
-    current_domain : str = ""
+
+    interface: pytg.pyturbogrid_core.PyTurboGrid = 0
+    mesh_vars: dict = dict()
+    current_domain: str = ""
 
     def __init__(self, turbogrid_instance: pytg.pyturbogrid_core.PyTurboGrid, domain: str = "ALL"):
         """
