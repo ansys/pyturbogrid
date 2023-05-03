@@ -4,6 +4,7 @@ import os
 # -- Project information -----------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#project-information
 from ansys_sphinx_theme import ansys_favicon, ansys_logo_black, get_version_match
+from sphinx_gallery.sorting import FileNameSortKey
 
 from ansys.turbogrid.core import __version__
 
@@ -25,9 +26,15 @@ release = version = __version__
 ## -- General configuration ---------------------------------------------------
 ## https://www.sphinx-doc.org/en/master/usage/configuration.html#general-configuration
 
-extensions = []
+extensions = ["sphinx.ext.autodoc", "sphinx.ext.autosummary", "sphinx_gallery.gen_gallery"]
 
 exclude_patterns = []
+
+sphinx_gallery_conf = {
+    "examples_dirs": "../../examples",  # path to your example scripts
+    "gallery_dirs": "examples",  # path where the gallery generated output will be saved
+    "within_subsection_order": FileNameSortKey,
+}
 
 # -- Options for HTML output -------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#options-for-html-output
@@ -41,6 +48,27 @@ html_theme_options = {
         "version_match": get_version_match(__version__),
     },
     "check_switcher": False,
+}
+
+html_context = {
+    "github_user": "pyansys",
+    "github_repo": "pyturbogrid",
+    "github_version": "main",
+    "doc_path": "doc/source",
+}
+
+html_theme_options = {
+    "github_url": "https://github.com/pyansys/pyturbogrid",
+    "show_prev_next": True,
+    "show_breadcrumbs": True,
+    "use_edit_page_button": True,
+    "icon_links": [
+        {
+            "name": "Contribute",
+            "url": "https://github.com/pyansys/pyturbogrid/blob/main/CONTRIBUTING.md",
+            "icon": "fa fa-wrench",
+        },
+    ],
 }
 
 ## static path
