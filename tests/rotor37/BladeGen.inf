@@ -1,0 +1,7 @@
+!======  CFX-BladeGen Export  ========
+Axis of Rotation: Z
+Number of Blade Sets: 36
+Geometry Units: CM
+Hub Data File: hub.curve
+Shroud Data File: shroud.curve
+Profile Data File: profile.curve
