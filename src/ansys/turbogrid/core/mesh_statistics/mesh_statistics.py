@@ -163,8 +163,7 @@ class MeshStatistics:
     def _get_table_rows(self) -> list:
         row_data = list()
         row_data.append(["Mesh Measure", "Value", "% Bad", "% ok", "%OK"])
-        for var_name in self.mesh_vars:
-            var_data = self.mesh_vars[var_name]
+        for var_name, var_data in self.mesh_vars.items():
             # Exclude variables which only have 'Count' set (e.g. 'Elements')
             if "Maximum" in var_data:
                 data = list()
