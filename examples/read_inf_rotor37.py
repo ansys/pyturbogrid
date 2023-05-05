@@ -17,14 +17,8 @@ import os.path as ospath
 from ansys.api.turbogrid.launcher import get_turbogrid_exe_path, launch_turbogrid
 
 #################################################################################
-# Launch turbogrid in the most basic way
-turbogrid = launch_turbogrid()
-
-#################################################################################
-# We want to access the examples folder in the TurboGrid installation that will be used
+# We want to access the examples folder in the TurboGrid installation available
 # Find the examples folder based on the path to cfxtg found by below call to get_turbogrid_exe_path
-# If launch_turbogrid call above is given some input like turbogrid_path or product_version,
-# the same should be sent to the below call
 exec_path = get_turbogrid_exe_path()
 turbogrid_install_location = "/".join(exec_path.parts[:-2])
 turbogrid_install_location = turbogrid_install_location.replace("\\", "")
@@ -35,6 +29,11 @@ examples_path_str = turbogrid_install_location + "/examples"
 if not ospath.isdir(examples_path_str):
     print("examples folder not found in the TurboGrid installation")
     exit()
+
+#################################################################################
+# Launch turbogrid in the most basic way
+# We need to launch turbogrid from the same path as obtained above while finding the examples location
+turbogrid = launch_turbogrid(turbogrid_path=exec_path)
 
 #################################################################################
 # Read inf for rotor37 example
