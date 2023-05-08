@@ -1,1 +1,1 @@
-## Contains templates for the documentation build
+Contains templates for the documentation build
