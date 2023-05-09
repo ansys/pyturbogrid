@@ -1,11 +1,11 @@
 .. _mesh_statistics:
 
-.. currentmodule:: ansys.turbogrid.core.mesh_statistics.mesh_statistics
+.. currentmodule:: ansys.turbogrid.core.mesh_statistics.local_stats
 
-mesh_statistics
+local_stats
 ===============
 
 .. autosummary::
    :toctree: _autosummary
 
-   MeshStatistics
+   LocalMeshStatistics
