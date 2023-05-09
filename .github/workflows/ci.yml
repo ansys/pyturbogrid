@@ -127,20 +127,20 @@ jobs:
       - name: "Build library source and wheel artifacts"
         uses: pyansys/actions/build-library@v4
         with:
-          library-name: ${{ env.PACKAGE_NAME }}
+          library-name: ${{ env.LIBRARY_NAME }}
 
       - name: "Build a wheelhouse of the Python library"
         uses: pyansys/actions/build-wheelhouse@v4
         with:
-          library-name: ${{ env.PACKAGE_NAME }}
-          library-namespace: ${{ env.PACKAGE_NAMESPACE }}
+          library-name: ${{ env.LIBRARY_NAME }}
+          library-namespace: ${{ env.LIBRARY_NAMESPACE }}
           operating-system: windows-latest
           python-version: '3.10'
 
       - name: "Release to the private PyPI repository"
         uses: pyansys/actions/release-pypi-private@v1
         with:
-          library-name: ${{ env.PACKAGE_NAME }}
+          library-name: ${{ env.LIBRARY_NAME }}
           twine-username: "__token__"
           twine-token: ${{ secrets.PYANSYS_PYPI_PRIVATE_PAT }}
 
@@ -157,7 +157,7 @@ jobs:
       # - name: "Upload wheel and binaries"
       #   uses: actions/upload-artifact@v3
       #   with:
-      #     name: ${{ env.PACKAGE_NAME }}-artifacts
+      #     name: ${{ env.LIBRARY_NAME }}-artifacts
       #     path: dist/
       #     retention-days: 7
 
