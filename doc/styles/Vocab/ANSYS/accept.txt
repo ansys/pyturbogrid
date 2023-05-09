@@ -8,6 +8,7 @@ cfxtg
 get_turbogrid_exe_path
 launch_turbogrid
 launcher
+mesh_statistics
 product_version
 Pythonic
 pyturbogrid_core
