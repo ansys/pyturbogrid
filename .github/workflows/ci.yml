@@ -13,9 +13,10 @@ on:
 # Environment Variables
 env:
   MAIN_PYTHON_VERSION: '3.10' # We need 3.9 for building sphinx
-  LIBRARY_NAME: 'ansys-turbogrid-core' # The repo name
-  LIBRARY_NAMESPACE: 'ansys.turbogrid.core'
+  LIBRARY_NAME: 'ansys-turbogrid-client' # The repo name
+  LIBRARY_NAMESPACE: 'ansys.turbogrid.client'
   DOCUMENTATION_CNAME: 'turbogrid.docs.pyansys.com'
+  PIP_EXTRA_INDEX_URL: 'https://${{ secrets.PYANSYS_PYPI_PRIVATE_PAT }}@pkgs.dev.azure.com/pyansys/_packaging/pyansys/pypi/simple/'
 
 # This deals with concurrent runs of this script.
 concurrency:
@@ -60,6 +61,7 @@ jobs:
         with:
           python-version: '3.10' # 3.9 is required for Sphinx
 
+
 # Using the newest version of pip, install all the dependencies.
 # The syntax .[NAME] refers to the project.optional-dependencies in pyproject.toml
       - name: "Install packages for documentation build"
@@ -102,68 +104,62 @@ jobs:
 #          cname: ${{ env.DOCUMENTATION_CNAME }}
 #          token: ${{ secrets.GITHUB_TOKEN }}
 #          python-version: ${{ env.MAIN_PYTHON_VERSION }}
-                    
-#  smoke-tests:
-#    name: "Build and Smoke tests"
-#    runs-on: ${{ matrix.os }}
-#    needs: [code-style]
-#    strategy:
-#      fail-fast: false
-#      matrix:
-#        os: [ubuntu-latest, windows-latest]
-#        python-version: ['3.9', '3.10']
-#    steps:
-#      - uses: pyansys/actions/build-wheelhouse@v2
-#        with:
-#          library-name: ${{ env.LIBRARY_NAME }}
-#          library-namespace: ${{ env.LIBRARY_NAMESPACE }}
-#          operating-system: ${{ matrix.os }}
-#          python-version: ${{ matrix.python-version }}
-
-#  tests:
-#    name: "Tests"
-#    runs-on: ${{ matrix.os }}
-#    needs: [smoke-tests]
-#    strategy:
-#      matrix:
-#       os: [ubuntu-latest, windows-latest]
-#       python-version: ['3.9', '3.10']
-#      fail-fast: false
-#    steps:
-#      - uses: pyansys/actions/tests-pytest@v2
-#        with:
-#          pytest-extra-args: "--cov=ansys --cov-report=term --cov-report=html:.cov/html"
-#
 
 
-#  doc-deploy-dev:
-#    name: "Deploy development documentation"
-#    runs-on: ubuntu-latest
-#    needs: [doc-build]
-#    if: github.event_name == 'push'
-#    steps:
-#      - uses: pyansys/actions/doc-deploy-dev@v2
-#        with:
-#          cname: ${{ env.DOCUMENTATION_CNAME }}
-#          token: ${{ secrets.GITHUB_TOKEN }}
+# The build job is responsible for creating the build artifact and uploading it to PYPI using twine.
+  build:
+    name: Build
+    needs: [code-style]
+    runs-on: ubuntu-latest
 
-#  doc-deploy-stable:
-#    name: "Deploy stable documentation"
-#    runs-on: ubuntu-latest
-#    needs: [doc-deploy-dev]
-#    if: github.event_name == 'push' && contains(github.ref, 'refs/tags')
-#    steps:
-#      - uses: pyansys/actions/doc-deploy-stable@v2
-#        with:
-#          cname: ${{ env.DOCUMENTATION_CNAME }}
-#          token: ${{ secrets.GITHUB_TOKEN }}
+    steps:
+      - uses: actions/checkout@v3
 
-#  build-library:
-#    name: "Build library basic example"
-#    runs-on: ubuntu-latest
-#    needs: [tests, doc-deploy-stable]
-#    steps:
-#      - uses: pyansys/actions/build-library@v2
-#        with:
-#          library-name: ${{ env.LIBRARY_NAME }}
-#          python-version: ${{ env.MAIN_PYTHON_VERSION }}
+      - name: Setup Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.10'
+
+      - name: Pull PyTurboGrid API Package
+        run: |
+          python -m pip install ansys-turbogrid-api 
+
+      - name: "Build library source and wheel artifacts"
+        uses: pyansys/actions/build-library@v4
+        with:
+          library-name: ${{ env.LIBRARY_NAME }}
+
+      - name: "Build a wheelhouse of the Python library"
+        uses: pyansys/actions/build-wheelhouse@v4
+        with:
+          library-name: ${{ env.LIBRARY_NAME }}
+          library-namespace: ${{ env.LIBRARY_NAMESPACE }}
+          operating-system: windows-latest
+          python-version: '3.10'
+
+      - name: "Release to the private PyPI repository"
+        uses: pyansys/actions/release-pypi-private@v1
+        with:
+          library-name: ${{ env.LIBRARY_NAME }}
+          twine-username: "__token__"
+          twine-token: ${{ secrets.PYANSYS_PYPI_PRIVATE_PAT }}
+
+      # - name: Build package
+      #   run: |
+      #     python -m pip install build
+      #     python -m build
+
+      # - name: Check package
+      #   run: |
+      #     pip install twine
+      #     twine check dist/*
+
+      # - name: "Upload wheel and binaries"
+      #   uses: actions/upload-artifact@v3
+      #   with:
+      #     name: ${{ env.LIBRARY_NAME }}-artifacts
+      #     path: dist/
+      #     retention-days: 7
+
+
+
