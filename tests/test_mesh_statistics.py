@@ -6,7 +6,7 @@ from pathlib import Path
 
 from ansys.api.turbogrid import pyturbogrid_core
 
-from ansys.turbogrid.core.mesh_statistics import mesh_statistics
+from ansys.turbogrid.client.mesh_statistics import mesh_statistics
 
 
 def test_get_mesh_statistics(pyturbogrid: pyturbogrid_core.PyTurboGrid):
