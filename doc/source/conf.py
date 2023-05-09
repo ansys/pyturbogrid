@@ -2,7 +2,7 @@ from datetime import datetime
 import os
 import sys
 
-from ansys.turbogrid.core.mesh_statistics_mesh_statistics import MeshStats
+from ansys.turbogrid.core.mesh_statistics.mesh_statistics import MeshStats
 
 # -- Project information -----------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#project-information
