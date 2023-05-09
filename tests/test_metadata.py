@@ -1,4 +1,4 @@
-from ansys.turbogrid.core import __version__
+from ansys.turbogrid.client import __version__
 
 
 def test_pkg_version():
