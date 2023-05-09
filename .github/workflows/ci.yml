@@ -69,7 +69,8 @@ jobs:
           python -m venv ./.venv
           source ./.venv/bin/activate
           python -m pip install -U pip
-          python -m pip install ansys-turbogrid-api --index-url https://${{ secrets.PYANSYS_PYPI_PRIVATE_PAT }}@pkgs.dev.azure.com/pyansys/_packaging/pyansys/pypi/simple/ --no-dependencies      
+#         python -m pip install ansys-turbogrid-api --index-url https://${{ secrets.PYANSYS_PYPI_PRIVATE_PAT }}@pkgs.dev.azure.com/pyansys/_packaging/pyansys/pypi/simple/ --no-dependencies      
+          python -m pip install .
           python -m pip install .[doc]
 
       - name: Build the documentation (HTML)
@@ -122,7 +123,8 @@ jobs:
 
       - name: Pull PyTurboGrid API Package
         run: |
-          python -m pip install ansys-turbogrid-api --index-url https://${{ secrets.PYANSYS_PYPI_PRIVATE_PAT }}@pkgs.dev.azure.com/pyansys/_packaging/pyansys/pypi/simple/ --no-dependencies        
+#         python -m pip install ansys-turbogrid-api --index-url https://${{ secrets.PYANSYS_PYPI_PRIVATE_PAT }}@pkgs.dev.azure.com/pyansys/_packaging/pyansys/pypi/simple/ --no-dependencies        
+          python -m pip install ansys-turbogrid-api 
 
       - name: "Build library source and wheel artifacts"
         uses: pyansys/actions/build-library@v4
