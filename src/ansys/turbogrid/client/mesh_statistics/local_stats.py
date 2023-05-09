@@ -1,4 +1,4 @@
-import ansys.api.turbogrid as pytg
+# import ansys.api.turbogrid as pytg
 
 
 class LocalMeshStatistics:
@@ -16,7 +16,7 @@ class LocalMeshStatistics:
             Domain name to get the initial statistics for. If not specified, statistics for all
             domains are read.
         """
-        self.interface = pytg.pyturbogrid_core.PyTurboGrid
+        # self.interface = pytg.pyturbogrid_core.PyTurboGrid
         self.mesh_vars = dict()
         self.current_domain = str()
         self._read_mesh_statistics(domain)
