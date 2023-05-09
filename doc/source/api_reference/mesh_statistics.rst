@@ -2,7 +2,7 @@
 
 .. currentmodule:: ansys.turbogrid.client.mesh_statistics.mesh_statistics
 
-local_stats
+mesh_statistics
 ===============
 
 .. autosummary::
