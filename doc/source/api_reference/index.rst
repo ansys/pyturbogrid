@@ -10,4 +10,5 @@ This documentation lists the modules and functions in pyturbogrid repository as 
    :maxdepth: 2
 
    launcher
+   mesh_statistics
    pyturbogrid_core

@@ -4,17 +4,29 @@ ansys
 additional_args_str
 additional_kw_args
 ansys-api-turbogrid
+application
 cfxtg
+create_histogram
+current_domain
+get_mesh_statistics
+get_table_as_text
 get_turbogrid_exe_path
+json
 launch_turbogrid
 launcher
+mesh_statistics
+mesh_vars
 product_version
 Pythonic
 pyturbogrid_core
 PyTurboGrid
 pyturbogrid
+serializer
+TurboGrid
+turbogrid
 turbogrid_path
 turbomachinery
+write_table_to_csv
 
 # Function names
 query_mesh_statistics
