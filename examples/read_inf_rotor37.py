@@ -11,14 +11,18 @@ import json
 import os.path as ospath
 
 #################################################################################
-# At present the launcher is in ansys internal ansy-api-turbogrid repo.
+# At present the launcher is in ansys internal ansy-api-turbogrid repository.
 # It is assumed that ansys-api-turbogrid has been installed.
-# This may change in the future when launcher moves into pyturbogrid repo.
+# This may change in the future when launcher moves into pyturbogrid repository.
 from ansys.api.turbogrid.launcher import get_turbogrid_exe_path, launch_turbogrid
 
 #################################################################################
-# We want to access the examples folder in the TurboGrid installation available.
-# Find the examples folder based on the path to cfxtg found by below call to get_turbogrid_exe_path
+# Launch TurboGrid instance in the most basic way.
+turbogrid = launch_turbogrid()
+
+#################################################################################
+# Find the examples folder based on the path to the TurboGrid executable found by below call to get_turbogrid_exe_path.
+# We want to access the examples folder in the TurboGrid installation used. get_turbogrid_exe_path ensures that.
 exec_path = get_turbogrid_exe_path()
 turbogrid_install_location = "/".join(exec_path.parts[:-2])
 turbogrid_install_location = turbogrid_install_location.replace("\\", "")
@@ -29,11 +33,6 @@ examples_path_str = turbogrid_install_location + "/examples"
 if not ospath.isdir(examples_path_str):
     print("examples folder not found in the TurboGrid installation")
     exit()
-
-#################################################################################
-# Launch turbogrid in the most basic way.
-# We need to launch turbogrid from the same path as obtained above while finding the examples location.
-turbogrid = launch_turbogrid(turbogrid_path=exec_path)
 
 #################################################################################
 # Read inf for rotor37 example.
@@ -53,5 +52,5 @@ stats = turbogrid.query_mesh_statistics()
 print("Mesh statistics:", json.dumps(stats, indent=2))
 
 #################################################################################
-# Quit the turbogrid session.
+# quit the TurboGrid session.
 turbogrid.quit()
