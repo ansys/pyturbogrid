@@ -30,8 +30,13 @@ PyTurboGrid
    :target: https://github.com/psf/black
    :alt: Black
 
+.. |intro| image:: https://github.com/pyansys/pyturbogrid/raw/main/doc/source/_static/turbine_blade_squealer_tip_conformal_white.png
+   :alt: TurboGrid
+   :width: 600 
 
-A Python wrapper for Ansys TurboGrid
+A Python wrapper for `Ansys TurboGrid`_ software to generate high quality turbomachinery meshes.
+
+|intro| 
 
 .. inclusion-marker-do-not-remove
 
@@ -190,3 +195,4 @@ the building requirements and then executing the build module:
 .. _pytest: https://docs.pytest.org/en/stable/
 .. _Sphinx: https://www.sphinx-doc.org/en/master/
 .. _tox: https://tox.wiki/
+.. _Ansys TurboGrid: https://www.ansys.com/products/fluids/ansys-turbogrid
