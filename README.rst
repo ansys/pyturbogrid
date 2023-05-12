@@ -34,7 +34,7 @@ PyTurboGrid
    :alt: TurboGrid
    :width: 600 
 
-A Python wrapper for `Ansys TurboGrid`_ to generate high quality turbomachinery meshes.
+A Python wrapper for `Ansys TurboGrid`_ software to generate high quality turbomachinery meshes.
 
 |intro| 
 
