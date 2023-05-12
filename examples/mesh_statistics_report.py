@@ -14,13 +14,15 @@ template file "report_template.html".
 
 # sphinx_gallery_thumbnail_path = '_static/rotor37_with_histogram.png'
 
-from jinja2 import Environment, FileSystemLoader
-from ansys.api.turbogrid.launcher import get_turbogrid_exe_path, launch_turbogrid
-from ansys.api.turbogrid.cfx.ccl_object_db import CCLObjectDB
-from ansys.turbogrid.client.mesh_statistics import mesh_statistics
-from datetime import date
 from collections import OrderedDict
+from datetime import date
 import os.path as ospath
+
+from ansys.api.turbogrid.cfx.ccl_object_db import CCLObjectDB
+from ansys.api.turbogrid.launcher import get_turbogrid_exe_path, launch_turbogrid
+from jinja2 import Environment, FileSystemLoader
+
+from ansys.turbogrid.client.mesh_statistics import mesh_statistics
 
 #################################################################################
 # Set up a TurboGrid session with a basic case and mesh, similar to the
