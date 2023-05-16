@@ -90,7 +90,7 @@ jobs:
 # Currently, we update the doc on every script run.
 # TODO: we need a better system for controlling when documentation is updated.
       - name: "Deploy dev doc"
-        uses: pyansys/actions/doc-deploy-dev@v3
+        uses: ansys/actions/doc-deploy-dev@v4
         with:
           doc-artifact-name: 'documentation-html'
           cname: ${{ env.DOCUMENTATION_CNAME }}
