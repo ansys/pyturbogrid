@@ -55,9 +55,9 @@ doc = [
 ]
 
 # [project.urls]
-# Source = "https://github.com/pyansys/pyturbogrid"
-# Tracker = "https://github.com/pyansys/pyturbogrid/issues"
-# Homepage = "https://github.com/pyansys/pyturbogrid"
+# Source = "https://github.com/ansys/pyturbogrid"
+# Tracker = "https://github.com/ansys/pyturbogrid/issues"
+# Homepage = "https://github.com/ansys/pyturbogrid"
 
 [tool.flit.module]
 name = "ansys.turbogrid.client"
@@ -80,7 +80,7 @@ secondary = true
 
 [tool.poetry.dependencies]
 python = ">=3.7,<4.0"
-ansys-turbogrid-api= {version = "==0.1.0", source = "privatepypi"}
+ansys-turbogrid-api = {source = "privatepypi"}
 
 
 # [tool.coverage.run]
