@@ -90,7 +90,7 @@ jobs:
 # Currently, we update the doc on every script run.
 # TODO: we need a better system for controlling when documentation is updated.
       - name: "Deploy dev doc"
-        uses: ansys/actions/doc-deploy-dev@v3
+        uses: ansys/actions/doc-deploy-dev@v4
         with:
           doc-artifact-name: 'documentation-html'
           cname: ${{ env.DOCUMENTATION_CNAME }}
@@ -98,7 +98,7 @@ jobs:
 
 # # Stable doc, which is versioned, but I don't know how yet.
 #      - name: "Deploy release doc"
-#        uses: ansys/actions/doc-deploy-stable@v3
+#        uses: ansys/actions/doc-deploy-stable@v4
 #        with:
 #          doc-artifact-name: 'documentation-html'
 #          cname: ${{ env.DOCUMENTATION_CNAME }}
