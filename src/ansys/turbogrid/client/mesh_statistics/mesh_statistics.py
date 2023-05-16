@@ -1,4 +1,4 @@
-import ansys.api.turbogrid as pytg
+import ansys.turbogrid.api as pytg
 
 
 class MeshStatistics:
