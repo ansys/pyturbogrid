@@ -34,6 +34,7 @@ sphinx_gallery_conf = {
     "examples_dirs": "../../examples",  # path to your example scripts
     "gallery_dirs": "examples",  # path where the gallery generated output will be saved
     "within_subsection_order": FileNameSortKey,
+    "remove_config_comments": True,
 }
 
 # -- Options for HTML output -------------------------------------------------

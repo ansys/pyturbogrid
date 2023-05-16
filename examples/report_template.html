@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <title>TurboGrid Mesh Statistics Report</title>
+  <style>
+    table,
+    th,
+    td {
+      border: 1px solid
+    }
+
+    tr:first-child td,
+    tr td:first-child {
+      font-weight: bold;
+    }
+
+    td {
+      width: "15%";
+      text-align: center;
+    }
+
+    tr td:first-child {
+      width: "40%";
+      text-align: left;
+    }
+  </style>
+</head>
+
+<body>
+
+  <h1>TurboGrid Mesh Statistics Report</h1>
+
+  <h2>Case Details</h2>
+  {% for key, value in case_info.items() %}
+  <p>{{key}}: {{value}}</p>
+  {% endfor %}
+
+  <h2>Mesh Statistics</h2>
+  <table style="width:50%">
+    <tr>
+      <th>Domain</th>
+      <th>Nodes</th>
+      <th>Elements</th>
+    </tr>
+    {% for domain, values in domain_count.items() %}
+    <tr>
+      <td style="width:50%">{{domain}}</td>
+      <td style="width:25%; text-align:right">{{values['Vertices']['Count']}}</td>
+      <td style="width:25%; text-align:right">{{values['Elements']['Count']}}</td>
+    </tr>
+    {% endfor %}
+  </table>
+
+  <h2>Mesh Quality Table</h2>
+  <table style="width:100%">
+    {% for row in stat_table_rows %}
+    <tr>
+      {% for item in row %}
+      <td>{{item}}</td>
+      {% endfor %}
+    </tr>
+    {% endfor %}
+  </table>
+
+  <h2>Mesh Quality Histograms</h2>
+
+  {% for var, file_name in hist_dict.items() %}
+  <figure>
+    <img src="{{file_name}}" alt="Mesh Statistics Histogram for {{var}}" style="width:100%">
+    <figcaption>Figure: Mesh Statistics for {{var}}</figcaption>
+  </figure>
+  {% endfor %}
+
+</body>
+
+</html>
