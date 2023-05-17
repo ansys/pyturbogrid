@@ -30,7 +30,7 @@ PyTurboGrid
    :target: https://github.com/psf/black
    :alt: Black
 
-.. |intro| image:: https://github.com/pyansys/pyturbogrid/raw/main/doc/source/_static/turbine_blade_squealer_tip_conformal_white.png
+.. |intro| image:: https://github.com/pyansys/pyturbogrid/raw/main/doc/source/_static/turbine_blade_squealer_tip_conformal_white_rounded.png
    :alt: TurboGrid
    :width: 600 
 
