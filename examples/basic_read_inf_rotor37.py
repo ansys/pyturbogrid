@@ -19,7 +19,7 @@ import os.path as ospath
 # At present the launcher is in ansys internal ansy-api-turbogrid repository.
 # It is assumed that ansys-api-turbogrid has been installed.
 # This may change in the future when launcher moves into pyturbogrid repository.
-from ansys.api.turbogrid.launcher import get_turbogrid_exe_path, launch_turbogrid
+from ansys.turbogrid.api.launcher import get_turbogrid_exe_path, launch_turbogrid
 
 #################################################################################
 # Launch TurboGrid instance in the most basic way.
