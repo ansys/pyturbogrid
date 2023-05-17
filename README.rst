@@ -18,8 +18,8 @@ PyTurboGrid
    :target: https://codecov.io/gh/pyansys/pyturbogrid
    :alt: Codecov
 
-.. |GH-CI| image:: https://github.com/pyansys/pyturbogrid/actions/workflows/ci_cd.yml/badge.svg
-   :target: https://github.com/pyansys/pyturbogrid/actions/workflows/ci_cd.yml
+.. |GH-CI| image:: https://github.com/pyansys/pyturbogrid/actions/workflows/ci.yml/badge.svg
+   :target: https://github.com/pyansys/pyturbogrid/actions/workflows/ci.yml
    :alt: GH-CI
 
 .. |MIT| image:: https://img.shields.io/badge/License-MIT-yellow.svg
