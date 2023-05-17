@@ -1,4 +1,4 @@
-import ansys.api.turbogrid as pytg
+import ansys.turbogrid.api as pytg
 
 
 class MeshStatistics:
@@ -6,8 +6,16 @@ class MeshStatistics:
     Class for mesh statistics analysis based on the current mesh in a running session of TurboGrid.
     """
 
+    #: Interface to a running session of TurboGrid.
     interface: pytg.pyturbogrid_core.PyTurboGrid = 0
+
+    #: Cache of the basic mesh statistics obtained by the last call to update_mesh_statistics or
+    #: from the initialization of the object if update_mesh_statistics has not been called. The
+    #: domain that these statistics relate to is stored as the current_domain attribute.
     mesh_vars: dict = dict()
+
+    #: The domain that was used for the last update of the mesh statistics. See the documentation
+    #: for the mesh_vars attribute.
     current_domain: str = ""
 
     def __init__(self, turbogrid_instance: pytg.pyturbogrid_core.PyTurboGrid, domain: str = "ALL"):
@@ -18,7 +26,7 @@ class MeshStatistics:
         ----------
         turbogrid_instance: pytg.pyturbogrid_core.PyTurboGrid
             Running session of TurboGrid.
-        domain : str, optional
+        domain: str, optional
             Domain name to get the initial statistics for. If not specified, statistics for all
             domains are read.
         """
@@ -39,7 +47,7 @@ class MeshStatistics:
 
         Parameters
         ----------
-        variable : str, optional
+        variable: str, optional
             Mesh statistics variable to get statistics for. If not specified, a dictionary of all
             variables is returned.
 
@@ -62,13 +70,26 @@ class MeshStatistics:
 
         Parameters
         ----------
-        domain : str, optional
+        domain: str, optional
             Domain name to get statistics for. If not specified, statistics for all domains are
             read.
         """
         self._read_mesh_statistics(domain)
 
-    def _get_domain_label(self, domain: str) -> str:
+    def get_domain_label(self, domain: str) -> str:
+        """Get a label for a domain.
+
+        Parameters
+        ----------
+        domain: str
+            Domain name to get statistics for. If not specified, statistics for all domains are
+            read.
+
+        Returns
+        -------
+        str
+            A domain label.
+        """
         if domain == "ALL":
             domain_label = "All Domains"
         else:
@@ -116,7 +137,7 @@ class MeshStatistics:
         ----------
         variable: str
             Mesh statistics variable to use for the histogram.
-        domain : str, optional
+        domain: str, optional
             Domain name to get statistics for. If not specified, statistics for all domains are
             read.
         use_percentages: bool, optional
@@ -125,7 +146,8 @@ class MeshStatistics:
         bin_units: str, optional
             Use the provided units for the bin values (x-axis labels).
         image_file: str, optional
-            If set, write the histogram image to the specified file.
+            If set, write the histogram image to the specified file. The image format is
+            determined by the file extension e.g. ".png".
         show: bool, optional
             If set to false, do not display the image on screen. Only useful if the image is
             being written to a file.
@@ -155,12 +177,19 @@ class MeshStatistics:
             bin_values=bin_values,
             xlabel=xlabel,
             ylabel=ylabel,
-            domain_label=self._get_domain_label(domain),
+            domain_label=self.get_domain_label(domain),
             image_file=image_file,
             show=show,
         )
 
-    def _get_table_rows(self) -> list:
+    def get_table_rows(self) -> list:
+        """Get the mesh statistics table data as a list of rows.
+
+        Returns
+        -------
+        list
+            Each list item represents one table row and is a list containing the row data for the mesh statistics.
+        """
         row_data = list()
         row_data.append(["Mesh Measure", "Value", "% Bad", "% ok", "%OK"])
         for var_name, var_data in self.mesh_vars.items():
@@ -188,22 +217,22 @@ class MeshStatistics:
 
         Parameters
         ----------
-        file_name : str
+        file_name: str
             File name for writing the statistics table.
         """
         import csv
 
         with open(file_name, "w", newline="") as f:
             writer = csv.writer(f)
-            row_data = self._get_table_rows()
-            writer.writerow([self._get_domain_label(self.current_domain)])
+            row_data = self.get_table_rows()
+            writer.writerow([self.get_domain_label(self.current_domain)])
             for row in row_data:
                 writer.writerow(row)
 
     def get_table_as_text(self) -> str:
         """Get a text version of the mesh statistics table."""
-        table = "\n" + self._get_domain_label(self.current_domain) + "\n\n"
-        row_data = self._get_table_rows()
+        table = "\n" + self.get_domain_label(self.current_domain) + "\n\n"
+        row_data = self.get_table_rows()
         row_lengths = [9] * 5
         for row in row_data:
             for index, value in enumerate(row):

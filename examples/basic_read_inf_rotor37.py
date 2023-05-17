@@ -1,12 +1,17 @@
 """
 .. _read_inf_rotor37:
 
-Read Inf Example
-----------------
+Basic Mesh Generation
+---------------------
 
-This example demonstrates how to launch a PyTurboGrid instance and use it to load a blade model into the associated TurboGrid instance by reading an inf file. Further this will also show how to query mesh statistics from the session.
+This example demonstrates how to launch a PyTurboGrid instance and use it to load a blade model
+into the associated TurboGrid instance by reading an inf file. Further this will also show how to
+query mesh statistics from the session.
 
 """
+
+# sphinx_gallery_thumbnail_path = '_static/rotor37_overview.png'
+
 import json
 import os.path as ospath
 
@@ -14,7 +19,7 @@ import os.path as ospath
 # At present the launcher is in ansys internal ansy-api-turbogrid repository.
 # It is assumed that ansys-api-turbogrid has been installed.
 # This may change in the future when launcher moves into pyturbogrid repository.
-from ansys.api.turbogrid.launcher import get_turbogrid_exe_path, launch_turbogrid
+from ansys.turbogrid.api.launcher import get_turbogrid_exe_path, launch_turbogrid
 
 #################################################################################
 # Launch TurboGrid instance in the most basic way.
@@ -52,5 +57,9 @@ stats = turbogrid.query_mesh_statistics()
 print("Mesh statistics:", json.dumps(stats, indent=2))
 
 #################################################################################
-# quit the TurboGrid session.
+# Save the mesh.
+turbogrid.save_mesh(filename="rotor37.gtm")
+
+#################################################################################
+# Quit the TurboGrid session.
 turbogrid.quit()
