@@ -84,6 +84,18 @@ Assuming a suitable python environment is active, and the current working direct
     
       python -m pip install -e . 
 
+Requirements
+------------
+
+You must have a licensed copy of Ansys TurboGrid software installed locally. PyTurboGrid supports Ansys TurboGrid release 2023 R2. The Windows installation of Ansys automatically sets the required environment variables for PyTurboGrid to find the locall TurboGrid installation. Using Ansys TurboGrid 2023 R2 installed in the default directory for example, the installer automatically sets an environment variable ``AWP_ROOT232`` to point to ``C:\Program Files\ANSYS Inc\v232``.
+
+On Linux, the required environment variable is not set automatically. Using Ansys 2023 R2 in the default installation directory as an example, this and can be set for the current user in the current shell session before running PyTurboGrid, with:
+
+.. code:: console
+
+    export AWP_ROOT232=/usr/ansys_inc/v232
+
+For this setting to persist between different shell sessions for the current user, the same export command can instead be added to the user's ``~/.profile`` file.
 
 
 .. LINKS AND REFERENCES
