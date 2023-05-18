@@ -58,7 +58,7 @@ Then, you can simply execute:
     python -m pip install ansys-turbogrid-client
 
 
-Installing PyTurboGrid in from source code allows you to modify the source and enhance it. Before contributing to the project, please refer to the `PyAnsys Developer's guide`_. You will need to follow these steps:
+Installing PyTurboGrid from source code allows you to modify the source and enhance it. Before contributing to the project, please refer to the `PyAnsys Developer's guide`_. You will need to follow these steps:
 
 1. Start by cloning this repository:
 
@@ -89,7 +89,7 @@ Requirements
 
 You must have a licensed copy of Ansys TurboGrid software installed locally. PyTurboGrid supports Ansys TurboGrid release 2023 R2. The Windows installation of Ansys automatically sets the required environment variables for PyTurboGrid to find the locall TurboGrid installation. Using Ansys TurboGrid 2023 R2 installed in the default directory for example, the installer automatically sets an environment variable ``AWP_ROOT232`` to point to ``C:\Program Files\ANSYS Inc\v232``.
 
-On Linux, the required environment variable is not set automatically. Using Ansys 2023 R2 in the default installation directory as an example, this and can be set for the current user in the current shell session before running PyTurboGrid, with:
+On Linux, the required environment variable is not set automatically. Using Ansys 2023 R2 in the default installation directory as an example, this can be set for the current user in the current shell session before running PyTurboGrid, with:
 
 .. code:: console
 
