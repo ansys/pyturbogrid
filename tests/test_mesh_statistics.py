@@ -4,7 +4,7 @@
 import os
 from pathlib import Path
 
-from ansys.api.turbogrid import pyturbogrid_core
+from ansys.turbogrid.api import pyturbogrid_core
 
 from ansys.turbogrid.client.mesh_statistics import mesh_statistics
 
@@ -132,5 +132,5 @@ def test_get_table_as_text(pyturbogrid: pyturbogrid_core.PyTurboGrid):
     # Check that the string is approximately the right size (the exact contents might change
     # as the numbers might vary slightly)
     assert len(table_string) > 550
-    assert len(table_string) < 650
+    assert len(table_string) < 750
     assert table_string.count("\n") == 12

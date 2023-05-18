@@ -9,8 +9,9 @@ if pyturbogrid_root:
 else:
     sys.path.append("./src")
 
-from ansys.api.turbogrid import pyturbogrid_core
-from ansys.api.turbogrid.launcher import launch_turbogrid
+from ansys.turbogrid.api import pyturbogrid_core
+
+from ansys.turbogrid.client.launcher.launcher import launch_turbogrid
 
 pytest.socket_port = 5000
 
