@@ -19,9 +19,9 @@ from datetime import date
 import os.path as ospath
 
 from ansys.turbogrid.api.cfx.ccl_object_db import CCLObjectDB
-from ansys.turbogrid.api.launcher import get_turbogrid_exe_path, launch_turbogrid
 from jinja2 import Environment, FileSystemLoader
 
+from ansys.turbogrid.client.launcher.launcher import get_turbogrid_exe_path, launch_turbogrid
 from ansys.turbogrid.client.mesh_statistics import mesh_statistics
 
 #################################################################################
