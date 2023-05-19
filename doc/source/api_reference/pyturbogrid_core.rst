@@ -3,11 +3,35 @@
 pyturbogrid_core
 ================
 
-read_inf
---------
-.. code-block:: pycon
+.. py:function::__init__(
+        self,
+        socket_port: int | None,
+        turbogrid_location_type,
+        cfxtg_location,
+        log_level,
+        additional_args_str=None,
+        additional_kw_args=None,
+    )
 
-    >>> turbogrid.read_inf(path_to_inf_file)
+    Creates the PyTurboGrid instance.
+
+    :param socket_port: ``int``, ``optional``.
+        Port at which PyTurbogrid should connect with TurboGrid application.
+        If not provided, a random port available will be used.
+    :param turbogrid_location_type: ``TurboGridLocationType``.
+        Enum type input to indicate whether to use a locally installed TurboGrid application
+        or a container installed application
+    :param cfxtg_location: ``str``.
+        Path to the ``cfxtg`` command used to start TurboGrid.
+    :param log_level: ``TurboGridLogLevel``. 
+        Level of details to be given in the log file and console output
+    :param additional_args_str: ``str`` | ``None``.
+        Additional arguments to send to TurboGrid. The default is ``None``
+    :param additional_kw_args: ``dict`` | ``None``.
+        Additional arguments to send to TurboGrid. The default is ``None``.
+    
+.. py:function::read_inf(self, filename: str)
+    Reads a blade model from an inf file.
 
 read_session  
 ------------
