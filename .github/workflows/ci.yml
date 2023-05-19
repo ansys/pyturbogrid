@@ -137,29 +137,16 @@ jobs:
           operating-system: windows-latest
           python-version: '3.10'
 
+
+# Only a tagged commit that begins with 'v' will get pushed to the index.
+# The developer MUST make sure that:
+#   1. The commit has this tag
+#   2. The commit is done within a matching branch release/v*
+#   3. The file src\ansys\turbogrid\core\__init__.py's __version__ is updated to match the above 2.
       - name: "Release to the private PyPI repository"
+        if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/v')
         uses: ansys/actions/release-pypi-private@v4
         with:
           library-name: ${{ env.LIBRARY_NAME }}
           twine-username: "__token__"
           twine-token: ${{ secrets.PYANSYS_PYPI_PRIVATE_PAT }}
-
-      # - name: Build package
-      #   run: |
-      #     python -m pip install build
-      #     python -m build
-
-      # - name: Check package
-      #   run: |
-      #     pip install twine
-      #     twine check dist/*
-
-      # - name: "Upload wheel and binaries"
-      #   uses: actions/upload-artifact@v3
-      #   with:
-      #     name: ${{ env.LIBRARY_NAME }}-artifacts
-      #     path: dist/
-      #     retention-days: 7
-
-
-
