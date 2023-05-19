@@ -21,8 +21,8 @@ import os.path as ospath
 from ansys.turbogrid.api.cfx.ccl_object_db import CCLObjectDB
 from jinja2 import Environment, FileSystemLoader
 
-from ansys.turbogrid.client.launcher.launcher import get_turbogrid_exe_path, launch_turbogrid
-from ansys.turbogrid.client.mesh_statistics import mesh_statistics
+from ansys.turbogrid.core.launcher.launcher import get_turbogrid_exe_path, launch_turbogrid
+from ansys.turbogrid.core.mesh_statistics import mesh_statistics
 
 #################################################################################
 # Set up a TurboGrid session with a basic case and mesh, similar to the

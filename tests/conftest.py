@@ -9,9 +9,15 @@ if pyturbogrid_root:
 else:
     sys.path.append("./src")
 
+pyturbogrid_api_root = os.getenv("PYTURBOGRID_API_ROOT")
+if pyturbogrid_api_root:
+    sys.path.append(f"{pyturbogrid_api_root}/src")
+else:
+    raise RuntimeError("PYTURBOGRID_API_ROOT must be defined")
+
 from ansys.turbogrid.api import pyturbogrid_core
 
-from ansys.turbogrid.client.launcher.launcher import launch_turbogrid
+from ansys.turbogrid.core.launcher.launcher import launch_turbogrid
 
 pytest.socket_port = 5000
 
@@ -28,7 +34,7 @@ def pyturbogrid() -> pyturbogrid_core.PyTurboGrid:
         additional_args = None
     pyturbogrid = launch_turbogrid(
         additional_args_str=additional_args,
-        # additional_kw_args={"local-root": os.getenv("PYTURBOGRID_TURBOGRID_LOCAL_ROOT")},
+        additional_kw_args={"local-root": os.getenv("PYTURBOGRID_TURBOGRID_LOCAL_ROOT")},
         port=pytest.socket_port,
     )
     print("Success")
