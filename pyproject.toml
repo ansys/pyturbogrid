@@ -38,6 +38,7 @@ tests = [
 ]
 doc = [
     "ansys-sphinx-theme==0.9.8",
+    "autodocsumm=0.2.10",
     "ipyvtklink==0.2.3",
     "jupyter_sphinx==0.4.0",
     "jupytext==1.14.5",

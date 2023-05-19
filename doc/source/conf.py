@@ -26,7 +26,12 @@ release = version = __version__
 ## -- General configuration ---------------------------------------------------
 ## https://www.sphinx-doc.org/en/master/usage/configuration.html#general-configuration
 
-extensions = ["sphinx.ext.autodoc", "sphinx.ext.autosummary", "sphinx_gallery.gen_gallery"]
+extensions = [
+    "autodocsumm",
+    "sphinx.ext.autodoc",
+    "sphinx.ext.autosummary",
+    "sphinx_gallery.gen_gallery",
+]
 
 exclude_patterns = []
 
