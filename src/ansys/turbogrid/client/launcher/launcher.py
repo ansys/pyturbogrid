@@ -16,7 +16,7 @@ def _is_windows():
 
 
 class TurboGridVersion(Enum):
-    """Contains the standard Ansys TurboGrid release."""
+    """An enumeration over supported Ansys TurboGrid versions."""
 
     # Versions must be listed here with the most recent first
     version_23R2 = "23.2.0"
@@ -40,7 +40,14 @@ class TurboGridVersion(Enum):
 
 
 def get_latest_ansys_version() -> str:
-    """Get the latest Ansys version from AWP_ROOT environment variables."""
+    """Get the latest available Ansys version from the AWP_ROOT environment variables.
+
+    Returns
+    -------
+    str
+      Latest available version, in the form "23.2.0".
+
+    """
 
     for v in TurboGridVersion:
         if "AWP_ROOT" + "".join(str(v).split("."))[:-1] in os.environ:
@@ -50,6 +57,22 @@ def get_latest_ansys_version() -> str:
 
 
 def get_turbogrid_exe_path(**launch_argvals) -> Path:
+    """Get the path to a local installation of TurboGrid.
+
+    The path is searched in the following order:
+
+    1. The "turbogrid_path" parameter from launch_argvals.
+    2. The "PYTURBOGRID_TURBOGRID_ROOT" environment variable.
+    3. The TurboGrid installation found from the "product_version" parameter from launch_argvals, using the corresponding "AWP_ROOTnnn" environment variable.
+    4. The latest Ansys version from the AWP_ROOT environment variables.
+
+    Returns
+    -------
+    Path
+      The path of a local TurboGrid installation.
+
+    """
+
     def get_turbogrid_root(version: TurboGridVersion) -> Path:
         awp_root = os.environ["AWP_ROOT" + "".join(str(version).split("."))[:-1]]
         return Path(awp_root) / "TurboGrid"
@@ -95,13 +118,13 @@ def launch_turbogrid(
     ----------
     product_version : str, optional
         Version of TurboGrid to use in the numeric format (such as ``"23.2.0"``
-        for 2023 R2). The default is ``None``, in which case the active version
-        or latest installed version is used.
+        for 2023 R2). The default is ``None``, in which case the latest installed version is used.
     turbogrid_path : str, optional
-        Path to the "cfxtg" command used to start TurboGrid. The default is ``None``.
+        Path to the "cfxtg" command used to start TurboGrid. The default is ``None``,
         in which case the product_version is used instead.
     port : int, optional
-        Port to use for TurboGrid communications. The default is ``5000``.
+        Port to use for TurboGrid communications. If not specified, any free port is
+        used.
     additional_args_str : str, optional
         Additional arguments to send to TurboGrid. The default is ``None``.
     additional_kw_args : dict, optional
