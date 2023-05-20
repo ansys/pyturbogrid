@@ -2,99 +2,79 @@
 
 pyturbogrid_core
 ================
+  
+.. py:function:: quit(self) -> None:
+   
+    Quit the PyTurboGrid instance.
 
-.. py:function::__init__(
-        self,
-        socket_port: int | None,
-        turbogrid_location_type,
-        cfxtg_location,
-        log_level,
-        additional_args_str=None,
-        additional_kw_args=None,
-    )
-
-    Creates the PyTurboGrid instance.
-
-    :param socket_port: ``int``, ``optional``.
-        Port at which PyTurbogrid should connect with TurboGrid application.
-        If not provided, a random port available will be used.
-    :param turbogrid_location_type: ``TurboGridLocationType``.
-        Enum type input to indicate whether to use a locally installed TurboGrid application
-        or a container installed application
-    :param cfxtg_location: ``str``.
-        Path to the ``cfxtg`` command used to start TurboGrid.
-    :param log_level: ``TurboGridLogLevel``. 
-        Level of details to be given in the log file and console output
-    :param additional_args_str: ``str`` | ``None``.
-        Additional arguments to send to TurboGrid. The default is ``None``
-    :param additional_kw_args: ``dict`` | ``None``.
-        Additional arguments to send to TurboGrid. The default is ``None``.
+.. py:function:: end_session(self) -> None:
     
-.. py:function::read_inf(self, filename: str)
-    Reads a blade model from an inf file.
+    End the connected TurboGrid session.
 
-read_session  
-------------
-.. code-block:: pycon
+.. py:function:: read_inf(self, filename: str) -> None:
+    
+    Read blade model from an inf file
 
-    >>> turbogrid.read_session(path_to_session_file)
+    :param filename: Name of the inf file with relative path
+    :type filename: str
+    
 
-read_state
-----------
-.. code-block:: pycon
+.. py:function:: read_ndf(self, ndffilename: str, cadfilename: str, flowpath: str, bladerow: str, bladename: str) -> None:
 
-    >>> turbogrid.read_state(path_to_state_file)
+    read ndf file
 
-unsuspend
----------
-Example:
+    :param ndffilename: Name of the NDF file
+    :type ndffilename: str
+    :param cadfilename: Name of the CAD file to be written
+    :type cadfilename: str
+    :param flowpath: Name of the flowpath to use
+    :type flowpath: str
+    :param bladerow: Name of the blade row to select
+    :type bladerow: str
+    :param bladename: Name of the blade to input
+    :type bladename: str
 
-.. code-block:: pycon
 
-    >>> turbogrid.unsuspend(object="/TOPOLOGY SET")
+.. py:function:: read_session(self, filename: str) -> None:
 
-save_state
-----------
-.. code-block:: pycon
+    Read a session file and repeat a previous session
 
-    >>> turbogrid.save_state(path_to_new_state_file)
+    :param filename: Name of the session file
+    :type filename: str
 
-set_topology_choice
--------------------
-.. code-block:: pycon
 
-    >>> turbogrid.set_topology_choice(topology_choice_string)
+.. py:function:: read_state(self, filename: str) -> None:
 
-set_topology_list
------------------
-.. code-block:: pycon
+    Restore a previous state from a saved state file
 
-    >>> turbogrid.set_topology_list(
-    ...     topology_list_string
-    ... )  # topology_list_string example: "LECircleHigh_TECircleLow"
+    :param filename: Name of the state file
+    :type filename: str
 
-set_global_size_factor
-----------------------
-Example:
 
-.. code-block:: pycon
+.. py:function:: save_mesh(self, filename: str, onefile: str, onedomain: str) -> None:
 
-    >>> turbogrid.set_global_size_factor(2)
+    Save generated mesh to a file
 
-query_mesh_statistics
-----------------------
-.. code-block:: pycon
+    :param filename: Name of the mesh file to save
+    :type filename: str
+    :param onefile: String to indicate if onefile is preferred
+    :type onefile: str
+    :param onedomain: String to indicate if onedomain is preferred
+    :type onedomain: str
 
-    >>> stats = turbogrid.query_mesh_statistics()
 
-query_valid_topology_choices
-----------------------------
-.. code-block:: pycon
+.. py:function:: save_state(self, filename: str) -> None:
 
-    >>> choices = turbogrid.query_valid_topology_choices()
+    Save TurboGrid state into a file
 
-quit
-----
-.. code-block:: pycon
+    :param filename: Name of the file to save
+    :type filename: str
 
-    >>> turbogrid.quit()
+
+.. py:function:: set_global_size_factor(self, global_size_factor: str) -> None:
+
+    Set global size factor
+
+    :param global_size_factor: Value to use as size factor
+    :type global_size_factor: str
+
