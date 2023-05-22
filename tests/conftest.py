@@ -9,11 +9,13 @@ if pyturbogrid_root:
 else:
     sys.path.append("./src")
 
+# Note, internal ANSYS developers will have this available.
+# External developers will need to have the most up-to-date ansys-turbogrid-api
+# package installed in order to continue below.
 pyturbogrid_api_root = os.getenv("PYTURBOGRID_API_ROOT")
 if pyturbogrid_api_root:
     sys.path.append(f"{pyturbogrid_api_root}/src")
-else:
-    raise RuntimeError("PYTURBOGRID_API_ROOT must be defined")
+
 
 from ansys.turbogrid.api import pyturbogrid_core
 
