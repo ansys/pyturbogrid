@@ -43,7 +43,7 @@ A Python wrapper for `Ansys TurboGrid`_ software to generate high quality turbom
 How to install
 --------------
 
-The name of the package from this repository available on `PyPI`_ is ``ansys-turbogrid-client``. It has been tested for use with python 3.10 on Windows and Linux.
+The name of the package from this repository available on `PyPI`_ is ``ansys-turbogrid-core``. It has been tested for use with python 3.10 on Windows and Linux.
 
 In order to install PyTurboGrid, make sure you have the latest version of `pip`_. To do so, run:
 
@@ -55,7 +55,7 @@ Then, you can simply execute:
 
 .. code:: bash
 
-    python -m pip install ansys-turbogrid-client
+    python -m pip install ansys-turbogrid-core
 
 
 Installing PyTurboGrid from source code allows you to modify the source and enhance it. Before contributing to the project, please refer to the `PyAnsys Developer's guide`_. You will need to follow these steps:
