@@ -6,10 +6,10 @@ from pathlib import Path
 
 from ansys.turbogrid.api import pyturbogrid_core
 
-from ansys.turbogrid.client.mesh_statistics import mesh_statistics
+from ansys.turbogrid.core.mesh_statistics import mesh_statistics
 
 
-def test_get_mesh_statistics(pyturbogrid: pyturbogrid_core.PyTurboGrid):
+def test_get_mesh_statistics_basic(pyturbogrid: pyturbogrid_core.PyTurboGrid):
     pyturbogrid.read_state(filename="tests/rotor37/Rotor37State.tst")
     pyturbogrid.unsuspend(object="/TOPOLOGY SET")
 
