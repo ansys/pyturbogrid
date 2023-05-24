@@ -2,7 +2,7 @@
 
 .. module:: mesh_statistics
 
-.. currentmodule:: ansys.turbogrid.client.mesh_statistics.mesh_statistics
+.. currentmodule:: ansys.turbogrid.core.mesh_statistics.mesh_statistics
 
 mesh_statistics
 ===============
