@@ -104,7 +104,6 @@ jobs:
           doc-artifact-name: 'documentation-html'
           cname: ${{ env.DOCUMENTATION_CNAME }}
           token: ${{ secrets.GITHUB_TOKEN }}
-          python-version: ${{ env.MAIN_PYTHON_VERSION }}
 
 
 # The build job is responsible for creating the build artifact and uploading it to PYPI using twine.
