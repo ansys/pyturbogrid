@@ -16,7 +16,7 @@ Module in the ansys-turbogrid-api package that is internally used by modules in 
 
     .. py:method:: read_inf(filename: str) -> None
 
-        Read a blade model from a BladeGen \*.inf file..
+        Read a blade model from a BladeGen \*.inf file.
 
         :param filename: Name or path for the Bladegen \*.inf file.
         :type filename: str
@@ -100,11 +100,11 @@ Module in the ansys-turbogrid-api package that is internally used by modules in 
     .. py:method:: set_obj_param(object: str, param_val_pairs: str) -> None
 
         
-        Update the value for a CCL object parameter
+        Update the value for a CCL object parameter.
 
-        :param object: Name with full path for the CCL object
+        :param object: Name with full path for the CCL object.
         :type object: str
-        :param param_val_pairs: Name and value pair for the parameter to set
+        :param param_val_pairs: Name and value pair for the parameter to set.
         :type param_val_pairs: str
 
     .. py:method:: set_outlet_hub_position(parametric_hub_location: str) -> None
@@ -187,25 +187,25 @@ Module in the ansys-turbogrid-api package that is internally used by modules in 
         
         Returns data that can be used to plot mesh statistics histograms.
 
-        :param variable: Name of the quality measurement to query the statistics
+        :param variable: Name of the quality measurement to query the statistics.
         :type variable: str
-        :param domain: Name of the domain to obtain the measuments from
+        :param domain: Name of the domain to obtain the measuments from.
         :type domain: str
-        :param number_of_bins: Number of histogram columns to use
+        :param number_of_bins: Number of histogram columns to use.
         :type number_of_bins: int
-        :param upper_bound: The maximum limit for the horizontal axis
+        :param upper_bound: The maximum limit for the horizontal axis.
         :type upper_bound: float
-        :param lower_bound: The minimum limit for the horizontal axis
+        :param lower_bound: The minimum limit for the horizontal axis.
         :type lower_bound: float
-        :param bin_units: The unit to use for the horizontal ax1s
+        :param bin_units: The unit to use for the horizontal ax1s.
         :type bin_units: str
-        :param scale: Scaling type for the horizontal axis, linear or logarithmic
+        :param scale: Scaling type for the horizontal axis, linear or logarithmic.
         :type scale: str
-        :param use_absolute_values: Choice to use absolute or percentage values on the vertical axis
+        :param use_absolute_values: Choice to use absolute or percentage values on the vertical axis.
         :type use_absolute_values: bool
-        :param bin_divisions: User provided bin divisions
+        :param bin_divisions: User provided bin divisions.
         :type bin_divisions: list
-        :return: A dictionary form of the statistics for the requested quality measurement
+        :return: A dictionary form of the statistics for the requested quality measurement.
         :rtype: dict
 
     .. py:method:: query_valid_topology_choices() -> list
@@ -213,7 +213,7 @@ Module in the ansys-turbogrid-api package that is internally used by modules in 
         
         Returns the permitted topology methods for the blade geometry in the current session.
 
-        :return: List of topology method names
+        :return: List of topology method names.
         :rtype: list
 
     .. py:method:: quit() -> None
