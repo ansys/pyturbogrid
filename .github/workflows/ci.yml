@@ -96,14 +96,15 @@ jobs:
           cname: ${{ env.DOCUMENTATION_CNAME }}
           token: ${{ secrets.GITHUB_TOKEN }}
 
-# # Stable doc, which is versioned, but I don't know how yet.
-#      - name: "Deploy release doc"
-#        uses: ansys/actions/doc-deploy-stable@v4
-#        with:
-#          doc-artifact-name: 'documentation-html'
-#          cname: ${{ env.DOCUMENTATION_CNAME }}
-#          token: ${{ secrets.GITHUB_TOKEN }}
-#          python-version: ${{ env.MAIN_PYTHON_VERSION }}
+# Stable doc, which is versioned
+#       if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/v')
+     - name: "Deploy release doc"
+       uses: ansys/actions/doc-deploy-stable@v4
+       with:
+         doc-artifact-name: 'documentation-html'
+         cname: ${{ env.DOCUMENTATION_CNAME }}
+         token: ${{ secrets.GITHUB_TOKEN }}
+         python-version: ${{ env.MAIN_PYTHON_VERSION }}
 
 
 # The build job is responsible for creating the build artifact and uploading it to PYPI using twine.
