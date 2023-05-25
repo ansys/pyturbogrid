@@ -47,9 +47,9 @@ jobs:
         with:
           token: ${{ secrets.GITHUB_TOKEN }}  
   
-  doc-build:
 # Documentation is built in the environment of this script run,
 # it is uploaded as a build artifact, then sent to the doc website.
+  doc-build:
     name: "Documentation"
     needs: [doc-style]
     runs-on: ubuntu-latest
