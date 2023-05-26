@@ -1,5 +1,7 @@
 .. _launcher:
 
+.. module:: launcher
+
 launcher
 ========
 
