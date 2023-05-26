@@ -45,13 +45,13 @@ How to install
 
 The name of the package from this repository available on `PyPI`_ is ``ansys-turbogrid-core``. It has been tested for use with python 3.10 on Windows and Linux.
 
-In order to install PyTurboGrid, make sure you have the latest version of `pip`_. To do so, run:
+1. In order to install PyTurboGrid, make sure you have the latest version of `pip`_. To do so, run:
 
 .. code:: bash
 
     python -m pip install -U pip
 
-Then, you can simply execute:
+2. Then, you can simply execute:
 
 .. code:: bash
 
@@ -60,7 +60,7 @@ Then, you can simply execute:
 
 Installing PyTurboGrid from source code allows you to modify the source and enhance it. Before contributing to the project, please refer to the `PyAnsys Developer's guide`_. You will need to follow these steps:
 
-1. Start by cloning this repository:
+3. Start by cloning this repository:
 
    .. code:: bash
 
@@ -70,15 +70,7 @@ It is recommended to use a python virtual environment for the steps below and fo
 
 Assuming a suitable python environment is active, and the current working directory is the top level directory of the pyturbogrid repository cloned locally, following steps will install the package from the local repository.
       
-2. Make sure you have the latest required build system and doc, testing, and CI tools:
-
-   .. code:: bash
-
-      python -m pip install -r requirements/requirements_build.txt
-      python -m pip install -r requirements/requirements_doc.txt
-      python -m pip install -r requirements/requirements_tests.txt
-
-3. Install the project in editable mode:
+4. Install the project in editable mode:
 
    .. code:: bash
     
