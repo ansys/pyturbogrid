@@ -62,9 +62,9 @@ Installing PyTurboGrid from source code allows you to modify the source and enha
 
 3. Start by cloning this repository:
 
-   .. code:: bash
+.. code:: bash
 
-      git clone https://github.com/ansys/pyturbogrid.git
+   git clone https://github.com/ansys/pyturbogrid.git
       
 It is recommended to use a python virtual environment for the steps below and for PyTurbogrid development in general. Please refer to PyAnsys documentation on `virtual environment`_ for the steps to create and activate one. 
 
@@ -72,9 +72,9 @@ Assuming a suitable python environment is active, and the current working direct
       
 4. Install the project in editable mode:
 
-   .. code:: bash
-    
-      python -m pip install -e . 
+.. code:: bash
+   
+   python -m pip install -e . 
 
 Requirements
 ------------
