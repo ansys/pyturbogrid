@@ -68,7 +68,7 @@ Installing PyTurboGrid from source code allows you to modify the source and enha
       
 It is recommended to use a python virtual environment for the steps below and for PyTurbogrid development in general. Please refer to PyAnsys documentation on `virtual environment`_ for the steps to create and activate one. 
 
-Assuming a suitable python environment is active, and the current working directory is the top level directory of the pyturbogrid repository cloned locally, following steps will install the package from the local repository.
+Assuming a suitable python environment is active, step 1 to update pip has been done for this environment as well, and the current working directory is the top level directory of the pyturbogrid repository cloned locally, following steps will install the package from the local repository.
       
 4. Install the project in editable mode:
 
