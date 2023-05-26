@@ -107,6 +107,7 @@ def get_turbogrid_exe_path(**launch_argvals) -> Path:
 def launch_turbogrid(
     product_version: str = None,
     turbogrid_path: str = None,
+    log_level: pyturbogrid_core.PyTurboGrid.TurboGridLogLevel = pyturbogrid_core.PyTurboGrid.TurboGridLogLevel.INFO,
     additional_args_str: str = None,
     additional_kw_args: dict = None,
     port: int | None = None,
@@ -125,6 +126,10 @@ def launch_turbogrid(
     port : int, optional
         Port to use for TurboGrid communications. If not specified, any free port is
         used.
+    log_level: pyturbogrid_core.PyTurboGrid.TurboGridLogLevel, optional
+        Level of logging information written to the terminal. The default is ``INFO``. Other
+        available options are ``WARNING``, ``ERROR``, ``CRITICAL`` and ``DEBUG``. This setting
+        does not affect the level of output which is written to the log files.
     additional_args_str : str, optional
         Additional arguments to send to TurboGrid. The default is ``None``.
     additional_kw_args : dict, optional
@@ -145,9 +150,10 @@ def launch_turbogrid(
     pathToCFXTG = get_turbogrid_exe_path(**argVals)
 
     return pyturbogrid_core.PyTurboGrid(
-        port,
-        pyturbogrid_core.PyTurboGrid.TurboGridLocationType.TURBOGRID_INSTALL,
-        pathToCFXTG,
-        additional_args_str,
-        additional_kw_args,
+        socket_port=port,
+        turbogrid_location_type=pyturbogrid_core.PyTurboGrid.TurboGridLocationType.TURBOGRID_INSTALL,
+        cfxtg_location=pathToCFXTG,
+        log_level=log_level,
+        additional_args_str=additional_args_str,
+        additional_kw_args=additional_kw_args,
     )
