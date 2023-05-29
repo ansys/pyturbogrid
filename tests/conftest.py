@@ -34,9 +34,16 @@ def pyturbogrid() -> pyturbogrid_core.PyTurboGrid:
         additional_args = "-debug"
     else:
         additional_args = None
+
+    tg_local_root = os.getenv("PYTURBOGRID_TURBOGRID_LOCAL_ROOT")
+    if tg_local_root:
+        additional_kw_args = {"local-root": tg_local_root}
+    else:
+        additional_kw_args = None
+
     pyturbogrid = launch_turbogrid(
         additional_args_str=additional_args,
-        additional_kw_args={"local-root": os.getenv("PYTURBOGRID_TURBOGRID_LOCAL_ROOT")},
+        additional_kw_args=additional_kw_args,
         port=pytest.socket_port,
     )
     print("Success")
