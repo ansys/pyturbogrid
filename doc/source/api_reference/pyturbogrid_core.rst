@@ -11,7 +11,7 @@ Module in the ansys-turbogrid-api package that is internally used by modules in 
     This class controls of the launching, interactions and quitting of TurboGrid.
     Refer :py:mod:`launcher` module to see how to create an instance of this class.
 
-    .. py:method:: __init__( socket_port: int | None, turbogrid_location_type: TurboGridLocationType, cfxtg_location: str, log_level=TurboGridLogLevel.INFO, additional_args_str: str = None, additional_kw_args: dict = None, )
+    .. py:method:: __init__( socket_port: int | None, turbogrid_location_type: TurboGridLocationType, cfxtg_location: str, additional_args_str: str | None, additional_kw_args: dict | None, log_level=TurboGridLogLevel.INFO, )
 
 
     .. py:method:: read_inf(filename: str) -> None
