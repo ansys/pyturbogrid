@@ -1,7 +1,7 @@
 version: 2
 updates:
   - package-ecosystem: "pip"
-    directory:"/requirements"
+    directory: "/" # Location of package manifests
     schedule:
       interval: "daily"
     labels:
@@ -21,4 +21,4 @@ updates:
       - "maintenance"
     reviewers: 
       - "acohen-work"  
-      - 'zlilek-work"'
+      - "zlilek-work"
