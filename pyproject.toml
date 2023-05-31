@@ -61,7 +61,7 @@ doc = [
     "sphinx-gallery==0.12.2",
 ]
 
-# [project.urls]
+[project.urls]
 Source = "https://github.com/ansys/pyturbogrid"
 Homepage = "https://turbogrid.docs.pyansys.com/version/stable/"
 Documentation = "https://turbogrid.docs.pyansys.com/version/stable/"
