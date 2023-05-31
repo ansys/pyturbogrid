@@ -81,6 +81,11 @@ def test_create_histogram(pyturbogrid: pyturbogrid_core.PyTurboGrid):
     ms = mesh_statistics.MeshStatistics(pyturbogrid)
 
     image_file = "basic_histogram.png"
+
+    ms.create_histogram(
+        variable="Maximum Face Angle", image_file=image_file, use_percentages=False, show=False
+    )
+
     ms.create_histogram(variable="Minimum Face Angle", image_file=image_file, show=False)
 
     pyturbogrid.quit()
@@ -123,7 +128,7 @@ def test_get_table_as_text(pyturbogrid: pyturbogrid_core.PyTurboGrid):
     pyturbogrid.read_state(filename="tests/rotor37/Rotor37State.tst")
     pyturbogrid.unsuspend(object="/TOPOLOGY SET")
 
-    ms = mesh_statistics.MeshStatistics(pyturbogrid)
+    ms = mesh_statistics.MeshStatistics(pyturbogrid, "Inlet")
 
     table_string = ms.get_table_as_text()
 
