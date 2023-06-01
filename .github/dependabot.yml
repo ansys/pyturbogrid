@@ -1,7 +1,15 @@
 version: 2
+registries:
+  python-azure:
+    type: python-index
+    url: https://pkgs.dev.azure.com/pyansys/_packaging/pyansys/pypi/simple/
+    token: ${{ secrets.PYANSYS_PYPI_PRIVATE_PAT }}
+
 updates:
   - package-ecosystem: "pip"
     directory: "/" # Location of package manifests
+    registries:
+      - python-azure
     schedule:
       interval: "daily"
     labels:
