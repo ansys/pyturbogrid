@@ -80,7 +80,7 @@ line_length = 100
 default_section = "THIRDPARTY"
 src_paths = ["doc", "src", "tests"]
 
-[tool.poetry.source]
+[[tool.poetry.source]]
 name = "privatepypi"
 url = "https://pkgs.dev.azure.com/pyansys/_packaging/pyansys/pypi/simple/"
 default = false
