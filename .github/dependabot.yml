@@ -1,8 +1,8 @@
 version: 2
 registries:
-  python-azure:
+  privatepypi:
     type: python-index
-    url: https://pkgs.dev.azure.com/pyansys/_packaging/pyansys/pypi/simple/
+    url: pkgs.dev.azure.com/pyansys/_packaging/pyansys/pypi/simple/
     token: ${{ secrets.PYANSYS_PYPI_PRIVATE_PAT }}
 
 updates:
@@ -10,7 +10,7 @@ updates:
     directory: "/" # Location of package manifests
     insecure-external-code-execution: allow
     registries:
-      - python-azure
+      - privatepypi
     schedule:
       interval: "daily"
     labels:
