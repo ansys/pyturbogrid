@@ -10,11 +10,12 @@ description = "A python wrapper for Ansys TurboGrid"
 readme = "README.rst"
 requires-python = ">=3.7,<4"
 license = {file = "LICENSE"}
+
 authors = [
-    {name = "ANSYS, Inc.", email = "pyansys.support@ansys.com"},
+    {name = "ANSYS, Inc.", email = "pyansys.core@ansys.com"},
 ]
 maintainers = [
-    {name = "PyTurboGrid developers", email = "pyturbogrid.maintainers@ansys.com"},
+    {name = "ANSYS, Inc.", email = "pyansys.core@ansys.com"},
 ]
 
 classifiers = [
@@ -23,11 +24,16 @@ classifiers = [
     "Topic :: Scientific/Engineering :: Information Analysis",
     "License :: OSI Approved :: MIT License",
     "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.7",
+    "Programming Language :: Python :: 3.8",
     "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
 ]
 
 dependencies = [
-    "ansys-turbogrid-api",
+    "ansys-turbogrid-api>=0.1.7",
     "matplotlib>=3.5.1"
 ]
 
@@ -55,10 +61,11 @@ doc = [
     "sphinx-gallery==0.12.2",
 ]
 
-# [project.urls]
-# Source = "https://github.com/ansys/pyturbogrid"
-# Tracker = "https://github.com/ansys/pyturbogrid/issues"
-# Homepage = "https://github.com/ansys/pyturbogrid"
+[project.urls]
+Source = "https://github.com/ansys/pyturbogrid"
+Homepage = "https://turbogrid.docs.pyansys.com/version/stable/"
+Documentation = "https://turbogrid.docs.pyansys.com/version/stable/"
+Tracker = "https://github.com/ansys/pyturbogrid/issues"
 
 [tool.flit.module]
 name = "ansys.turbogrid.core"
@@ -73,7 +80,7 @@ line_length = 100
 default_section = "THIRDPARTY"
 src_paths = ["doc", "src", "tests"]
 
-[tool.poetry.source]
+[[tool.poetry.source]]
 name = "privatepypi"
 url = "https://pkgs.dev.azure.com/pyansys/_packaging/pyansys/pypi/simple/"
 default = false

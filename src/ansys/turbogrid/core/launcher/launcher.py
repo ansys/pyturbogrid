@@ -79,15 +79,17 @@ def get_turbogrid_exe_path(**launch_argvals) -> Path:
 
     def get_exe_path(turbogrid_root: Path) -> Path:
         if _is_windows():
-            return turbogrid_root / "bin" / "cfxtg.exe"
+            return (
+                turbogrid_root / "bin" / "cfxtg.exe"
+            )  # pragma no cover (operating system dependent)
         else:
-            return turbogrid_root / "bin" / "cfxtg"
+            return turbogrid_root / "bin" / "cfxtg"  # pragma no cover (operating system dependent)
 
     # Look for TurboGrid exe path in the following order:
     # 1. turbogrid_path parameter passed with launch_turbogrid
     turbogrid_path = launch_argvals.get("turbogrid_path")
     if turbogrid_path:
-        return turbogrid_path
+        return Path(turbogrid_path)
 
     # 2. "PYTURBOGRID_TURBOGRID_ROOT" environment variable
     turbogrid_root = os.getenv("PYTURBOGRID_TURBOGRID_ROOT")

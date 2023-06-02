@@ -38,7 +38,9 @@ class MeshStatistics:
     def _read_mesh_statistics(self, domain: str = "ALL") -> None:
         self.mesh_vars.clear()
         if "query_mesh_statistics" not in dir(self.interface):
-            raise self.interface.InvalidQuery("query_mesh_statistics")
+            raise self.interface.InvalidQuery(
+                "query_mesh_statistics"
+            )  # pragma no cover (won't occur with current TurboGrid data)
         self.mesh_vars = self.interface.query_mesh_statistics(domain)
         self.current_domain = domain
 
@@ -118,7 +120,7 @@ class MeshStatistics:
         if image_file:
             plt.savefig(image_file)
         if show:
-            plt.show()
+            plt.show()  # pragma no cover (can't open a separate window in unit_tests)
         else:
             plt.close(fig)
 
@@ -153,7 +155,9 @@ class MeshStatistics:
             being written to a file.
         """
         if "query_mesh_statistics_histogram_data" not in dir(self.interface):
-            raise self.interface.InvalidQuery("query_mesh_statistics_histogram_data")
+            raise self.interface.InvalidQuery(
+                "query_mesh_statistics_histogram_data"
+            )  # pragma no cover (won't occur with current TurboGrid data)
 
         histogram_stats = self.interface.query_mesh_statistics_histogram_data(
             domain=domain, variable=variable, bin_units=bin_units
@@ -169,7 +173,7 @@ class MeshStatistics:
         if histogram_stats["Bin Limits Units"]:
             xlabel = variable + r" [" + histogram_stats["Bin Limits Units"] + r"]"
         else:
-            xlabel = variable
+            xlabel = variable  # pragma no cover (won't occur with current TurboGrid data)
 
         self._draw_histogram(
             variable=variable,
@@ -202,7 +206,7 @@ class MeshStatistics:
                 elif var_data["Limits Type"] == "Minimum":
                     value = str(var_data["Minimum"])
                 else:
-                    value = ""
+                    value = ""  # pragma no cover (won't occur with current TurboGrid data)
                 if value and var_data["Units"]:
                     value += " [" + var_data["Units"] + "]"
                 data.append(value)
