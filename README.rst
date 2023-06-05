@@ -34,7 +34,7 @@ PyTurboGrid
    :alt: TurboGrid
    :width: 600 
 
-A Python wrapper for `Ansys TurboGrid`_ software to generate high quality turbomachinery meshes.
+A Python wrapper for the `Ansys TurboGrid`_ software to generate high-quality turbomachinery meshes.
 
 |intro| 
 
@@ -43,9 +43,11 @@ A Python wrapper for `Ansys TurboGrid`_ software to generate high quality turbom
 How to install
 --------------
 
-The name of the package from this repository available on `PyPI`_ is ``ansys-turbogrid-core``. It has been tested for use with python 3.10 on Windows and Linux.
+To use PyTurboGrid, the ``ansys-turbogrid-core`` package must be installed from `PyPI`_. This 
+package is supported with Python 3.10 on Windows and Linux.
 
-1. In order to install PyTurboGrid, make sure you have the latest version of `pip`_. To do so, run:
+1. In order to install PyTurboGrid, ensure you have the latest version of `pip`_. To update pip,
+run:
 
 .. code:: bash
 
@@ -58,17 +60,23 @@ The name of the package from this repository available on `PyPI`_ is ``ansys-tur
     python -m pip install ansys-turbogrid-core
 
 
-Installing PyTurboGrid from source code allows you to modify the source and enhance it. Before contributing to the project, please refer to the `PyAnsys Developer's guide`_. You will need to follow these steps:
+Installing PyTurboGrid from source code allows you to modify the source and enhance it. Before 
+contributing to the project, please refer to the `PyAnsys Developer's guide`_. You will need to 
+follow these additional steps:
 
-3. Start by cloning this repository:
+3. Clone the ``pyturbogrid`` repository:
 
 .. code:: bash
 
    git clone https://github.com/ansys/pyturbogrid.git
       
-It is recommended to use a python virtual environment for the steps below and for PyTurbogrid development in general. Please refer to PyAnsys documentation on `virtual environment`_ for the steps to create and activate one. 
+It is recommended to use a Python virtual environment for the steps below, and whenever you
+run PyTurbogrid from the source code. Please refer to the PyAnsys documentation on 
+`virtual environment`_ for the steps to create and activate a virtual environment. 
 
-Assuming a suitable python environment is active, step 1 to update pip has been done for this environment as well, and the current working directory is the top level directory of the pyturbogrid repository cloned locally, following steps will install the package from the local repository.
+Assuming that a suitable Python environment is active, pip has been updated, and the current 
+working directory is the top-level directory of the pyturbogrid repository cloned locally, 
+the following steps will install the package from the local repository.
       
 4. Install the project in editable mode:
 
@@ -79,16 +87,15 @@ Assuming a suitable python environment is active, step 1 to update pip has been 
 Requirements
 ------------
 
-You must have a licensed copy of Ansys TurboGrid software installed locally. PyTurboGrid supports Ansys TurboGrid release 2023 R2. The Windows installation of Ansys automatically sets the required environment variables for PyTurboGrid to find the locall TurboGrid installation. Using Ansys TurboGrid 2023 R2 installed in the default directory for example, the installer automatically sets an environment variable ``AWP_ROOT232`` to point to ``C:\Program Files\ANSYS Inc\v232``.
+You must have a licensed local installaton of Ansys TurboGrid. PyTurboGrid supports Ansys 
+TurboGrid Release 2023 R2. The Windows installation of Ansys automatically sets the required 
+environment variable for PyTurboGrid to find the local TurboGrid installation. For example, if
+Ansys Release 2023 R2 is installed in the default directory, the installer automatically 
+sets an environment variable ``AWP_ROOT232`` to point to ``C:\Program Files\ANSYS Inc\v232``.
 
-On Linux, the required environment variable is not set automatically. Using Ansys 2023 R2 in the default installation directory as an example, this can be set for the current user in the current shell session before running PyTurboGrid, with:
-
-.. code:: console
-
-    export AWP_ROOT232=/usr/ansys_inc/v232
-
-For this setting to persist between different shell sessions for the current user, the same export command can instead be added to the user's ``~/.profile`` file.
-
+On Linux, the required environment variable is not set automatically and you must set this 
+manually. For example, if Ansys Release 2023 R2 is installed in the default directory, the
+``AWP_ROOT232`` environment variable must be set to ``/usr/ansys_inc/v232``.
 
 .. LINKS AND REFERENCES
 .. _Ansys TurboGrid: https://www.ansys.com/products/fluids/ansys-turbogrid
