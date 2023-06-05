@@ -48,14 +48,6 @@ sphinx_gallery_conf = {
 html_theme = "ansys_sphinx_theme"
 html_logo = ansys_logo_black
 html_favicon = ansys_favicon
-html_theme_options = {
-    "switcher": {
-        "json_url": f"https://{cname}/release/versions.json",
-        "version_match": get_version_match(__version__),
-    },
-    "check_switcher": False,
-}
-
 html_context = {
     "github_user": "pyansys",
     "github_repo": "pyturbogrid",
@@ -64,10 +56,19 @@ html_context = {
 }
 
 html_theme_options = {
+    "switcher": {
+        "json_url": f"https://{cname}/versions.json",
+        "version_match": get_version_match(__version__),
+    },
+    "check_switcher": False,
     "github_url": "https://github.com/pyansys/pyturbogrid",
     "show_prev_next": True,
     "show_breadcrumbs": True,
+    "collapse_navigation": True,
     "use_edit_page_button": True,
+    "additional_breadcrumbs": [
+        ("PyAnsys", "https://docs.pyansys.com/"),
+    ],
     "icon_links": [
         {
             "name": "Contribute",
