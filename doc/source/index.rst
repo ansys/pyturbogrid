@@ -1,10 +1,10 @@
 PyTurboGrid documentation
 =========================
 
-Ansys TurboGrid is a high-quality turbomachinery meshing software. It features 
+Ansys TurboGrid is a high-quality turbomachinery meshing software application. It features 
 novel automated mesh generation capabilities in a simple-to-use, streamlined
 workspace. The tools offered can be applied to a wide variety of turbomachinery
-equipment to help produce better simulation results.
+equipment to help produce accurate simulation results.
 
 .. toctree::
    :maxdepth: 2
@@ -14,8 +14,7 @@ equipment to help produce better simulation results.
    api_reference/index
    examples/index
 
-Indices and tables
-==================
+Project index
+=============
 
 * :ref:`genindex`
-* :ref:`search`

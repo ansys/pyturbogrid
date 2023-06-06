@@ -3,9 +3,9 @@
 Getting started
 ===============
 
-PyTurboGrid provides Pythonic access to Ansys TurboGrid. 
+PyTurboGrid provides access to Ansys TurboGrid from a Python environment. 
 
-To run PyTurboGrid, you must have a licensed copy of TurboGrid 2023 R2 installed locally.
+To run PyTurboGrid, you must have a licensed local installation of Ansys TurboGrid from Release 2023 R2.
 
 .. include:: ../../../README.rst
   :start-after: inclusion-marker-do-not-remove

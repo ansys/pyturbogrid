@@ -45,7 +45,7 @@ def get_latest_ansys_version() -> str:
     Returns
     -------
     str
-      Latest available version, in the form "23.2.0".
+      Latest available version, in the form of "23.2.0".
 
     """
 
@@ -59,12 +59,12 @@ def get_latest_ansys_version() -> str:
 def get_turbogrid_exe_path(**launch_argvals) -> Path:
     """Get the path to a local installation of TurboGrid.
 
-    The path is searched in the following order:
+    The path is obtained by searching in the following order:
 
-    1. The "turbogrid_path" parameter from launch_argvals.
-    2. The "PYTURBOGRID_TURBOGRID_ROOT" environment variable.
-    3. The TurboGrid installation found from the "product_version" parameter from launch_argvals, using the corresponding "AWP_ROOTnnn" environment variable.
-    4. The latest Ansys version from the AWP_ROOT environment variables.
+    1. The path specified by the "turbogrid_path" parameter from launch_argvals.
+    2. The path specified by the "PYTURBOGRID_TURBOGRID_ROOT" environment variable.
+    3. The path of the TurboGrid installation found from the "product_version" parameter from launch_argvals, using the corresponding "AWP_ROOTnnn" environment variable.
+    4. The path of the TurboGrid installation in latest available Ansys version from the AWP_ROOT environment variables.
 
     Returns
     -------

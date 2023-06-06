@@ -7,7 +7,7 @@ Mesh Statistics Report Example
 This example demonstrates how to use the mesh_statistics module and CCL queries to generate a
 simple report.
 
-The jinja library is used to produce the report in html format, starting from the report
+The jinja library is used to produce the report in HTML format, starting from the report
 template file "report_template.html".
 
 """
@@ -47,7 +47,7 @@ domain_list = [obj.get_name() for obj in ccl_db.get_objects_by_type("DOMAIN")]
 domain_list.append(ALL_DOMAINS)
 
 #################################################################################
-# Set up the information that will be shown under 'Case Details' in the report.
+# Set up the information to be shown under 'Case Details' in the report.
 case_info = OrderedDict()
 case_info["Case Name"] = "rotor37"
 case_info["Number of Bladesets"] = ccl_db.get_object_by_path("/GEOMETRY/MACHINE DATA").get_value(
@@ -60,8 +60,8 @@ case_info["Report Date"] = date.today()
 ms = mesh_statistics.MeshStatistics(turbogrid)
 
 #################################################################################
-# Calculate and store the basic mesh statistics for each domain separately, and
-# also for 'All Domains'.
+# Calculate and store the basic mesh statistics for each domain separately and
+# for 'All Domains'.
 domain_count = dict()
 for domain in domain_list:
     ms.update_mesh_statistics(domain)
