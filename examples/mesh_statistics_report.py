@@ -1,8 +1,8 @@
 """
 .. _mesh_statistics_report:
 
-Mesh Statistics Report Example
-------------------------------
+Mesh Statistics Report
+----------------------
 
 This example demonstrates how to use the mesh_statistics module and CCL queries to generate a
 simple report.
