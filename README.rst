@@ -46,8 +46,7 @@ How to install
 To use PyTurboGrid, the ``ansys-turbogrid-core`` package must be installed from `PyPI`_. This 
 package is supported with Python 3.10 on Windows and Linux.
 
-1. In order to install PyTurboGrid, ensure you have the latest version of `pip`_. To update pip,
-run:
+1. In order to install PyTurboGrid, ensure you have the latest version of `pip`_. To update pip, run:
 
 .. code:: bash
 
