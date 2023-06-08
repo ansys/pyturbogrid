@@ -1,3 +1,4 @@
+# Copyright (c) 2023 ANSYS, Inc. All rights reserved
 """
 .. _read_inf_rotor37:
 
