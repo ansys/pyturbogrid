@@ -1,3 +1,4 @@
+# Copyright (c) 2023 ANSYS, Inc. All rights reserved
 """Provides a module for launching Ansys TurboGrid.
 
 This module supports starting Ansys TurboGrid locally.

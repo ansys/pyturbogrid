@@ -1,3 +1,4 @@
+# Copyright (c) 2023 ANSYS, Inc. All rights reserved
 # To run these tests, navigate your terminal to the root of this project (pyturbogrid)
 # and use the command pytest -v. -s can be added as well to see all of the console output.
 
