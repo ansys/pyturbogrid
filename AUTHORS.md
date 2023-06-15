@@ -1,12 +1,17 @@
-# Authors
 
-## Project Lead or Owner
-
-* [Zeljko Lilek](https://github.com/zlilek-work)
-
-## Contributors
-
-* [Ming Chen](https://github.com/mchen-work)
-* [Alexander Cohen](https://github.com/Acohen-work)
-* [Jimin Joy](https://github.com/jjoy-work)
-* [Sarah Wilson](https://github.com/swilson-work)
+# This is the list of PyGeometry's significant contributors.
+#
+# This file does not necessarily list everyone who has contributed code,
+# especially since many employees of one corporation may be contributing.
+# To see the full list of contributors, see the revision history in
+# source control.
+#
+# For contributions made under a Corporate CLA, then the copyright
+# belongs to that organization.
+#
+# If a contribution was made under an Individual CLA, the submitter
+# has indicated that they own the copyright. If that is your case, and
+# you want to be added to this file, please submit a request.
+#
+#
+ANSYS, Inc.
