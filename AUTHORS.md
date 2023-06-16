@@ -1,5 +1,5 @@
 
-*This is the list of PyTurboGrid's significant contributors.
+*This is the list of PyTurboGrid's significant contributors.*
 
  This file does not necessarily list everyone who has contributed code,
  especially since many employees of one corporation may be contributing.
@@ -11,7 +11,7 @@
 
  If a contribution was made under an Individual CLA, the submitter
  has indicated that they own the copyright. If that is your case, and
- you want to be added to this file, please submit a request.*
+ you want to be added to this file, please submit a request.
 
 #
 ANSYS, Inc.
