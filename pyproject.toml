@@ -51,7 +51,7 @@ doc = [
     "numpydoc==1.5.0",
     "panel==1.1.1",
     "Sphinx==7.0.1",
-    "sphinx-autoapi==2.1.0",
+    "sphinx-autoapi==2.1.1",
     "sphinx-autodoc-typehints==1.23.2",
     "sphinx-copybutton==0.5.2",
     "sphinx-gallery==0.13.0",
