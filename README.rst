@@ -75,7 +75,7 @@ run PyTurbogrid from the source code. Please refer to the PyAnsys documentation 
 
 Assuming that a suitable Python environment is active, pip has been updated, and the current 
 working directory is the top-level directory of the pyturbogrid repository cloned locally, 
-the following steps will install the package from the local repository.
+the following step will install the package from the local repository.
       
 4. Install the project in editable mode:
 

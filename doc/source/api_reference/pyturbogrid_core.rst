@@ -3,13 +3,13 @@
 pyturbogrid_core
 ================
 
-Module in the ansys-turbogrid-api package that is internally used by modules in pyturbogrid package for interactions with a running Ansys TurboGrid application.
+Module in the ansys-turbogrid-api package that is internally used by modules in the pyturbogrid package for interactions with a running Ansys TurboGrid application.
 
 .. py:class:: PyTurboGrid
 
     
-    This class controls of the launching, interactions and quitting of TurboGrid.
-    Refer :py:mod:`launcher` module to see how to create an instance of this class.
+    This class enables you to launch, interact with, and quit, a session of TurboGrid.
+    Refer to the :py:mod:`launcher` module to see how to create an instance of this class.
 
     .. py:method:: __init__( socket_port: int | None, turbogrid_location_type: TurboGridLocationType, cfxtg_location: str, additional_args_str: str | None, additional_kw_args: dict | None, log_level=TurboGridLogLevel.INFO, )
 
@@ -23,10 +23,10 @@ Module in the ansys-turbogrid-api package that is internally used by modules in 
 
     .. py:method:: read_ndf( ndffilename: str, cadfilename: str, flowpath: str, bladerow: str, bladename: str ) -> None
 
-        Read a blade model from an NDF \*.ndf file.
+        Read a blade model from an NDF (\*.ndf) file.
         TurboGrid uses the details in the NDF file to generate and import a CAD file containing the blade geometry.
 
-        :param ndffilename: Name or path for the NDF \*.ndf file.
+        :param ndffilename: Name or path for the NDF (\*.ndf) file.
         :type ndffilename: str
         :param cadfilename: Name of the CAD \*.x_b file to be generated.
         :type cadfilename: str
@@ -120,8 +120,8 @@ Module in the ansys-turbogrid-api package that is internally used by modules in 
         
         Set the parametric position of the outlet line on the shroud.
 
-        :param parametric_hub_location: Value to be used as parametric location in string format.
-        :type parametric_hub_location: str
+        :param parametric_shroud_location: Value to be used as parametric location in string format.
+        :type parametric_shroud_location: str
 
     .. py:method:: set_topology_choice(atm_topology_choice: str) -> None
 
@@ -160,9 +160,9 @@ Module in the ansys-turbogrid-api package that is internally used by modules in 
     .. py:method:: unsuspend(object: str) -> None
 
         
-        Unsuspend an item in the TurboGrid objects tree.
+        Unsuspend a TurboGrid object.
 
-        :param object: String specifying the name and type of the tree item to be unsuspended.
+        :param object: String specifying the name and type of the object to be unsuspended.
         :type object: str
 
         Example
@@ -176,7 +176,7 @@ Module in the ansys-turbogrid-api package that is internally used by modules in 
         Returns mesh quality measures from TurboGrid for the current session and specified domain.
         **Note**: It is suggested to use the :py:mod:`mesh_statistics` module instead of directly calling this.
 
-        :param domain: Name of the domain to query measurements.
+        :param domain: Name of the domain from which to obtain the measurements.
         :type domain: str
         :return: A dictionary form of the quality measurements.
         :rtype: dict
@@ -187,9 +187,9 @@ Module in the ansys-turbogrid-api package that is internally used by modules in 
         
         Returns data that can be used to plot mesh statistics histograms.
 
-        :param variable: Name of the quality measurement to query the statistics.
+        :param variable: Name of the quality measurement to query from the statistics.
         :type variable: str
-        :param domain: Name of the domain to obtain the measuments from.
+        :param domain: Name of the domain from which to obtain the measuments.
         :type domain: str
         :param number_of_bins: Number of histogram columns to use.
         :type number_of_bins: int
@@ -199,11 +199,11 @@ Module in the ansys-turbogrid-api package that is internally used by modules in 
         :type lower_bound: float
         :param bin_units: The unit to use for the horizontal ax1s.
         :type bin_units: str
-        :param scale: Scaling type for the horizontal axis, linear or logarithmic.
+        :param scale: Scaling type for the horizontal axis: 'linear' or 'logarithmic'.
         :type scale: str
-        :param use_absolute_values: Choice to use absolute or percentage values on the vertical axis.
+        :param use_absolute_values: Choice of whether to use absolute or percentage values on the vertical axis.
         :type use_absolute_values: bool
-        :param bin_divisions: User provided bin divisions.
+        :param bin_divisions: User-provided bin divisions.
         :type bin_divisions: list
         :return: A dictionary form of the statistics for the requested quality measurement.
         :rtype: dict
