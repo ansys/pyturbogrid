@@ -90,3 +90,7 @@ source_suffix = ".rst"
 
 ## The master toctree document.
 master_doc = "index"
+
+autodoc_default_options = {
+    "special-members": "__init__",
+}
