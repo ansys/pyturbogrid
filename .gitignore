@@ -164,3 +164,6 @@ PyClientOutgoing.txt
 SCHEDULER SEQUENCE.dat
 SUPER PROFILER OVER 50ms.dat
 SUPER PROFILER.dat
+
+# VSCode settings
+.vscode
