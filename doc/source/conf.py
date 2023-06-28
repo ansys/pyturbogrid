@@ -62,7 +62,7 @@ html_theme_options = {
         "version_match": get_version_match(__version__),
     },
     "check_switcher": False,
-    "github_url": "https://github.com/pyansys/pyturbogrid",
+    "github_url": "https://github.com/ansys/pyturbogrid",
     "show_prev_next": True,
     "show_breadcrumbs": True,
     "collapse_navigation": True,
@@ -73,7 +73,7 @@ html_theme_options = {
     "icon_links": [
         {
             "name": "Contribute",
-            "url": "https://github.com/pyansys/pyturbogrid/blob/main/CONTRIBUTING.md",
+            "url": "https://github.com/ansys/pyturbogrid/blob/main/CONTRIBUTING.md",
             "icon": "fa fa-wrench",
         },
     ],
