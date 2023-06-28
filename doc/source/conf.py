@@ -50,7 +50,7 @@ html_theme = "ansys_sphinx_theme"
 html_logo = ansys_logo_black
 html_favicon = ansys_favicon
 html_context = {
-    "github_user": "pyansys",
+    "github_user": "ansys",
     "github_repo": "pyturbogrid",
     "github_version": "main",
     "doc_path": "doc/source",
