@@ -33,7 +33,7 @@ jobs:
     name: "Code Style Checks"
     runs-on: ubuntu-latest
     steps:
-      - name: "PyAnsys code style checks"
+      - name: "Ansys code style checks"
         uses: ansys/actions/code-style@v4 # This action looks in .pre-commit-config.yaml for code check tasks.
         with:
           python-version: ${{ env.MAIN_PYTHON_VERSION }}
@@ -42,7 +42,7 @@ jobs:
     name: "Documentation Style Checks"
     runs-on: ubuntu-latest
     steps:
-      - name: PyAnsys documentation style checks
+      - name: Ansys documentation style checks
         uses: ansys/actions/doc-style@v4
         with:
           token: ${{ secrets.GITHUB_TOKEN }}  
@@ -69,7 +69,6 @@ jobs:
           python -m venv ./.venv
           source ./.venv/bin/activate
           python -m pip install -U pip
-          python -m pip install .
           python -m pip install .[doc]
 
       - name: Build the documentation (HTML)
