@@ -64,7 +64,8 @@ def get_turbogrid_exe_path(**launch_argvals) -> Path:
 
     1. The path specified by the "turbogrid_path" parameter from launch_argvals.
     2. The path specified by the "PYTURBOGRID_TURBOGRID_ROOT" environment variable.
-    3. The path of the TurboGrid installation found from the "product_version" parameter from launch_argvals, using the corresponding "AWP_ROOTnnn" environment variable.
+    3. The path of the TurboGrid installation found from the "product_version" parameter from launch_argvals, using the
+       corresponding "AWP_ROOTnnn" environment variable.
     4. The path of the TurboGrid installation in latest available Ansys version from the AWP_ROOT environment variables.
 
     Returns

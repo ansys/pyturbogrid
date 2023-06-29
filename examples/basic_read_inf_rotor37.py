@@ -25,7 +25,8 @@ from ansys.turbogrid.core.launcher.launcher import get_turbogrid_exe_path, launc
 turbogrid = launch_turbogrid()
 
 #################################################################################
-# Find the examples folder based on the path to the TurboGrid executable found by the call below to ``get_turbogrid_exe_path``.
+# Find the examples folder based on the path to the TurboGrid executable found by
+# the call below to ``get_turbogrid_exe_path``.
 # This ensures that the examples folder from the current TurboGrid installation is used.
 exec_path = get_turbogrid_exe_path()
 turbogrid_install_location = "/".join(exec_path.parts[:-2])
