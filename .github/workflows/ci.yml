@@ -50,7 +50,7 @@ jobs:
   doc-build:
 # Documentation is built in the environment of this script run,
 # it is uploaded as a build artifact, then sent to the doc website.
-    name: "Documentation"
+    name: "Documentation build"
     needs: [doc-style]
     runs-on: ubuntu-latest
     steps:
@@ -85,9 +85,26 @@ jobs:
           path: doc/_build/html
           retention-days: 7
 
+  
+  smoke-tests:
+    name: "Build wheelhouse for ${{ matrix.os }} and Python ${{ matrix.python-version }}"
+    runs-on: ${{ matrix.os }}
+    needs: [code-style]
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [windows-latest, ubuntu-latest]
+        python-version: ['3.8', '3.9', '3.10', '3.11']
+    steps:
+      - uses: ansys/actions/build-wheelhouse@v4
+        with:
+          library-name: ${{ env.PACKAGE_NAME }}
+          library-namespace: ${{ env.PACKAGE_NAMESPACE }}
+          operating-system: ${{ matrix.os }}
+          python-version: ${{ matrix.python-version }}
 
 # The build job is responsible for creating the build artifact and uploading it to PYPI using twine.
-  build:
+  build-library:
     name: Build
     needs: [code-style]
     runs-on: ubuntu-latest
@@ -127,7 +144,7 @@ jobs:
   release:
     name: Release project
     if: github.event_name == 'push' && contains(github.ref, 'refs/tags')
-    needs: [build]
+    needs: [build-library]
     runs-on: ubuntu-latest
     steps:
       - name: "Release to the private PyPI repository"
@@ -146,7 +163,7 @@ jobs:
     name: "Deploy development documentation"
     if: github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
-    needs: [build]
+    needs: [build-library]
     steps:
       - uses: ansys/actions/doc-deploy-dev@v4
         with:
