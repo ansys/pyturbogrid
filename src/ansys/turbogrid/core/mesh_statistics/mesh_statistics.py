@@ -1,4 +1,5 @@
 # Copyright (c) 2023 ANSYS, Inc. All rights reserved
+"""Provides the ``MeshStatistics`` class."""
 import ansys.turbogrid.api as pytg
 
 
@@ -27,9 +28,9 @@ class MeshStatistics:
 
         Parameters
         ----------
-        turbogrid_instance: pytg.pyturbogrid_core.PyTurboGrid
+        turbogrid_instance : pytg.pyturbogrid_core.PyTurboGrid
             Running session of TurboGrid.
-        domain: str, optional
+        domain : str, optional
             Name of the domain from which to get the initial statistics. If not specified, statistics
             are read for all domains.
         """
@@ -52,7 +53,7 @@ class MeshStatistics:
 
         Parameters
         ----------
-        variable: str, optional
+        variable : str, optional
             Mesh statistics variable to get statistics for. If not specified, a dictionary of all
             variables is returned.
 
@@ -75,7 +76,7 @@ class MeshStatistics:
 
         Parameters
         ----------
-        domain: str, optional
+        domain : str, optional
             Name of the domain from which to get the statistics. If not specified, statistics are
             read for all domains.
         """
@@ -88,7 +89,7 @@ class MeshStatistics:
 
         Parameters
         ----------
-        domain: str
+        domain : str
             The domain name from which to generate the label.
 
         Returns
@@ -141,21 +142,21 @@ class MeshStatistics:
 
         Parameters
         ----------
-        variable: str
+        variable : str
             Mesh statistics variable to use for the histogram.
-        domain: str, optional
+        domain : str, optional
             Domain name to get statistics for. If not specified, statistics for all domains are
             read. Note: The cached mesh statistics are not used or affected.
-        use_percentages: bool, optional
+        use_percentages : bool, optional
             If not specified or set to true, display the percentage values of the bin counts for
             the histogram. If false, display the actual bin counts.
-        bin_units: str, optional
+        bin_units : str, optional
             Use the provided units for the mesh statistics values (x-axis labels).
-        image_file: str, optional
+        image_file : str, optional
             If set, write the histogram image to the specified file. The image format is
             determined by the file extension e.g. ".png". The available formats are those
             provided by matplotlib, including ".png", ".pdf", and ".svg".
-        show: bool, optional
+        show : bool, optional
             If set to false, do not display the image on screen. Only useful if the image is
             being written to a file.
         """
@@ -192,8 +193,9 @@ class MeshStatistics:
         )
 
     def get_table_rows(self) -> list:
-        """Get the mesh statistics table data as a list of row data, from the cached mesh
-           statistics.
+        """
+        Get the mesh statistics table data as a list of row data, from the cached mesh
+        statistics.
 
         Returns
         -------
@@ -224,12 +226,13 @@ class MeshStatistics:
         return row_data
 
     def write_table_to_csv(self, file_name: str) -> None:
-        """Write a csv file containing a table of the mesh statistics values, from the cached mesh
-           statistics.
+        """
+        Write a csv file containing a table of the mesh statistics values, from the cached mesh
+        statistics.
 
         Parameters
         ----------
-        file_name: str
+        file_name : str
             File name for writing the statistics table.
         """
         import csv

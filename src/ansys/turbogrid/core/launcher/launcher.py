@@ -129,7 +129,7 @@ def launch_turbogrid(
     port : int, optional
         Port to use for TurboGrid communications. If not specified, any free port is
         used.
-    log_level: pyturbogrid_core.PyTurboGrid.TurboGridLogLevel, optional
+    log_level : pyturbogrid_core.PyTurboGrid.TurboGridLogLevel, optional
         Level of logging information written to the terminal. The default is ``INFO``. Other
         available options are ``WARNING``, ``ERROR``, ``CRITICAL`` and ``DEBUG``. This setting
         does not affect the level of output which is written to the log files.

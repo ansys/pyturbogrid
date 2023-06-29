@@ -106,7 +106,7 @@ jobs:
 # The build job is responsible for creating the build artifact and uploading it to PYPI using twine.
   build-library:
     name: Build
-    needs: [code-style]
+    needs: [smoke-tests, doc-build]
     runs-on: ubuntu-latest
 
     steps:
