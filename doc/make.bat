@@ -10,6 +10,9 @@ if "%SPHINXBUILD%" == "" (
 set SOURCEDIR=source
 set BUILDDIR=_build
 
+if "%1" == "" goto help
+if "%1" == "clean" goto clean
+
 %SPHINXBUILD% >NUL 2>NUL
 if errorlevel 9009 (
 	echo.
@@ -23,9 +26,11 @@ if errorlevel 9009 (
 	exit /b 1
 )
 
-if "%1" == "" goto help
-
 %SPHINXBUILD% -M %1 %SOURCEDIR% %BUILDDIR% %SPHINXOPTS% %O%
+goto end
+
+:clean
+rmdir /s /q %BUILDDIR% > /NUL 2>&1
 goto end
 
 :help
