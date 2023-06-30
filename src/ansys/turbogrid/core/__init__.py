@@ -1,5 +1,5 @@
 # Copyright (c) 2023 ANSYS, Inc. All rights reserved
-"""PyTurboGrid is a Python wrapper for the Ansys TurboGrid."""
+"""PyTurboGrid is a Python wrapper for Ansys TurboGrid."""
 
 __version__ = "0.1.2dev0"
 
