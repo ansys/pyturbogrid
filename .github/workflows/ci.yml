@@ -6,7 +6,7 @@ on:
   workflow_dispatch: # This means when looking at the repo, you can click 'actions' then 'GitHub CI', and select 'Run Workflow' on any targets branch .
   push: # This means after a push (to main branch) This script also runs, just to be sure everything is fine.
     tags:
-      - "*"
+      - "v*"
     branches:
       - main
 
