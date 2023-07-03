@@ -5,7 +5,7 @@ build-backend = "flit_core.buildapi"
 [project]
 # Check https://flit.readthedocs.io/en/latest/pyproject_toml.html for all available sections
 name = "ansys-turbogrid-core"
-dynamic = ["version"]
+dynamic = "0.2.dev0"
 description = "A python wrapper for Ansys TurboGrid"
 readme = "README.rst"
 requires-python = ">=3.10,<4"
@@ -32,6 +32,7 @@ classifiers = [
 dependencies = [
     "ansys-turbogrid-api>=0.1.7",
     "matplotlib>=3.5.1",
+    "importlib-metadata>=4.0",
 ]
 
 [project.optional-dependencies]
