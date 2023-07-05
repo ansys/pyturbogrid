@@ -14,12 +14,12 @@ PyTurboGrid
    :target: https://pypi.org/project/pyturbogrid
    :alt: PyPI
 
-.. |codecov| image:: https://codecov.io/gh/pyansys/pyturbogrid/branch/main/graph/badge.svg
-   :target: https://codecov.io/gh/pyansys/pyturbogrid
+.. |codecov| image:: https://codecov.io/gh/ansys/pyturbogrid/branch/main/graph/badge.svg
+   :target: https://codecov.io/gh/ansys/pyturbogrid
    :alt: Codecov
 
-.. |GH-CI| image:: https://github.com/pyansys/pyturbogrid/actions/workflows/ci.yml/badge.svg
-   :target: https://github.com/pyansys/pyturbogrid/actions/workflows/ci.yml
+.. |GH-CI| image:: https://github.com/ansys/pyturbogrid/actions/workflows/ci.yml/badge.svg
+   :target: https://github.com/ansys/pyturbogrid/actions/workflows/ci.yml
    :alt: GH-CI
 
 .. |MIT| image:: https://img.shields.io/badge/License-MIT-yellow.svg
@@ -30,7 +30,7 @@ PyTurboGrid
    :target: https://github.com/psf/black
    :alt: Black
 
-.. |intro| image:: https://github.com/pyansys/pyturbogrid/raw/main/doc/source/_static/turbine_blade_squealer_tip_conformal_white_rounded.png
+.. |intro| image:: https://github.com/ansys/pyturbogrid/raw/main/doc/source/_static/turbine_blade_squealer_tip_conformal_white_rounded.png
    :alt: TurboGrid
    :width: 600 
 

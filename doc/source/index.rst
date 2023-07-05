@@ -13,6 +13,7 @@ equipment to help produce accurate simulation results.
    getting_started/index
    api_reference/index
    examples/index
+   contributing
 
 Project index
 =============

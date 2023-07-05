@@ -12,7 +12,6 @@ from ansys.turbogrid.core.launcher import launcher
 
 
 def test_turbogrid_version():
-
     assert launcher.TurboGridVersion(23.2) == launcher.TurboGridVersion.version_23R2
     assert launcher.TurboGridVersion("23.2") == launcher.TurboGridVersion.version_23R2
     assert launcher.TurboGridVersion("23.2.0") == launcher.TurboGridVersion.version_23R2
@@ -25,14 +24,12 @@ def test_turbogrid_version():
 
 
 def test_turbogrid_exe_paths():
-
     vars_to_restore = {
         "AWP_ROOT232": os.environ.get("AWP_ROOT232", None),
         "PYTURBOGRID_TURBOGRID_ROOT": os.environ.get("PYTURBOGRID_TURBOGRID_ROOT", None),
     }
 
     try:
-
         dummy_version = "23.2"
         os.environ["AWP_ROOT232"] = "/myansys/v232"
 

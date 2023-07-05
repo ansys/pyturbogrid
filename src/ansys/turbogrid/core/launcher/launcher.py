@@ -64,7 +64,8 @@ def get_turbogrid_exe_path(**launch_argvals) -> Path:
 
     1. The path specified by the "turbogrid_path" parameter from launch_argvals.
     2. The path specified by the "PYTURBOGRID_TURBOGRID_ROOT" environment variable.
-    3. The path of the TurboGrid installation found from the "product_version" parameter from launch_argvals, using the corresponding "AWP_ROOTnnn" environment variable.
+    3. The path of the TurboGrid installation found from the "product_version" parameter from launch_argvals, using the
+       corresponding "AWP_ROOTnnn" environment variable.
     4. The path of the TurboGrid installation in latest available Ansys version from the AWP_ROOT environment variables.
 
     Returns
@@ -129,7 +130,7 @@ def launch_turbogrid(
     port : int, optional
         Port to use for TurboGrid communications. If not specified, any free port is
         used.
-    log_level: pyturbogrid_core.PyTurboGrid.TurboGridLogLevel, optional
+    log_level : pyturbogrid_core.PyTurboGrid.TurboGridLogLevel, optional
         Level of logging information written to the terminal. The default is ``INFO``. Other
         available options are ``WARNING``, ``ERROR``, ``CRITICAL`` and ``DEBUG``. This setting
         does not affect the level of output which is written to the log files.
