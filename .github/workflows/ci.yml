@@ -76,35 +76,15 @@ jobs:
 
 # The build job is responsible for creating the build artifact and uploading it to PYPI using twine.
   build-library:
-    name: Build
+    name: Build library
     needs: [smoke-tests, docs-build]
     runs-on: ubuntu-latest
-
     steps:
-      - uses: actions/checkout@v3
-
-      - name: Setup Python
-        uses: actions/setup-python@v4
-        with:
-          python-version: '3.10'
-
-      - name: Pull PyTurboGrid API Package
-        run: |
-          python -m pip install ansys-turbogrid-api 
-
       - name: "Build library source and wheel artifacts"
         uses: ansys/actions/build-library@v4
         with:
-          library-name: ${{ env.LIBRARY_NAME }}
-
-      - name: "Build a wheelhouse of the Python library"
-        uses: ansys/actions/build-wheelhouse@v4
-        with:
-          library-name: ${{ env.LIBRARY_NAME }}
-          library-namespace: ${{ env.LIBRARY_NAMESPACE }}
-          operating-system: windows-latest
-          python-version: '3.10'
-
+          library-name: ${{ env.PACKAGE_NAME }}
+          python-version: ${{ env.MAIN_PYTHON_VERSION }}
 
 # Only a tagged commit that begins with 'v' will get pushed to the index.
 # The developer MUST make sure that:
