@@ -1,12 +1,8 @@
+.. _ref_example_gallery:
+
 Examples
 ========
+End-to-end examples show how you can use PyTurboGrid. If PyTurboGrid is
+installed on your machine, you can download these examples as Python files
+or Jupyter notebooks and run them locally.
 
-Basic Mesh Generation
----------------------
-
-Reads a blade model from an inf file, generates mesh, and queries mesh statistics.
-
-Mesh Statistics Report
-----------------------
-
-Uses the mesh_statistics module and CCL queries to demonstrate basic report creation.

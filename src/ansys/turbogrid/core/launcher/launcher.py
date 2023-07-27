@@ -1,7 +1,6 @@
 # Copyright (c) 2023 ANSYS, Inc. All rights reserved
-"""Provides a module for launching Ansys TurboGrid.
+"""Module for launching a local instance of Ansys TurboGrid.
 
-This module supports starting Ansys TurboGrid locally.
 """
 from enum import Enum
 import os
@@ -17,7 +16,7 @@ def _is_windows():
 
 
 class TurboGridVersion(Enum):
-    """An enumeration over supported Ansys TurboGrid versions."""
+    """Provide an enumeration over supported TurboGrid versions."""
 
     # Versions must be listed here with the most recent first
     version_23R2 = "23.2.0"
@@ -41,12 +40,18 @@ class TurboGridVersion(Enum):
 
 
 def get_latest_ansys_version() -> str:
-    """Get the latest available Ansys version from the AWP_ROOT environment variables.
+    """Get the latest installed Ansys version from ``AWP_ROOTxxx`` environment variables.
+
+    .. note::
+       The ``xxx`` is the three-digit Ansys version. For example, the ``AWP_ROOT232``
+       environment variable specifies the path to the directory where Ansys 2023 R2
+       is installed. If Ansys 2023 R2 is installed in the default directory, the
+       value for this environment variable is ``C:\Program Files\ANSYS Inc\v232``.
 
     Returns
     -------
     str
-      Latest available version, in the form of "23.2.0".
+        Latest installed Ansys version in this format: ``"23.2.0"``.
 
     """
 
@@ -60,18 +65,19 @@ def get_latest_ansys_version() -> str:
 def get_turbogrid_exe_path(**launch_argvals) -> Path:
     """Get the path to a local installation of TurboGrid.
 
-    The path is obtained by searching in the following order:
+    The path is obtained by searching in this order:
 
-    1. The path specified by the "turbogrid_path" parameter from launch_argvals.
-    2. The path specified by the "PYTURBOGRID_TURBOGRID_ROOT" environment variable.
-    3. The path of the TurboGrid installation found from the "product_version" parameter from launch_argvals, using the
-       corresponding "AWP_ROOTnnn" environment variable.
-    4. The path of the TurboGrid installation in latest available Ansys version from the AWP_ROOT environment variables.
+    1. The path specified by the ``turbogrid_path`` parameter from ``launch_argvals``.
+    2. The path specified by the ``PYTURBOGRID_TURBOGRID_ROOT`` environment variable.
+    3. The path of the TurboGrid installation specified by the ``product_version`` parameter
+       from ``launch_argvals``, using the corresponding ``AWP_ROOTxxx`` environment variable.
+    4. The path of the TurboGrid installation from the ``AWP_ROOTxxx` environment variable for
+       the latest installed Ansys version.
 
     Returns
     -------
-    Path
-      The path of a local TurboGrid installation.
+    str
+        Path of a local TurboGrid installation.
 
     """
 
@@ -121,28 +127,29 @@ def launch_turbogrid(
 
     Parameters
     ----------
-    product_version : str, optional
-        Version of TurboGrid to use in the numeric format (such as ``"23.2.0"``
-        for 2023 R2). The default is ``None``, in which case the latest installed version is used.
-    turbogrid_path : str, optional
-        Path to the "cfxtg" command used to start TurboGrid. The default is ``None``,
-        in which case the product_version is used instead.
-    port : int, optional
-        Port to use for TurboGrid communications. If not specified, any free port is
-        used.
-    log_level : pyturbogrid_core.PyTurboGrid.TurboGridLogLevel, optional
+    product_version : str, default: None
+        Version of TurboGrid to use in the numeric format. For example, ``"23.2.0"``
+        for 2023 R2. The default is ``None``, in which case the latest installed
+        version is used.
+    turbogrid_path : str, default: None
+        Path to the ``cfxtg`` command for starting TurboGrid. The default is ``None``,
+        in which case the value for the ``product_version`` parameter is used.
+    port : int, default: None
+        Port for TurboGrid communications. The defaultis ``None``, in which case
+        the first free port is used.
+    log_level : pyturbogrid_core.PyTurboGrid.TurboGridLogLevel, default: INFO
         Level of logging information written to the terminal. The default is ``INFO``. Other
-        available options are ``WARNING``, ``ERROR``, ``CRITICAL`` and ``DEBUG``. This setting
-        does not affect the level of output which is written to the log files.
-    additional_args_str : str, optional
-        Additional arguments to send to TurboGrid. The default is ``None``.
-    additional_kw_args : dict, optional
-        Additional arguments to send to TurboGrid. The default is ``None``.
+        options are ``WARNING``, ``ERROR``, ``CRITICAL``, and ``DEBUG``. This setting
+        does not affect the level of output that is written to the log files.
+    additional_args_str : str, default: None
+        Additional arguments to send to TurboGrid.
+    additional_kw_args : dict, default: None
+        Additional arguments to send to TurboGrid.
 
     Returns
     -------
     pyturbogrid_core.PyTurboGrid
-      TurboGrid session.
+        TurboGrid session.
 
     """
     if kwargs:

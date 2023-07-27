@@ -1,25 +1,26 @@
 # Copyright (c) 2023 ANSYS, Inc. All rights reserved
-"""Provides the ``MeshStatistics`` class."""
+"""Module for facilitating analysis of mesh statistics."""
 import ansys.turbogrid.api as pytg
 
 
 class MeshStatistics:
     """
-    Class to facilitate analysis of mesh statistics for the current mesh in a running session of
+    Facilitates analysis of mesh statistics for the current mesh in a running session of
     TurboGrid.
     """
 
     #: Interface to a running session of TurboGrid.
     interface: pytg.pyturbogrid_core.PyTurboGrid = 0
 
-    #: Cache of the basic mesh statistics obtained by the last call to update_mesh_statistics or
-    #: from the initialization of the object if update_mesh_statistics has not been called. The
-    #: name of the domain to which these statistics relate is stored as the current_domain
+    #: Cache of the basic mesh statistics obtained by the last call to the
+    #: :func: `update_mesh_statistics` method or from the initialization of
+    #: the object if this method has not been called. The name of the domain
+    #: these statistics relate to is stored as the :attr:`current_domain`
     #: attribute.
     mesh_vars: dict = dict()
 
-    #: The domain that was used for the last update of the mesh statistics. See the documentation
-    #: for the mesh_vars attribute.
+    #: Domain that was used for the last update of the mesh statistics. See the :attr:`mesh_vars`
+    #: attribute.
     current_domain: str = ""
 
     def __init__(self, turbogrid_instance: pytg.pyturbogrid_core.PyTurboGrid, domain: str = "ALL"):
@@ -30,9 +31,9 @@ class MeshStatistics:
         ----------
         turbogrid_instance : pytg.pyturbogrid_core.PyTurboGrid
             Running session of TurboGrid.
-        domain : str, optional
-            Name of the domain from which to get the initial statistics. If not specified, statistics
-            are read for all domains.
+        domain : str, default: "ALL"
+            Name of the domain to get the initial statistics from. The default is ``"All"``,
+            in which case statistics are read for all domains.
         """
         self.interface = turbogrid_instance
         self.mesh_vars = dict()
@@ -53,15 +54,16 @@ class MeshStatistics:
 
         Parameters
         ----------
-        variable : str, optional
-            Mesh statistics variable to get statistics for. If not specified, a dictionary of all
-            variables is returned.
+        variable : str, default: "ALL"
+            Mesh statistics variable to get statistics for. The default is
+            ``"ALL"``, in which case a dictionary of all variables is returned.
 
         Returns
         -------
         dict
-            A dictionary of the current mesh statistics values for a single variable, or a dictionary
-            of all variable dictionaries if no variable is specified.
+            Dictionary of all variables if the default value of ``"ALL"``
+            is used for the ``variable`` parameter or a dictionary of the
+            current mesh statistics values if a single variable is specified.
         """
         if variable == "ALL":
             return self.mesh_vars
@@ -71,31 +73,32 @@ class MeshStatistics:
     def update_mesh_statistics(self, domain: str = "ALL") -> None:
         """Re-read the mesh statistics from TurboGrid.
 
-        This can be used either to update the cached mesh statistics after TurboGrid has remeshed,
-        or to update the cached mesh statistics to use a different domain or domains.
+        This method can be used either to update the cached mesh statistics after TurboGrid
+        has remeshed or update the cached mesh statistics to use a different domain or domains.
 
         Parameters
         ----------
-        domain : str, optional
-            Name of the domain from which to get the statistics. If not specified, statistics are
-            read for all domains.
+        domain : str, default: ``ALL``
+            Name of the domain to get the statistics from. The default is ``"ALL"``, in which
+            case statistics are read for all domains.
         """
         self._read_mesh_statistics(domain)
 
     def get_domain_label(self, domain: str) -> str:
-        """Get suitable label text for the specified domain name. This returns either
-        "Domain: <name>" or "All Domains" (if "ALL" is specified as the input parameter).
-
-
+        """Get suitable label text for a domain.
+        
         Parameters
         ----------
         domain : str
-            The domain name from which to generate the label.
+            Name of the domain to generate the label frorm.
 
         Returns
         -------
         str
-            The domain label.
+            ``"All Domains"`` is returned if ``"ALL"`` is the value
+            value specifed for the ``domain`` parameter or ``"Domain: <name>"``
+            is returned if a name of a single domain is specified.
+        
         """
         if domain == "ALL":
             domain_label = "All Domains"
@@ -138,26 +141,31 @@ class MeshStatistics:
         image_file: str = "",
         show: bool = True,
     ) -> None:
-        """Create a histogram of mesh statistics using the matplotlib library.
+        """Create a histogram of mesh statistics using `Matplotlib <https://matplotlib.org/>`_.
 
         Parameters
         ----------
         variable : str
             Mesh statistics variable to use for the histogram.
-        domain : str, optional
-            Domain name to get statistics for. If not specified, statistics for all domains are
-            read. Note: The cached mesh statistics are not used or affected.
-        use_percentages : bool, optional
-            If not specified or set to true, display the percentage values of the bin counts for
-            the histogram. If false, display the actual bin counts.
-        bin_units : str, optional
-            Use the provided units for the mesh statistics values (x-axis labels).
-        image_file : str, optional
-            If set, write the histogram image to the specified file. The image format is
-            determined by the file extension e.g. ".png". The available formats are those
-            provided by matplotlib, including ".png", ".pdf", and ".svg".
-        show : bool, optional
-            If set to false, do not display the image on screen. Only useful if the image is
+        domain : str, default: "ALL"
+            Domain name to get statistics for. The default is ``"ALL"``, in which
+            case statistics for all domains are read. Cached mesh statistics are
+            not used or affected.
+        use_percentages : bool, default: False
+            Whether to display the percentage values of the bin counts for
+            the histogram. The default is ``False``, in which case the actual bin
+            counts are shown.
+        bin_units : str, default: ""
+            Units for the mesh statistics values (x-axis labels). The default is
+            ``""``, in which case the provided units are used.
+        image_file : str, default: ""
+            File format to write the histogram image to. The default is ``""``, in
+            which case the format is determined by the file extension (such as ``.png``).
+            Available formats are those provided by Matplotlib, including ``".png"``,
+            ``".pdf"``, and ``".svg"``.
+        show : bool, default: True
+            Whether to display the image on the screen. If ``False``, the image is not
+            displayed on the screen, which is only useful if the image is
             being written to a file.
         """
         if "query_mesh_statistics_histogram_data" not in dir(self.interface):
@@ -194,14 +202,13 @@ class MeshStatistics:
 
     def get_table_rows(self) -> list:
         """
-        Get the mesh statistics table data as a list of row data, from the cached mesh
-        statistics.
+        Get the mesh statistics table data from the cached mesh statistics.
 
         Returns
         -------
         list
-            Each list item represents one table row, and contains a list of the cell
-            contents for each cell in the row.
+            List of row data. Each list item represents one table row. The list
+            item contains a list of the cell contents for each cell in the row.
         """
         row_data = list()
         row_data.append(["Mesh Measure", "Value", "% Bad", "% ok", "%OK"])
@@ -227,13 +234,15 @@ class MeshStatistics:
 
     def write_table_to_csv(self, file_name: str) -> None:
         """
-        Write a csv file containing a table of the mesh statistics values, from the cached mesh
-        statistics.
+        Write the mesh statistics table to a CSV file.
+        
+        The values in the mesh statistics table are obtained from the cached
+        mesh statistics.
 
         Parameters
         ----------
         file_name : str
-            File name for writing the statistics table.
+            File name to write the mesh statistics table to.
         """
         import csv
 
@@ -245,7 +254,7 @@ class MeshStatistics:
                 writer.writerow(row)
 
     def get_table_as_text(self) -> str:
-        """Get a text version of the mesh statistics table, from the cached mesh statistics."""
+        """Get a text version of the mesh statistics table from the cached mesh statistics."""
         table = "\n" + self.get_domain_label(self.current_domain) + "\n\n"
         row_data = self.get_table_rows()
         row_lengths = [9] * 5

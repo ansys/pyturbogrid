@@ -3,8 +3,8 @@
 API reference
 #############
 
-This section lists the modules and functions available after installation of the 
-``ansys-turbogrid-core`` package.
+This section provides descriptions of the modules, classes, functions,
+and methods in the PyTurboGrid API.
 
 .. toctree::
    :hidden:

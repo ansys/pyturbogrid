@@ -14,6 +14,7 @@ get_turbogrid_exe_path
 json
 launch_turbogrid
 launcher
+Matplotlib
 mesh_statistics
 mesh_vars
 product_version
