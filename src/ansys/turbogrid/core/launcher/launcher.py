@@ -1,7 +1,6 @@
 # Copyright (c) 2023 ANSYS, Inc. All rights reserved
-"""Module for launching a local instance of Ansys TurboGrid.
+"""Module for launching a local instance of Ansys TurboGrid."""
 
-"""
 from enum import Enum
 import os
 from pathlib import Path

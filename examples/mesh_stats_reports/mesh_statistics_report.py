@@ -6,7 +6,7 @@ Mesh statistics report
 ----------------------
 
 This example shows how to use the ``mesh_statistics`` module and CCL queries to generate a
-report for rotor37 in the :ref:`_read_inf_rotor37` example.
+report for rotor37 in the :ref:`read_inf_rotor37` example.
 
 `Jinja <https://jinja.palletsprojects.com/en/3.1.x/>`_ is used to generate the report in
 HTML format, starting from the report template file, ``report_template.html``.
