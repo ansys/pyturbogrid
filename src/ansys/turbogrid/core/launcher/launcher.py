@@ -51,7 +51,6 @@ def get_latest_ansys_version() -> str:
     -------
     str
         Latest installed Ansys version in this format: ``"23.2.0"``.
-
     """
 
     for v in TurboGridVersion:
@@ -70,14 +69,14 @@ def get_turbogrid_exe_path(**launch_argvals) -> Path:
     2. The path specified by the ``PYTURBOGRID_TURBOGRID_ROOT`` environment variable.
     3. The path of the TurboGrid installation specified by the ``product_version`` parameter
        from ``launch_argvals``, using the corresponding ``AWP_ROOTxxx`` environment variable.
-    4. The path of the TurboGrid installation from the ``AWP_ROOTxxx` environment variable for
+    4. The path of the TurboGrid installation from the ``AWP_ROOTxxx`` environment variable for
        the latest installed Ansys version.
+
 
     Returns
     -------
     str
         Path of a local TurboGrid installation.
-
     """
 
     def get_turbogrid_root(version: TurboGridVersion) -> Path:
@@ -137,9 +136,9 @@ def launch_turbogrid(
         Port for TurboGrid communications. The defaultis ``None``, in which case
         the first free port is used.
     log_level : pyturbogrid_core.PyTurboGrid.TurboGridLogLevel, default: INFO
-        Level of logging information written to the terminal. The default is ``INFO``. Other
-        options are ``WARNING``, ``ERROR``, ``CRITICAL``, and ``DEBUG``. This setting
-        does not affect the level of output that is written to the log files.
+        Level of logging information written to the terminal. The default is ``INFO``.
+        Options are ``INFO``, ``WARNING``, ``ERROR``, ``CRITICAL``, and ``DEBUG``.
+        This setting does not affect the level of output that is written to the log files.
     additional_args_str : str, default: None
         Additional arguments to send to TurboGrid.
     additional_kw_args : dict, default: None
