@@ -26,13 +26,14 @@ This image shows a model overview:
 import json
 import os.path as ospath
 
+from ansys.turbogrid.core.launcher.launcher import get_turbogrid_exe_path, launch_turbogrid
+
 #################################################################################
 # Get path for TurboGrid executable file
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # It is assumed that the ``ansys-turbogrid-core`` package has been installed.
 # Get the path for the TurboGrid executable file.
 
-from ansys.turbogrid.core.launcher.launcher import get_turbogrid_exe_path, launch_turbogrid
 
 #################################################################################
 # Launch a TurboGrid instance

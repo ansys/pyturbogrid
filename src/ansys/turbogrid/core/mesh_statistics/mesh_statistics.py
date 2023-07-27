@@ -86,7 +86,7 @@ class MeshStatistics:
 
     def get_domain_label(self, domain: str) -> str:
         """Get suitable label text for a domain.
-        
+
         Parameters
         ----------
         domain : str
@@ -96,9 +96,9 @@ class MeshStatistics:
         -------
         str
             ``"All Domains"`` is returned if ``"ALL"`` is the value
-            value specifed for the ``domain`` parameter or ``"Domain: <name>"``
+            value specified for the ``domain`` parameter or ``"Domain: <name>"``
             is returned if a name of a single domain is specified.
-        
+
         """
         if domain == "ALL":
             domain_label = "All Domains"
@@ -235,7 +235,7 @@ class MeshStatistics:
     def write_table_to_csv(self, file_name: str) -> None:
         """
         Write the mesh statistics table to a CSV file.
-        
+
         The values in the mesh statistics table are obtained from the cached
         mesh statistics.
 
