@@ -5,16 +5,15 @@
 Mesh statistics report
 ----------------------
 
-This example shows how to use the ``mesh_statistics`` module and CCL queries to generate a
-report for rotor37 in the :ref:`read_inf_rotor37` example.
+This example shows how to generate a report (histogram) for the
+blade model in the :ref:`read_inf_rotor37` example.
 
-`Jinja <https://jinja.palletsprojects.com/en/3.1.x/>`_ is used to generate the report in
-HTML format, starting from the report template file, ``report_template.html``.
+`Jinja <https://jinja.palletsprojects.com/en/3.1.x/>`_ is used to generate
+this report in HTML format, starting from the report template file, ``report_template.html``.
 
-This image shows a histogram for the rotor37 example.
 """
 #########################################################
-# Workflow:
+# Histogram for rotor37:
 # .. image:: ../../_static/rotor37_with_histogram.png
 #  :width: 400
 #  :alt: Histogram for rotor37.
@@ -56,7 +55,7 @@ turbogrid.unsuspend(object="/TOPOLOGY SET")
 #################################################################################
 # Determine domains
 # ~~~~~~~~~~~~~~~~~
-# Determine which domains are available by querying the CCL (TurboGrid command
+# Determine which domains are available by querying the CCL (CFX command
 # language).
 
 ALL_DOMAINS = "ALL"
@@ -79,15 +78,15 @@ case_info["Report Date"] = date.today()
 #################################################################################
 # Create ``MeshStatistics`` object
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-# Create the MeshStatistics object for obtaining the mesh statistics.
+# Create the ``MeshStatistics`` object for obtaining the mesh statistics.
 
 ms = mesh_statistics.MeshStatistics(turbogrid)
 
 #################################################################################
-# Calculate and store basic mesh statistics
-# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# Calculate and store mesh statistics
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # Calculate and store the basic mesh statistics for each domain separately and
-# for ``"All Domains"``.
+# for all domains.
 
 domain_count = dict()
 for domain in domain_list:

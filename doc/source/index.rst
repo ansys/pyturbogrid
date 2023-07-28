@@ -35,6 +35,6 @@ in conjunction with other PyAnsys libraries and external Python libraries.
    contributing
 
 Project index
-=============
+-------------
 
 * :ref:`genindex`

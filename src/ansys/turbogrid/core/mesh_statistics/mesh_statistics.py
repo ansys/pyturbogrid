@@ -13,7 +13,7 @@ class MeshStatistics:
     interface: pytg.pyturbogrid_core.PyTurboGrid = 0
 
     #: Cache of the basic mesh statistics obtained by the last call to the
-    #: :func: `update_mesh_statistics` method or from the initialization of
+    #: :func:`update_mesh_statistics` method or from the initialization of
     #: the object if this method has not been called. The name of the domain
     #: these statistics relate to is stored as the :attr:`current_domain`
     #: attribute.
@@ -31,7 +31,7 @@ class MeshStatistics:
         ----------
         turbogrid_instance : pytg.pyturbogrid_core.PyTurboGrid
             Running session of TurboGrid.
-        domain : str, default: "ALL"
+        domain : str, default: ``"ALL"``
             Name of the domain to get the initial statistics from. The default is ``"All"``,
             in which case statistics are read for all domains.
         """
@@ -54,16 +54,17 @@ class MeshStatistics:
 
         Parameters
         ----------
-        variable : str, default: "ALL"
+        variable : str, default: ``"ALL"``
             Mesh statistics variable to get statistics for. The default is
             ``"ALL"``, in which case a dictionary of all variables is returned.
 
         Returns
         -------
         dict
-            Dictionary of all variables if the default value of ``"ALL"``
-            is used for the ``variable`` parameter or a dictionary of the
-            current mesh statistics values if a single variable is specified.
+            Dictionary of all variables is returned if the default value of
+            ``"ALL"`` is used for the ``variable`` parameter or a dictionary of
+            the current mesh statistics values is returned if a single variable
+            is specified.
         """
         if variable == "ALL":
             return self.mesh_vars
@@ -78,7 +79,7 @@ class MeshStatistics:
 
         Parameters
         ----------
-        domain : str, default: ``ALL``
+        domain : str, default: ``"ALL"``
             Name of the domain to get the statistics from. The default is ``"ALL"``, in which
             case statistics are read for all domains.
         """
@@ -90,14 +91,14 @@ class MeshStatistics:
         Parameters
         ----------
         domain : str
-            Name of the domain to generate the label frorm.
+            Name of the domain to generate the label from.
 
         Returns
         -------
         str
             ``"All Domains"`` is returned if ``"ALL"`` is the value
-            value specified for the ``domain`` parameter or ``"Domain: <name>"``
-            is returned if a name of a single domain is specified.
+            specified for the ``domain`` parameter or ``"Domain: <name>"``
+            is returned if the name of a single domain is specified.
 
         """
         if domain == "ALL":
@@ -147,18 +148,19 @@ class MeshStatistics:
         ----------
         variable : str
             Mesh statistics variable to use for the histogram.
-        domain : str, default: "ALL"
+        domain : str, default: ``"ALL"``
             Domain name to get statistics for. The default is ``"ALL"``, in which
-            case statistics for all domains are read. Cached mesh statistics are
-            not used or affected.
-        use_percentages : bool, default: False
+            case statistics for all domains are read. If a specific domain name
+            is supplied, statistics are read for only this domain. Cached mesh
+            statistics are not used or affected.
+        use_percentages : bool, default: ``False``
             Whether to display the percentage values of the bin counts for
             the histogram. The default is ``False``, in which case the actual bin
             counts are shown.
-        bin_units : str, default: ""
+        bin_units : str, default: ``""``
             Units for the mesh statistics values (x-axis labels). The default is
             ``""``, in which case the provided units are used.
-        image_file : str, default: ""
+        image_file : str, default: ``""``
             File format to write the histogram image to. The default is ``""``, in
             which case the format is determined by the file extension (such as ``.png``).
             Available formats are those provided by Matplotlib, including ``".png"``,
@@ -242,7 +244,7 @@ class MeshStatistics:
         Parameters
         ----------
         file_name : str
-            File name to write the mesh statistics table to.
+            Name of the file to write the mesh statistics table to.
         """
         import csv
 
@@ -254,7 +256,13 @@ class MeshStatistics:
                 writer.writerow(row)
 
     def get_table_as_text(self) -> str:
-        """Get a text version of the mesh statistics table from the cached mesh statistics."""
+        """Get a text version of the mesh statistics table from the cached mesh statistics.
+
+        Returns
+        -------
+        str
+           Mesh statistics table in a text version.
+        """
         table = "\n" + self.get_domain_label(self.current_domain) + "\n\n"
         row_data = self.get_table_rows()
         row_lengths = [9] * 5

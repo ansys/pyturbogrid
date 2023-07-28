@@ -125,23 +125,23 @@ def launch_turbogrid(
 
     Parameters
     ----------
-    product_version : str, default: None
+    product_version : str, default: ``None``
         Version of TurboGrid to use in the numeric format. For example, ``"23.2.0"``
         for 2023 R2. The default is ``None``, in which case the latest installed
         version is used.
-    turbogrid_path : str, default: None
+    turbogrid_path : str, default: ``None``
         Path to the ``cfxtg`` command for starting TurboGrid. The default is ``None``,
         in which case the value for the ``product_version`` parameter is used.
-    port : int, default: None
+    port : int, default: ``None``
         Port for TurboGrid communications. The defaultis ``None``, in which case
         the first free port is used.
-    log_level : pyturbogrid_core.PyTurboGrid.TurboGridLogLevel, default: INFO
+    log_level : pyturbogrid_core.PyTurboGrid.TurboGridLogLevel, default: ``INFO``
         Level of logging information written to the terminal. The default is ``INFO``.
         Options are ``INFO``, ``WARNING``, ``ERROR``, ``CRITICAL``, and ``DEBUG``.
         This setting does not affect the level of output that is written to the log files.
-    additional_args_str : str, default: None
+    additional_args_str : str, default: ``None``
         Additional arguments to send to TurboGrid.
-    additional_kw_args : dict, default: None
+    additional_kw_args : dict, default: ``None``
         Additional arguments to send to TurboGrid.
 
     Returns

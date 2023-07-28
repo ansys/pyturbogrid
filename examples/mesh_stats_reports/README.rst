@@ -4,4 +4,4 @@ Mesh statistics reports
 -----------------------
 
 These examples show how to use the ``mesh_statistics`` module and CLL
-queries to create mesh statistic reports.
+(CFX command language) queries to create mesh statistic reports.
