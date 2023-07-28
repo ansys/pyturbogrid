@@ -10,7 +10,7 @@ from ansys.turbogrid.api import pyturbogrid_core
 
 
 def _is_windows():
-    """Check if the current operating system is windows."""
+    """Check if Windows is the current operating system."""
     return platform.system() == "Windows"
 
 
@@ -29,8 +29,8 @@ class TurboGridVersion(Enum):
                     return TurboGridVersion(version)
             else:
                 raise RuntimeError(
-                    f"The passed version '{version[:-2]}' does not exist."
-                    f" Available version strings are: "
+                    f"The passed version '{version[:-2]}' does not exist. "
+                    f"Available version strings are: "
                     f"{[ver.value for ver in TurboGridVersion]} "
                 )
 
@@ -75,7 +75,7 @@ def get_turbogrid_exe_path(**launch_argvals) -> Path:
 
     Returns
     -------
-    str
+    Path
         Path of a local TurboGrid installation.
     """
 
@@ -148,7 +148,6 @@ def launch_turbogrid(
     -------
     pyturbogrid_core.PyTurboGrid
         TurboGrid session.
-
     """
     if kwargs:
         raise TypeError(
