@@ -45,7 +45,7 @@ def get_latest_ansys_version() -> str:
        The ``xxx`` is the three-digit Ansys version. For example, the ``AWP_ROOT232``
        environment variable specifies the path to the directory where Ansys 2023 R2
        is installed. If Ansys 2023 R2 is installed in the default directory, the
-       value for this environment variable is ``C:/Program Files/ANSYS Inc/v232``.
+       value for this environment variable is ``C:\\Program Files\\ANSYS Inc\\v232``.
 
     Returns
     -------
