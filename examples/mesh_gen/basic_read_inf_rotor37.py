@@ -17,22 +17,16 @@ by reading an INF file, and generate a mesh.
 #
 #########################################################
 
-#########################################################
+#################################################################################
 # Perform required imports
 # ~~~~~~~~~~~~~~~~~~~~~~~~
-# Perform the required imports.
+# Perform the required imports. It is assumed that the ``ansys-turbogrid-core``
+# package has been installed.
 
 import json
 import os.path as ospath
 
 from ansys.turbogrid.core.launcher.launcher import get_turbogrid_exe_path, launch_turbogrid
-
-#################################################################################
-# Get path for TurboGrid installation
-# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-# It is assumed that the ``ansys-turbogrid-core`` package has been installed.
-# Get the path for your TurboGrid installation.
-
 
 #################################################################################
 # Launch TurboGrid instance
