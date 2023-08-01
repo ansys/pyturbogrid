@@ -15,8 +15,8 @@ this report in HTML format, starting from the ``report_template.html`` file.
 
 """
 #########################################################
-# Histogram for rotor37:
-# .. image:: ../../_static/rotor37_with_histogram.png
+# Report for rotor37:
+# .. image:: ../_static/rotor37_with_histogram.png
 #  :width: 400
 #  :alt: Report for rotor37.
 #
