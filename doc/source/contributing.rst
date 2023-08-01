@@ -24,9 +24,9 @@ in development mode, run these commands:
 Post issues
 -----------
 
-Use the `PyTurboGrid Issues <https://github.com/ansys/pyturbogrid/issues>`_
-page to submit questions, report bugs, and request new features. When possible,
-use these issue templates:
+Use the `PyTurboGrid Issues <https://github.com/ansys/pyturbogrid/issues>`_ page
+to submit questions, report bugs, and request new features. When possible, use
+these issue templates:
 
 * Bug, problem, error: For filing a bug report
 * Documentation error: For requesting modifications to the documentation
