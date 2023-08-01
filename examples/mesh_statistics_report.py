@@ -5,18 +5,20 @@
 Mesh statistics report
 ----------------------
 
-This example shows how to generate a report (histogram) for the
-blade model in the :ref:`read_inf_rotor37` example.
+To generate a mesh statistics report, you use the ``mesh_statistics`` module
+and CCL (CFX command language) queries. This example shows how to generate
+a mesh statistics report for the blade model in the :ref:`read_inf_rotor37`
+example.
 
 `Jinja <https://jinja.palletsprojects.com/en/3.1.x/>`_ is used to generate
-this report in HTML format, starting from the report template file, ``report_template.html``.
+this report in HTML format, starting from the ``report_template.html`` file.
 
 """
 #########################################################
 # Histogram for rotor37:
 # .. image:: ../../_static/rotor37_with_histogram.png
 #  :width: 400
-#  :alt: Histogram for rotor37.
+#  :alt: Report for rotor37.
 #
 #########################################################
 

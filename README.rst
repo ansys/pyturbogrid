@@ -77,7 +77,7 @@ source code, you can modify and enhance the code.
 Overall guidance on contributing to a PyAnsys library appears in the
 `Contributing <https://dev.docs.pyansys.com/overview/contributing.html>`_ topic
 in the *PyAnsys Developer's Guide*. Ensure that you are thoroughly familiar
-with this `guide <https://dev.docs.pyansys.com/>`_` before attempting to
+with this `guide <https://dev.docs.pyansys.com/>_` before attempting to
 contribute to PyTurboGrid.
 
 #. Clone the ``pyturbogrid`` repository:
@@ -108,7 +108,7 @@ contribute to PyTurboGrid.
 
 Requirements
 ------------
-You must have a licensed local installaton of Ansys TurboGrid 2023 R2 or later.
+You must have a licensed local installation of Ansys TurboGrid 2023 R2 or later.
 
 The ``AWP_ROOTxxx`` environment variable, where ``xxx`` is the three-digit
 Ansys version, allows PyTurboGrid to find your local TurboGrid installation.

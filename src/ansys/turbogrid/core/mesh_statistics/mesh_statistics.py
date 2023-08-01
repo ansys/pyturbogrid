@@ -32,7 +32,7 @@ class MeshStatistics:
         turbogrid_instance : pytg.pyturbogrid_core.PyTurboGrid
             Running session of TurboGrid.
         domain : str, default: ``"ALL"``
-            Name of the domain to get the initial statistics from. The default is ``"All"``,
+            Name of the domain to get the initial statistics from. The default is ``"ALL"``,
             in which case statistics are read for all domains.
         """
         self.interface = turbogrid_instance
@@ -61,10 +61,11 @@ class MeshStatistics:
         Returns
         -------
         dict
-            Dictionary of all variables is returned if the default value of
-            ``"ALL"`` is used for the ``variable`` parameter or a dictionary of
-            the current mesh statistics values is returned if a single variable
-            is specified.
+            If a single variable is specified for the ``variable`` parameter, a
+            dictionary of the current mesh statistics values for the selected variable
+            is returned. Otherwise, if the default value of ``"ALL"`` is used for the
+            ``variable`` parameter. a dictionary of dictionaries (one per variable) is
+            returned.
         """
         if variable == "ALL":
             return self.mesh_vars
@@ -159,12 +160,13 @@ class MeshStatistics:
             counts are shown.
         bin_units : str, default: ``""``
             Units for the mesh statistics values (x-axis labels). The default is
-            ``""``, in which case the provided units are used.
+            ``""``, in which case the current TurboGrid units are used.
         image_file : str, default: ``""``
-            File format to write the histogram image to. The default is ``""``, in
-            which case the format is determined by the file extension (such as ``.png``).
-            Available formats are those provided by Matplotlib, including ``".png"``,
-            ``".pdf"``, and ``".svg"``.
+            Name and extension for the image file to write the histogram to. The
+            default is ``""``, in which case no image file is written. The format
+            is determined by the file extension (such as ``.png``) given in the
+            file name. Available formats are those supported by Matplotlib,
+            including ``".png"``, ``".pdf"``, and ``".svg"``.
         show : bool, default: True
             Whether to display the image on the screen. If ``False``, the image is not
             displayed on the screen, which is only useful if the image is

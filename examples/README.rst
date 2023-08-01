@@ -2,7 +2,7 @@
 
 Examples
 ========
-End-to-end examples show how you can use PyTurboGrid. If PyTurboGrid is
+These examples show how you use PyTurboGrid. If PyTurboGrid is
 installed on your machine, you can download these examples as Python files
 or Jupyter notebooks and run them locally.
 
