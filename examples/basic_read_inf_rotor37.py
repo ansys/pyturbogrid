@@ -4,7 +4,6 @@
 
 Basic mesh generation
 ---------------------
-
 This basic example shows how to launch PyTurboGrid, load a blade model
 by reading an INF file, and generate a mesh.
 

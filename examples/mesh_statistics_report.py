@@ -4,7 +4,6 @@
 
 Mesh statistics report
 ----------------------
-
 To generate a mesh statistics report, you use the ``mesh_statistics`` module
 and CCL (CFX command language) queries. This example shows how to generate
 a mesh statistics report for the blade model in the :ref:`read_inf_rotor37`
