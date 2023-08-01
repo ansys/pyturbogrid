@@ -75,7 +75,7 @@ and installing the project in editable mode. When you install PyTurboGrid from
 source code, you can modify and enhance the code.
 
 Overall guidance on contributing to a PyAnsys library appears in the
-`Contributing <https://dev.docs.pyansys.com/overview/contributing.html>`_ topic
+`Contributing < https://dev.docs.pyansys.com/how-to/contributing.html>`_ topic
 in the *PyAnsys Developer's Guide*. Ensure that you are thoroughly familiar
 with this `guide <https://dev.docs.pyansys.com/>_` before attempting to
 contribute to PyTurboGrid.
