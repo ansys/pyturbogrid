@@ -94,3 +94,5 @@ master_doc = "index"
 autodoc_default_options = {
     "special-members": "__init__",
 }
+
+linkcheck_ignore = ["https://github.com/ansys/pyturbogrid/issues"]
