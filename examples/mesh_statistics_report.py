@@ -2,18 +2,29 @@
 """
 .. _mesh_statistics_report:
 
-Mesh Statistics Report
+Mesh statistics report
 ----------------------
+To generate a mesh statistics report, you use the ``mesh_statistics`` module
+and CCL (CFX command language) queries. This example shows how to generate
+a mesh statistics report for the blade model in the :ref:`read_inf_rotor37`
+example.
 
-This example demonstrates how to use the mesh_statistics module and CCL queries to generate a
-simple report.
-
-The jinja library is used to produce the report in HTML format, starting from the report
-template file "report_template.html".
+`Jinja <https://jinja.palletsprojects.com/en/3.1.x/>`_ is used to generate
+this report in HTML format, starting from the ``report_template.html`` file.
 
 """
+#########################################################
+# Report for rotor37:
+# .. image:: ../_static/rotor37_with_histogram.png
+#  :width: 400
+#  :alt: Report for rotor37.
+#
+#########################################################
 
-# sphinx_gallery_thumbnail_path = '_static/rotor37_with_histogram.png'
+#########################################################
+# Perform required imports
+# ~~~~~~~~~~~~~~~~~~~~~~~~
+# Perform the required imports.
 
 from collections import OrderedDict
 from datetime import date
@@ -26,8 +37,11 @@ from ansys.turbogrid.core.launcher.launcher import get_turbogrid_exe_path, launc
 from ansys.turbogrid.core.mesh_statistics import mesh_statistics
 
 #################################################################################
+# Set up a TurboGrid session
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~
 # Set up a TurboGrid session with a basic case and mesh, similar to the
 # :ref:`read_inf_rotor37` example.
+
 turbogrid = launch_turbogrid()
 exec_path = get_turbogrid_exe_path()
 turbogrid_install_location = "/".join(exec_path.parts[:-2])
@@ -40,15 +54,21 @@ turbogrid.read_inf(examples_path_str + "/rotor37/BladeGen.inf")
 turbogrid.unsuspend(object="/TOPOLOGY SET")
 
 #################################################################################
-# Determine which domains are available by querying the CCL (TurboGrid command
+# Determine domains
+# ~~~~~~~~~~~~~~~~~
+# Determine which domains are available by querying the CCL (CFX command
 # language).
+
 ALL_DOMAINS = "ALL"
 ccl_db = CCLObjectDB(turbogrid)
 domain_list = [obj.get_name() for obj in ccl_db.get_objects_by_type("DOMAIN")]
 domain_list.append(ALL_DOMAINS)
 
 #################################################################################
-# Set up the information to be shown under 'Case Details' in the report.
+# Set up case details
+# ~~~~~~~~~~~~~~~~~~~
+# Set up the information to show under "Case Details" in the report.
+
 case_info = OrderedDict()
 case_info["Case Name"] = "rotor37"
 case_info["Number of Bladesets"] = ccl_db.get_object_by_path("/GEOMETRY/MACHINE DATA").get_value(
@@ -57,29 +77,45 @@ case_info["Number of Bladesets"] = ccl_db.get_object_by_path("/GEOMETRY/MACHINE 
 case_info["Report Date"] = date.today()
 
 #################################################################################
-# Create the MeshStatistics object for obtaining the mesh statistics.
+# Create ``MeshStatistics`` object
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# Create the ``MeshStatistics`` object for obtaining the mesh statistics.
+
 ms = mesh_statistics.MeshStatistics(turbogrid)
 
 #################################################################################
+# Calculate and store mesh statistics
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # Calculate and store the basic mesh statistics for each domain separately and
-# for 'All Domains'.
+# for all domains.
+
 domain_count = dict()
 for domain in domain_list:
     ms.update_mesh_statistics(domain)
     domain_count[ms.get_domain_label(domain)] = ms.get_mesh_statistics().copy()
 
 #################################################################################
-# Ensure that the currently-loaded mesh statistics are for all domains.
+# Check loaded mesh statistics
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# Check the currently loaded mesh statistics to ensure that they are for all
+# domains.
+
 ms.update_mesh_statistics(ALL_DOMAINS)
 all_dom_stats = ms.get_mesh_statistics()
 
 #################################################################################
+# Get mesh statistics table information
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # Get the mesh statistics table information in a form that can easily be used to
 # generate the table in the report.
+
 stat_table_rows = ms.get_table_rows()
 
 #################################################################################
-# Generate the histogram figures for all required mesh quality measures.
+# Generate histograms
+# ~~~~~~~~~~~~~~~~~~~
+# Generate histograms for all required mesh quality measures.
+
 hist_var_list = ["Minimum Face Angle", "Skewness"]
 hist_dict = dict()
 for var in hist_var_list:
@@ -93,12 +129,18 @@ for var in hist_var_list:
     hist_dict[var] = file_name
 
 #################################################################################
+# Quit session
+# ~~~~~~~~~~~~~
 # Quit the TurboGrid session as all of the relevant information has now been
 # assembled.
+
 turbogrid.quit()
 
 #################################################################################
-# Set up the jinja library with the relevant template and data.
+# Set up Jinja library
+# ~~~~~~~~~~~~~~~~~~~~
+# Set up the Jinja library with the relevant template and data.
+
 environment = Environment(loader=FileSystemLoader(ospath.dirname(__file__)))
 html_template = environment.get_template("report_template.html")
 html_context = {
@@ -109,7 +151,10 @@ html_context = {
 }
 
 #################################################################################
-# Generate the html report.
+# Generate report
+# ~~~~~~~~~~~~~~~
+# Generate the HTML report.
+
 filename = f"tg_report.html"
 content = html_template.render(html_context)
 with open(filename, mode="w", encoding="utf-8") as message:

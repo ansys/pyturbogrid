@@ -34,67 +34,106 @@ PyTurboGrid
    :alt: TurboGrid
    :width: 600 
 
-A Python wrapper for the `Ansys TurboGrid`_ software to generate high-quality turbomachinery meshes.
+PyTurboGrid is a Python wrapper for `Ansys TurboGrid`_, a high-quality turbomachinery
+meshing software app. To run PyTurboGrid, you must have access to a licensed local copy
+of TurboGrid. PyTurboGrid supports Ansys TurboGrid 2023 R2 and later.
+
 
 |intro| 
 
 .. inclusion-marker-do-not-remove
 
-How to install
---------------
+Installation
+------------
+The ``ansys-turbogrid-core`` package supports Python 3.10 on Windows and Linux. Two modes
+of installation are available:
 
-To use PyTurboGrid, the ``ansys-turbogrid-core`` package must be installed from `PyPI`_. This 
-package is supported with Python 3.10 on Windows and Linux.
+- User installation
+- Developer installation
 
-1. In order to install PyTurboGrid, ensure you have the latest version of `pip`_. To update pip, run:
+User installation
+~~~~~~~~~~~~~~~~~
+To use PyTurboGrid, you must install the ``ansys-turbogrid-core`` package from `PyPI`_. 
 
-.. code:: bash
+#. To ensure that you have the latest version of `pip`_, run this command:
 
-    python -m pip install -U pip
+   .. code:: bash
 
-2. Then, you can simply execute:
+       python -m pip install -U pip
 
-.. code:: bash
+#. To install PyTurboGrid, run this command:
 
-    python -m pip install ansys-turbogrid-core
+   .. code:: bash
+
+       python -m pip install ansys-turbogrid-core
 
 
-Installing PyTurboGrid from source code allows you to modify the source and enhance it. Before 
-contributing to the project, please refer to the `PyAnsys Developer's guide`_. You will need to 
-follow these additional steps:
+Developer installation
+~~~~~~~~~~~~~~~~~~~~~~
+A developer installation consists of cloning the ``pyturbogrid`` repository
+and installing the project in editable mode. When you install PyTurboGrid from
+source code, you can modify and enhance the code.
 
-3. Clone the ``pyturbogrid`` repository:
+Overall guidance on contributing to a PyAnsys library appears in the
+`Contributing <https://dev.docs.pyansys.com/how-to/contributing.html>`_ topic
+in the *PyAnsys Developer's Guide*. Ensure that you are thoroughly familiar
+with this `guide <https://dev.docs.pyansys.com/>_` before attempting to
+contribute to PyTurboGrid.
 
-.. code:: bash
+#. Clone the ``pyturbogrid`` repository:
 
-   git clone https://github.com/ansys/pyturbogrid.git
+   .. code:: bash
+
+       git clone https://github.com/ansys/pyturbogrid.git
       
-It is recommended to use a Python virtual environment for the steps below, and whenever you
-run PyTurbogrid from the source code. Please refer to the PyAnsys documentation on 
-`virtual environment`_ for the steps to create and activate a virtual environment. 
 
-Assuming that a suitable Python environment is active, pip has been updated, and the current 
-working directory is the top-level directory of the pyturbogrid repository cloned locally, 
-the following step will install the package from the local repository.
+#. To avoid incompatibilites in requirements when working in multiple
+   Python projects, create and activate a virtual environment. For
+   more information, see `Virtual environments`_ in the *PyAnsys
+   Developer's Guide*.
+
+#. To ensure that you have the latest version of `pip`_, run this command:
+
+   .. code:: bash
+
+       python -m pip install -U pip
+
+#. Assuming that your current working directory is the top-level directory
+   of your locally cloned ``pyturbogrid`` repository, install PyTurboGrid
+   from this local repository in editable mode by running this command:
       
-4. Install the project in editable mode:
-
-.. code:: bash
+   .. code:: bash
    
-   python -m pip install -e . 
+       python -m pip install -e . 
 
 Requirements
 ------------
+You must have a licensed local installation of Ansys TurboGrid 2023 R2 or later.
 
-You must have a licensed local installaton of Ansys TurboGrid. PyTurboGrid supports Ansys 
-TurboGrid Release 2023 R2. The Windows installation of Ansys automatically sets the required 
-environment variable for PyTurboGrid to find the local TurboGrid installation. For example, if
-Ansys Release 2023 R2 is installed in the default directory, the installer automatically 
-sets an environment variable ``AWP_ROOT232`` to point to ``C:\Program Files\ANSYS Inc\v232``.
+The ``AWP_ROOTxxx`` environment variable, where ``xxx`` is the three-digit
+Ansys version, allows PyTurboGrid to find your local TurboGrid installation.
 
-On Linux, the required environment variable is not set automatically and you must set this 
-manually. For example, if Ansys Release 2023 R2 is installed in the default directory, the
-``AWP_ROOT232`` environment variable must be set to ``/usr/ansys_inc/v232``.
+A Windows installation automatically sets this root environment variable.
+For example, if you install Ansys 2023 R2 in the default directory,
+the installer sets the ``AWP_ROOT232`` environment variable to
+``C:\Program Files\ANSYS Inc\v232``.
+
+A Linux installation does not automatically set this root environment
+variable. For example, if you install Ansys 2023 R2 in the default
+directory, you must manually set the ``AWP_ROOT232`` environment
+variable to ``/usr/ansys_inc/v232``.
+
+License and acknowledgments
+---------------------------
+
+PyTurboGrid is licensed under the MIT license.
+
+PyTurboGrid makes no commercial claim over Ansys whatsoever. This library extends the
+functionality of Ansys TurboGrid by adding a Python interface to TurboGrid without
+changing the core behavior or license of the original software. The use of the
+interactive control of PyTurboGrid requires a legally licensed local copy of TurboGrid.
+
+For more information on TurboGrid, see the `Ansys TurboGrid`_ page on the Ansys website.
 
 .. LINKS AND REFERENCES
 .. _Ansys TurboGrid: https://www.ansys.com/products/fluids/ansys-turbogrid
@@ -103,9 +142,9 @@ manually. For example, if Ansys Release 2023 R2 is installed in the default dire
 .. _isort: https://github.com/PyCQA/isort
 .. _pip: https://pypi.org/project/pip/
 .. _pre-commit: https://pre-commit.com/
-.. _PyAnsys Developer's guide: https://dev.docs.pyansys.com/
+.. _PyAnsys Developer's Guide: https://dev.docs.pyansys.com/
 .. _pytest: https://docs.pytest.org/en/stable/
 .. _PyPI: https://pypi.org/
 .. _Sphinx: https://www.sphinx-doc.org/en/master/
 .. _tox: https://tox.wiki/
-.. _virtual environment: https://dev.docs.pyansys.com/how-to/setting-up.html#virtual-environments
+.. _Virtual environments: https://dev.docs.pyansys.com/how-to/setting-up.html#virtual-environments
