@@ -64,7 +64,7 @@ class MeshStatistics:
             If a single variable is specified for the ``variable`` parameter, a
             dictionary of the current mesh statistics values for the selected variable
             is returned. Otherwise, if the default value of ``"ALL"`` is used for the
-            ``variable`` parameter. a dictionary of dictionaries (one per variable) is
+            ``variable`` parameter, a dictionary of dictionaries (one per variable) is
             returned.
         """
         if variable == "ALL":
