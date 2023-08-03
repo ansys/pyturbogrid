@@ -9,10 +9,11 @@ by reading an INF file, and generate a mesh.
 
 """
 #########################################################
-# Model overview:
-# .. image:: ../_static/rotor37_overview.png
-#  :width: 400
-#  :alt: Model overview.
+# Model overview
+# ~~~~~~~~~~~~~~
+# .. image:: _static/rotor37_overview.png
+#    :width: 400
+#    :alt: Model overview.
 #
 #########################################################
 
