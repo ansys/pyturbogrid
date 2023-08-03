@@ -12,7 +12,6 @@ example.
 `Jinja <https://jinja.palletsprojects.com/en/3.1.x/>`_ is used to generate
 this report in HTML format, starting from the ``report_template.html`` file.
 
-.. sphinx_gallery_thumbnail_path = '_static/rotor37_with_histogram.png'
 """
 #########################################################
 # Report for rotor37
@@ -38,6 +37,8 @@ from jinja2 import Environment, FileSystemLoader
 
 from ansys.turbogrid.core.launcher.launcher import get_turbogrid_exe_path, launch_turbogrid
 from ansys.turbogrid.core.mesh_statistics import mesh_statistics
+
+# sphinx_gallery_thumbnail_path = '_static/rotor37_with_histogram.png'
 
 #################################################################################
 # Set up a TurboGrid session

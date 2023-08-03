@@ -7,7 +7,6 @@ Basic mesh generation
 This basic example shows how to launch PyTurboGrid, load a blade model
 by reading an INF file, and generate a mesh.
 
-.. sphinx_gallery_thumbnail_path = '_static/rotor37_overview.png'
 """
 #########################################################
 # Model overview
@@ -29,6 +28,8 @@ import json
 import os.path as ospath
 
 from ansys.turbogrid.core.launcher.launcher import get_turbogrid_exe_path, launch_turbogrid
+
+# sphinx_gallery_thumbnail_path = '_static/rotor37_overview.png'
 
 #################################################################################
 # Launch TurboGrid instance
