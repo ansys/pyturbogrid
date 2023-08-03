@@ -12,14 +12,17 @@ example.
 `Jinja <https://jinja.palletsprojects.com/en/3.1.x/>`_ is used to generate
 this report in HTML format, starting from the ``report_template.html`` file.
 
+.. sphinx_gallery_thumbnail_path = '_static/rotor37_with_histogram.png'
 """
 #########################################################
-# Report for rotor37:
-# .. image:: ../_static/rotor37_with_histogram.png
-#  :width: 400
-#  :alt: Report for rotor37.
+# Report for rotor37
+# ~~~~~~~~~~~~~~~~~~
 #
-#########################################################
+# .. image:: ../_static/rotor37_with_histogram.png
+#    :width: 400
+#    :alt: Report for rotor37.
+#    :align: center
+#
 
 #########################################################
 # Perform required imports

@@ -7,15 +7,17 @@ Basic mesh generation
 This basic example shows how to launch PyTurboGrid, load a blade model
 by reading an INF file, and generate a mesh.
 
+.. sphinx_gallery_thumbnail_path = '_static/rotor37_overview.png'
 """
 #########################################################
 # Model overview
 # ~~~~~~~~~~~~~~
-# .. image:: _static/rotor37_overview.png
+#
+# .. image:: ../_static/rotor37_overview.png
 #    :width: 400
 #    :alt: Model overview.
+#    :align: center
 #
-#########################################################
 
 #################################################################################
 # Perform required imports
