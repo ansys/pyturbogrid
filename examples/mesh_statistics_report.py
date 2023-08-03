@@ -14,12 +14,14 @@ this report in HTML format, starting from the ``report_template.html`` file.
 
 """
 #########################################################
-# Report for rotor37:
-# .. image:: ../_static/rotor37_with_histogram.png
-#  :width: 400
-#  :alt: Report for rotor37.
+# Report for rotor37
+# ~~~~~~~~~~~~~~~~~~
 #
-#########################################################
+# .. image:: ../_static/rotor37_with_histogram.png
+#    :width: 400
+#    :alt: Report for rotor37.
+#    :align: center
+#
 
 #########################################################
 # Perform required imports
@@ -35,6 +37,8 @@ from jinja2 import Environment, FileSystemLoader
 
 from ansys.turbogrid.core.launcher.launcher import get_turbogrid_exe_path, launch_turbogrid
 from ansys.turbogrid.core.mesh_statistics import mesh_statistics
+
+# sphinx_gallery_thumbnail_path = '_static/rotor37_with_histogram.png'
 
 #################################################################################
 # Set up a TurboGrid session

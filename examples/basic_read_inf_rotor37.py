@@ -9,12 +9,14 @@ by reading an INF file, and generate a mesh.
 
 """
 #########################################################
-# Model overview:
-# .. image:: ../_static/rotor37_overview.png
-#  :width: 400
-#  :alt: Model overview.
+# Model overview
+# ~~~~~~~~~~~~~~
 #
-#########################################################
+# .. image:: ../_static/rotor37_overview.png
+#    :width: 400
+#    :alt: Model overview.
+#    :align: center
+#
 
 #################################################################################
 # Perform required imports
@@ -26,6 +28,8 @@ import json
 import os.path as ospath
 
 from ansys.turbogrid.core.launcher.launcher import get_turbogrid_exe_path, launch_turbogrid
+
+# sphinx_gallery_thumbnail_path = '_static/rotor37_overview.png'
 
 #################################################################################
 # Launch TurboGrid instance
