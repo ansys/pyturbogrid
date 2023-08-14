@@ -5,6 +5,7 @@ from enum import Enum
 import os
 from pathlib import Path
 import platform
+from typing import Optional
 
 from ansys.turbogrid.api import pyturbogrid_core
 
@@ -118,7 +119,7 @@ def launch_turbogrid(
     log_level: pyturbogrid_core.PyTurboGrid.TurboGridLogLevel = pyturbogrid_core.PyTurboGrid.TurboGridLogLevel.INFO,
     additional_args_str: str = None,
     additional_kw_args: dict = None,
-    port: int | None = None,
+    port: Optional[int] = None,
     **kwargs,
 ) -> pyturbogrid_core.PyTurboGrid:
     """Launch TurboGrid locally in server mode.
