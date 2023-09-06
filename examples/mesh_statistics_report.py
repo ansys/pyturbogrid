@@ -32,7 +32,7 @@ from collections import OrderedDict
 from datetime import date
 import os.path as ospath
 
-from ansys.turbogrid.api.cfx.ccl_object_db import CCLObjectDB
+from ansys.turbogrid.api.CCL.ccl_object_db import CCLObjectDB
 from jinja2 import Environment, FileSystemLoader
 
 from ansys.turbogrid.core.launcher.launcher import get_turbogrid_exe_path, launch_turbogrid
