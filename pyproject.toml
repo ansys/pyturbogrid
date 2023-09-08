@@ -32,7 +32,7 @@ classifiers = [
 ]
 
 dependencies = [
-    "ansys-turbogrid-api>=0.3.0",
+    "ansys-turbogrid-api>=0.3.dev0",
     "matplotlib>=3.5.1",
     "importlib-metadata>=4.0",
 ]
