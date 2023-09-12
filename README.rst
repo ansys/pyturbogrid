@@ -6,12 +6,12 @@ PyTurboGrid
    :target: https://docs.pyansys.com/
    :alt: PyAnsys
 
-.. |python| image:: https://img.shields.io/pypi/pyversions/pyturbogrid?logo=pypi
-   :target: https://pypi.org/project/pyturbogrid/
+.. |python| image:: https://img.shields.io/pypi/pyversions/ansys-turbogrid-core?logo=pypi
+   :target: https://pypi.org/project/ansys-turbogrid-core/
    :alt: Python
 
-.. |pypi| image:: https://img.shields.io/pypi/v/pyturbogrid.svg?logo=python&logoColor=white
-   :target: https://pypi.org/project/pyturbogrid
+.. |pypi| image:: https://img.shields.io/pypi/v/ansys-turbogrid-core.svg?logo=python&logoColor=white
+   :target: https://pypi.org/project/ansys-turbogrid-core
    :alt: PyPI
 
 .. |codecov| image:: https://codecov.io/gh/ansys/pyturbogrid/branch/main/graph/badge.svg

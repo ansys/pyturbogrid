@@ -1,6 +1,8 @@
 # Copyright (c) 2023 ANSYS, Inc. All rights reserved
 """PyTurboGrid is a Python wrapper for Ansys TurboGrid."""
 
+from ansys.turbogrid.core.launcher.launcher import launch_turbogrid
+
 try:
     import importlib.metadata as importlib_metadata
 except ModuleNotFoundError:  # pragma: no cover
