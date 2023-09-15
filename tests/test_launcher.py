@@ -26,12 +26,13 @@ def test_turbogrid_version():
 def test_turbogrid_exe_paths():
     vars_to_restore = {
         "AWP_ROOT232": os.environ.get("AWP_ROOT232", None),
+        "AWP_ROOT241": os.environ.get("AWP_ROOT241", None),
         "PYTURBOGRID_TURBOGRID_ROOT": os.environ.get("PYTURBOGRID_TURBOGRID_ROOT", None),
     }
 
     try:
-        dummy_version = "23.2"
         os.environ["AWP_ROOT232"] = "/myansys/v232"
+        os.environ["AWP_ROOT241"] = "/myansys2/v241"
 
         latest_path = launcher.get_turbogrid_exe_path()
         version_path = launcher.get_turbogrid_exe_path(product_version="23.2")
@@ -45,22 +46,23 @@ def test_turbogrid_exe_paths():
         else:
             exe_suffix = ""
 
-        assert str(latest_path) == str(Path(r"/myansys/v232/TurboGrid/bin/cfxtg")) + exe_suffix
+        assert str(latest_path) == str(Path(r"/myansys2/v241/TurboGrid/bin/cfxtg")) + exe_suffix
         assert str(version_path) == str(Path(r"/myansys/v232/TurboGrid/bin/cfxtg")) + exe_suffix
         assert str(pyturbogrid_env_path) == str(Path(r"/TGRoot/bin/cfxtg")) + exe_suffix
         assert str(specified_path) == str(Path(r"/MyPath/MyExe.exe"))
 
         del os.environ["AWP_ROOT232"]
+        del os.environ["AWP_ROOT241"]
+
         with pytest.raises(RuntimeError, match="No Ansys version can be found."):
             print(launcher.get_latest_ansys_version())
 
     finally:
         for var, value in vars_to_restore.items():
-            if value:
+            if value is not None:
                 os.environ[var] = value
-            else:
+            elif var in os.environ:
                 del os.environ[var]
-        print("New:" + os.environ["AWP_ROOT232"])
 
 
 def test_launch_turbogrid():
