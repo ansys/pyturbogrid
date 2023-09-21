@@ -26,7 +26,12 @@ this report in HTML format, starting from the ``report_template.html`` file.
 #########################################################
 # Perform required imports
 # ~~~~~~~~~~~~~~~~~~~~~~~~
+# Note: This example requires the jinja2 module to be installed before python is executed::
+#
+#       $ python -m pip install Jinja2
+#
 # Perform the required imports.
+#
 
 from collections import OrderedDict
 from datetime import date
@@ -144,6 +149,19 @@ turbogrid.quit()
 # Set up Jinja library
 # ~~~~~~~~~~~~~~~~~~~~
 # Set up the Jinja library with the relevant template and data.
+#
+# You must have a local (downloaded) copy of the report template
+# ``report_template.html``.
+# This is located in the examples directory of the pyturbogrid source code. If
+# you do not have the pyturbogrid source code available, the template can be
+# downloaded from `report_template.html
+# <https://github.com/ansys/pyturbogrid/blob/main/examples/report_template.html>`_.
+#
+# The python command below assumes that the example is being executed by running
+# the mesh_statistics_report.py script non-interactively and that the
+# ``report_template.html`` file is located in the same directory as the script.
+# Otherwise, ``ospath.dirname(__file__)`` must be replaced with the name of the
+# folder that contains the ``report_template.html`` file.
 
 environment = Environment(loader=FileSystemLoader(ospath.dirname(__file__)))
 html_template = environment.get_template("report_template.html")

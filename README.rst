@@ -45,7 +45,7 @@ of TurboGrid. PyTurboGrid supports Ansys TurboGrid 2023 R2 and later.
 
 Installation
 ------------
-The ``ansys-turbogrid-core`` package supports Python 3.10 on Windows and Linux. Two modes
+The ``ansys-turbogrid-core`` package supports Python 3.8, 3.9, 3.10 and 3.11 on Windows and Linux. Two modes
 of installation are available:
 
 - User installation
@@ -77,7 +77,7 @@ source code, you can modify and enhance the code.
 Overall guidance on contributing to a PyAnsys library appears in the
 `Contributing <https://dev.docs.pyansys.com/how-to/contributing.html>`_ topic
 in the *PyAnsys Developer's Guide*. Ensure that you are thoroughly familiar
-with this `guide <https://dev.docs.pyansys.com/>_` before attempting to
+with this `guide <https://dev.docs.pyansys.com/>`_ before attempting to
 contribute to PyTurboGrid.
 
 #. Clone the ``pyturbogrid`` repository:
