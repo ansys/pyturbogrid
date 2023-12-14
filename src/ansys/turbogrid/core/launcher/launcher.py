@@ -121,6 +121,7 @@ def launch_turbogrid(
     additional_args_str: str = None,
     additional_kw_args: dict = None,
     port: Optional[int] = None,
+    host: str = "127.0.0.1",
     **kwargs,
 ) -> pyturbogrid_core.PyTurboGrid:
     """Launch TurboGrid locally in server mode.
@@ -145,6 +146,8 @@ def launch_turbogrid(
     port : int, default: ``None``
         Port for TurboGrid communications. The default is ``None``, in which case
         an available port is automatically selected.
+    host : str, default: ``127.0.0.1 (this is the local host IP for windows and linux)``
+        host for TurboGrid communications. The default is ``127.0.0.1, or the local host``
 
     Returns
     -------
@@ -163,7 +166,40 @@ def launch_turbogrid(
         socket_port=port,
         turbogrid_location_type=pyturbogrid_core.PyTurboGrid.TurboGridLocationType.TURBOGRID_INSTALL,
         cfxtg_location=pathToCFXTG,
-        log_level=log_level,
         additional_args_str=additional_args_str,
         additional_kw_args=additional_kw_args,
+        log_level=log_level,
+        host_ip=host,
+    )
+
+
+def launch_turbogrid_ansys_labs(
+    product_version: str = "latest",
+    log_level: pyturbogrid_core.PyTurboGrid.TurboGridLogLevel = pyturbogrid_core.PyTurboGrid.TurboGridLogLevel.INFO,
+) -> pyturbogrid_core.PyTurboGrid:
+    """Launch TurboGrid locally in server mode.
+
+    Parameters
+    ----------
+    product_version : str, default: ``latest``
+        Version of TurboGrid to launch in the ansys labs environment. Only certain versions are supported.
+    log_level : pyturbogrid_core.PyTurboGrid.TurboGridLogLevel, default: ``INFO``
+        Level of logging information written to the terminal. The default is ``INFO``.
+        Options are ``INFO``, ``WARNING``, ``ERROR``, ``CRITICAL``, and ``DEBUG``.
+        This setting does not affect the level of output that is written to the log files.
+    Returns
+    -------
+    pyturbogrid_core.PyTurboGrid
+        TurboGrid session.
+    """
+    return pyturbogrid_core.PyTurboGrid(
+        socket_port=0,
+        turbogrid_location_type=pyturbogrid_core.PyTurboGrid.TurboGridLocationType.TURBOGRID_ANSYS_LABS,
+        cfxtg_location="",
+        additional_args_str=None,
+        additional_kw_args=None,
+        log_level=log_level,
+        host_ip="",
+        pim_app_name="turbogrid",
+        pim_app_ver=product_version,
     )
