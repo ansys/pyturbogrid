@@ -138,7 +138,7 @@ def launch_turbogrid(
     log_level : pyturbogrid_core.PyTurboGrid.TurboGridLogLevel, default: ``INFO``
         Level of logging information written to the terminal. The default is ``INFO``.
         Options are ``INFO``, ``WARNING``, ``ERROR``, ``CRITICAL``, and ``DEBUG``.
-        This setting does not affect the level of output that is written to the log files.
+        This setting also affects the level of output that is written to the log files.
     additional_args_str : str, default: ``None``
         Additional arguments to send to TurboGrid.
     additional_kw_args : dict, default: ``None``
@@ -147,7 +147,7 @@ def launch_turbogrid(
         Port for TurboGrid communications. The default is ``None``, in which case
         an available port is automatically selected.
     host : str, default: ``127.0.0.1 (this is the local host IP for windows and linux)``
-        host for TurboGrid communications. The default is ``127.0.0.1, or the local host``
+        host for TurboGrid communications. The default is ``127.0.0.1, or the local Host``
 
     Returns
     -------
@@ -177,16 +177,16 @@ def launch_turbogrid_ansys_labs(
     product_version: str = "latest",
     log_level: pyturbogrid_core.PyTurboGrid.TurboGridLogLevel = pyturbogrid_core.PyTurboGrid.TurboGridLogLevel.INFO,
 ) -> pyturbogrid_core.PyTurboGrid:
-    """Launch TurboGrid locally in server mode.
+    """Launch TurboGrid from within the Ansys Labs environment.
 
     Parameters
     ----------
     product_version : str, default: ``latest``
-        Version of TurboGrid to launch in the ansys labs environment. Only certain versions are supported.
+        Version of TurboGrid to launch in the Ansys Labs environment. Only certain versions are supported.
     log_level : pyturbogrid_core.PyTurboGrid.TurboGridLogLevel, default: ``INFO``
         Level of logging information written to the terminal. The default is ``INFO``.
         Options are ``INFO``, ``WARNING``, ``ERROR``, ``CRITICAL``, and ``DEBUG``.
-        This setting does not affect the level of output that is written to the log files.
+        This setting also affects the level of output that is written to the log files.
     Returns
     -------
     pyturbogrid_core.PyTurboGrid
