@@ -187,6 +187,7 @@ def launch_turbogrid_ansys_labs(
         Level of logging information written to the terminal. The default is ``INFO``.
         Options are ``INFO``, ``WARNING``, ``ERROR``, ``CRITICAL``, and ``DEBUG``.
         This setting also affects the level of output that is written to the log files.
+
     Returns
     -------
     pyturbogrid_core.PyTurboGrid
