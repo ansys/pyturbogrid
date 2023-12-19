@@ -4,7 +4,7 @@ import os
 
 # -- Project information -----------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#project-information
-from ansys_sphinx_theme import ansys_favicon, ansys_logo_black, get_version_match
+from ansys_sphinx_theme import ansys_favicon, pyansys_logo_black, get_version_match
 from sphinx_gallery.sorting import FileNameSortKey
 
 from ansys.turbogrid.core import __version__
@@ -47,7 +47,7 @@ sphinx_gallery_conf = {
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#options-for-html-output
 
 html_theme = "ansys_sphinx_theme"
-html_logo = ansys_logo_black
+html_logo = pyansys_logo_black
 html_favicon = ansys_favicon
 html_context = {
     "github_user": "ansys",
