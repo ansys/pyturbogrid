@@ -12,4 +12,5 @@ and methods in the PyTurboGrid API.
 
    launcher
    mesh_statistics
+   ndf_parser
    pyturbogrid_core

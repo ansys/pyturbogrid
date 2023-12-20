@@ -10,6 +10,8 @@ class NDFParser:
     """
 
     _ndf_file_full_name = ""
+    _tree = None
+        
 
     def __init__(self, ndf_file_full_name: str):
         """
@@ -21,6 +23,8 @@ class NDFParser:
             Name with full path of the NDF file to be parsed.
         """
         self._ndf_file_full_name = ndf_file_full_name
+        self._tree = ET.parse(self._ndf_file_full_name)
+
 
     def get_blade_row_blades(self)-> list:
         """
@@ -30,13 +34,13 @@ class NDFParser:
         -------
         list
             The names of the blade rows and blade in each row return in the form:
-            [["bladerow1",["blade1",]],["bladerow2",["blade2","splitter1",]],...]
+            [["bladerow1",["blade1",]],["bladerow2",["blade2","splitter1",]],...].
+
             If a blade row has no name in the NDF file, a name in the form "bladerowIndex"
             will be assigned where Index is the position of the row in the NDF file among the
-            row starting at position 1.
+            rows starting at position 1.
         """
-        tree = ET.parse(self._ndf_file_full_name)
-        root = tree.getroot()
+        root = self._tree.getroot()
         blade_row_blades = []
         blade_row_names = []
         blade_row_index = 1
