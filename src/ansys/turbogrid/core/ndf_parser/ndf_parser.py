@@ -12,9 +12,29 @@ class NDFParser:
     _ndf_file_full_name = ""
 
     def __init__(self, ndf_file_full_name: str):
+        """
+        Initialize the class using name with full path of an NDF file.
+
+        Parameters
+        ----------
+        ndf_file_full_name : str
+            Name with full path of the NDF file to be parsed.
+        """
         self._ndf_file_full_name = ndf_file_full_name
 
-    def get_blade_row_blades(self):
+    def get_blade_row_blades(self)-> list:
+        """
+        Get the name of the blade rows and blades in each row.
+
+        Returns
+        -------
+        list
+            The names of the blade rows and blade in each row return in the form:
+            [["bladerow1",["blade1",]],["bladerow2",["blade2","splitter1",]],...]
+            If a blade row has no name in the NDF file, a name in the form "bladerowIndex"
+            will be assigned where Index is the position of the row in the NDF file among the
+            row starting at position 1.
+        """
         tree = ET.parse(self._ndf_file_full_name)
         root = tree.getroot()
         blade_row_blades = []
@@ -33,11 +53,7 @@ class NDFParser:
             this_blade_row = [blade_row_name_to_use, []]
             for blade in br.iter("blade-name"):
                 this_blade_row[1].append(blade.text)
-            if len(this_blade_row[1]) != 1:
-                print(
-                    f"Blade row {this_blade_row[0]} with"
-                    f" {len(this_blade_row[1])} blades not supported"
-                )
-                continue
+            for blade in br.iter("splitter-name"):
+                this_blade_row[1].append(blade.text)
             blade_row_blades.append(this_blade_row)
         return blade_row_blades
