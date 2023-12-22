@@ -26,22 +26,22 @@ class NDFParser:
         self._tree = ET.parse(self._ndf_file_full_name)
 
 
-    def get_blade_row_blades(self)-> list:
+    def get_blade_row_blades(self)-> dict:
         """
         Get the name of the blade rows and blades in each row.
 
         Returns
         -------
-        list
+        dict
             The names of the blade rows and blade in each row return in the form:
-            [["bladerow1",["blade1",]],["bladerow2",["blade2","splitter1",]],...].
+            { "bladerow1":["blade1",]], "bladerow2":["blade2","splitter1",]], ...}.
 
             If a blade row has no name in the NDF file, a name in the form "bladerowIndex"
             will be assigned where Index is the position of the row in the NDF file among the
             rows starting at position 1.
         """
         root = self._tree.getroot()
-        blade_row_blades = []
+        blade_row_blades = {}
         blade_row_names = []
         blade_row_index = 1
         for br in root.iter("bladerow"):
@@ -54,10 +54,10 @@ class NDFParser:
             blade_row_index += 1
             if blade_row_name_to_use in blade_row_names:
                 raise Exception(f"{blade_row_name_to_use} name is not unique~")
-            this_blade_row = [blade_row_name_to_use, []]
+            this_blade_row_blades = []
             for blade in br.iter("blade-name"):
-                this_blade_row[1].append(blade.text)
+                this_blade_row_blades.append(blade.text)
             for blade in br.iter("splitter-name"):
-                this_blade_row[1].append(blade.text)
-            blade_row_blades.append(this_blade_row)
+                this_blade_row_blades.append(blade.text)
+            blade_row_blades[blade_row_name_to_use] = this_blade_row_blades
         return blade_row_blades
