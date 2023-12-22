@@ -54,7 +54,7 @@
   </table>
 
   <h2>Mesh Quality Table</h2>
-  <table style="width:100%">
+  <table style="width:50%">
     {% for row in stat_table_rows %}
     <tr>
       {% for item in row %}
@@ -68,7 +68,7 @@
 
   {% for var, file_name in hist_dict.items() %}
   <figure>
-    <img src="{{file_name}}" alt="Mesh Statistics Histogram for {{var}}" style="width:100%">
+    <img src="{{file_name}}" alt="Mesh Statistics Histogram for {{var}}" style="width:30%">
     <figcaption>Figure: Mesh Statistics for {{var}}</figcaption>
   </figure>
   {% endfor %}

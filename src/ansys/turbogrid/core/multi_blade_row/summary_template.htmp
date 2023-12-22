@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <title>TurboGrid Multi Blade Row Summary</title>
+  <style>
+    table,
+    th,
+    td {
+      border: 1px solid
+    }
+
+    tr:first-child td,
+    tr td:first-child {
+      font-weight: bold;
+    }
+
+    td {
+      width: "15%";
+      text-align: center;
+    }
+
+    tr td:first-child {
+      width: "40%";
+      text-align: left;
+    }
+  </style>
+</head>
+
+<body>
+
+  <h1>TurboGrid Multi Blade Row Summary</h1>
+  
+  <p>Case: {{case_name}}</p>
+
+  <h2>Mesh Size summary</h2>
+  <table style="width:50%">
+     <tr>
+      <th>Blade</th>
+      <th>Nodes</th>
+      <th>Elements</th>
+    </tr>
+    {% for blade, count_infos in blade_count_infos.items() %}
+    <tr>
+      <td style="width:50%">{{blade}}</td>
+      <td style="width:25%; text-align:right">{{count_infos['verts']}}</td>
+      <td style="width:25%; text-align:right">{{count_infos['elems']}}</td>
+    </tr>
+    {% endfor %}
+  </table>
+  
+  <h2>Mesh Reports</h2>
+  {% for blade in blades %}
+  <p>
+    <a href="{{blade.split("/")[-1]}}_tg_report.html">{{blade}}</a>
+  </p>
+  {% endfor %}
+  
+  <h2>Case Time Information</h2>
+  {% for key, value in case_time_infos.items() %}
+  <p>{{key}}: {{value}}</p>
+  {% endfor %}
+  
+  <h2>Meshing errors</h2>
+  {% for item in blade_errors %}
+  <p>{{item}}</p>
+  {% endfor %}
+
+  
+</body>
+
+</html>
