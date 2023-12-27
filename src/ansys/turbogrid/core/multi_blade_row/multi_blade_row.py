@@ -49,7 +49,9 @@ class MBR:
     # "Orthogonality Angle", "Skewness"
     report_mesh_quality_measures = ["Edge Length Ratio", "Minimum Face Angle", "Minimum Volume","Orthogonality Angle"]
     #
-    max_file_transfer_attempts = 20        
+    max_file_transfer_attempts = 20    
+    #
+    tg_container_key_file = ""
 
     def __init__(self, 
                  working_dir:str,
@@ -215,7 +217,8 @@ class MBR:
                                  self.report_stats_angle_unit,
                                  self.report_stats_decimal_places,
                                  self.report_mesh_quality_measures,
-                                 self.max_file_transfer_attempts])
+                                 self.max_file_transfer_attempts,
+                                 self.tg_container_key_file])
         start_dt = dt.now()
         with Pool(num_producers) as producers:
             producers.starmap(execute_blade_row_ansys_labs, work_details)
@@ -500,8 +503,7 @@ def execute_blade_row_ansys_labs(ndf_file,
             host=pytg_instance.ftp_ip,
             user="root",
             port=pytg_instance.ftp_port,
-            # connect_kwargs={"key_filename": "/home/jovyan/tg/tg_container_key"},
-            connect_kwargs={"key_filename": container_key_file},            
+            connect_kwargs={"key_filename": container_key_file},
         )
         progress_updates_queue.put([bladerow+"/"+blade,f"IP:{pytg_instance.ftp_ip} port:{pytg_instance.ftp_port}"])
 
