@@ -3,6 +3,7 @@
 
 import math
 import os
+import threading
 from collections import OrderedDict
 from datetime import datetime as dt
 from datetime import timedelta as td
@@ -97,7 +98,7 @@ class MBR:
                                         custom_blade_f_el_offsets:dict = None):
         self._blade_first_element_offsets = self._get_blade_feloffs(assembly_f_el_offset,
                                                                     custom_blade_f_el_offsets)
-        #print(f"blade_first_element_offsets {self._blade_first_element_offsets}")
+        print(f"blade_first_element_offsets {self._blade_first_element_offsets}")
 
     def set_custom_blade_settings(self,
                                   custom_blade_settings):
@@ -145,8 +146,8 @@ class MBR:
         os.chdir(self._results_directory)
         progress_updates_mgr = Manager()
         progress_updates_queue = progress_updates_mgr.Queue()
-        reporter = Process(target=publish_progress_updates, 
-                           args=(progress_updates_queue, num_rows, self._ndf_file_full_path))
+        reporter = threading.Thread(target=publish_progress_updates, 
+                                    args=(progress_updates_queue, num_rows, self._ndf_file_full_path))
         reporter.start()
         work_details = []
         for blade_row in self._blade_rows_to_mesh:
@@ -192,13 +193,14 @@ class MBR:
     def _set_case_directory_and_ndf(self, 
                                     case_directory:str,
                                     ndf_file:str) -> str:
+        if case_directory == "" or ndf_file == "":
+            raise Exception(f"Case directory or NDF file name is empty.")
         if os.path.isabs(case_directory):
             self._case_directory = case_directory
         else:
             self._case_directory = os.path.join(self._working_dir,case_directory)
         if not os.path.isdir(self._case_directory):
-            print(f"Case folder {self._case_directory} does not exists.")
-            exit()
+            raise Exception(f"Case folder {self._case_directory} does not exists.")
 
         self._ndf_file_full_path = os.path.join(self._case_directory,ndf_file)
         print(f"NDF file full path set to: {self._ndf_file_full_path}")
@@ -246,7 +248,6 @@ class MBR:
         blade_row_spanwise_counts = {}
         if len(rotor_blades) == 0:
             for i, blade_row in enumerate(self._blade_rows_to_mesh):
-                blade = blade_row[1][0]
                 if i%2 == 0:
                     #stator
                     blade_row_spanwise_counts[blade_row] = stator_spanwise_count
@@ -255,7 +256,7 @@ class MBR:
                     blade_row_spanwise_counts[blade_row] = rotor_spanwise_count
         else:
             for blade_row in self._blade_rows_to_mesh:
-                blade = blade_row[1][0]
+                blade = self._blade_rows_to_mesh[blade_row][0]
                 if blade in rotor_blades:
                     blade_row_spanwise_counts[blade_row] = rotor_spanwise_count
                 else:
@@ -265,7 +266,7 @@ class MBR:
     def _get_blade_row_settings(self):
         blade_row_settings = {}
         for blade_row in self._blade_rows_to_mesh:
-            blade = blade_row[1][0]
+            blade = self._blade_rows_to_mesh[blade_row][0]
             blade_row_settings[blade_row] = []
             if self._blade_row_gsfs is not None and blade_row in self._blade_row_gsfs:
                 blade_row_settings[blade_row].append(("/MESH DATA",
