@@ -183,6 +183,7 @@ class MBR:
         os.chdir(original_dir)
         
     def execute_in_ansys_labs(self):
+        start_dt = dt.now()
         if self._blade_rows_to_mesh is None:
             self.set_blade_rows_to_mesh([])
         blade_rows_to_mesh = self._blade_rows_to_mesh    
@@ -209,10 +210,16 @@ class MBR:
         reporter = Process(target=publish_progress_updates, 
                            args=(progress_updates_queue, num_rows, self._ndf_file_full_path))
         reporter.start()
+        # tginit_name = self._read_ndf_ansys_labs(self._ndf_file_full_path,  
+        #                                         list(self._blade_rows_to_mesh.keys())[0],
+        #                                         progress_updates_queue,
+        #                                         self.max_file_transfer_attempts,
+        #                                         self.tg_container_key_file)
+        # print("tginit is ",os.path.join(os.getcwd(),tginit_name))
         work_details = []
         for blade_row in blade_rows_to_mesh:        
             blade = blade_rows_to_mesh[blade_row][0]
-            work_details.append([self._ndf_file_full_path, 
+            work_details.append([self._ndf_file_full_path,
                                  blade_row,
                                  blade, 
                                  blade_row_settings[blade_row], 
@@ -222,9 +229,8 @@ class MBR:
                                  self.report_mesh_quality_measures,
                                  self.max_file_transfer_attempts,
                                  self.tg_container_key_file])
-        start_dt = dt.now()
         with Pool(num_producers) as producers:
-            producers.starmap(execute_tginit_blade_row_ansys_labs, work_details)
+            producers.starmap(execute_ndf_blade_row_ansys_labs, work_details)
         producers.close()
         producers.join()
 
@@ -363,7 +369,7 @@ class MBR:
                                     log_level=pyturbogrid_core.PyTurboGrid.TurboGridLogLevel.CRITICAL)
             progress_updates_queue.put([ndf_name,f"pytg_instance created"])
 
-            progress_updates_queue.put([ndf_name,f"read_ndf: {ndf_file}"])
+            progress_updates_queue.put([ndf_name,f"read_ndf:: {ndf_file}"])
             pytg_instance.read_ndf(ndffilename=ndf_file,
                                    cadfilename=ndf_name+".x_b",
                                    bladename=ndf_name)
@@ -420,20 +426,20 @@ class MBR:
             progress_updates_queue.put([ndf_name,f"To container->{local_filepath}"])
             container_connection.put(remote="/",local=local_filepath)
 
-            progress_updates_queue.put([ndf_name,f"read_ndf: {ndf_file}"])
-            pytg_instance.read_ndf(ndffilename="/"+os.path.split(ndf_file)[1],
+            progress_updates_queue.put([ndf_name,f"read_ndf:: {ndf_file}"])
+            pytg_instance.read_ndf(ndffilename=os.path.split(ndf_file)[1],
                                    cadfilename=ndf_name+".x_b",
                                    bladerow=blade_row)
             attempts = 0
             while attempts == 0 or (os.path.isfile(f"{ndf_name}.tginit") is False and attempts <= max_file_transfer_attempts):
-                progress_updates_queue.put(ndf_name,f":Get state attempt {attempts}")
+                progress_updates_queue.put([ndf_name,f"Get tginit attempt {attempts}"])
                 time.sleep(0.5)
                 container_connection.get(remote=f"/{ndf_name}.tginit",
                                          local=f"{ndf_name}.tginit")    
                 attempts += 1
             attempts = 0
             while attempts == 0 or (os.path.isfile(f"{ndf_name}.x_b") is False and attempts <= max_file_transfer_attempts):
-                progress_updates_queue.put(ndf_name,f":Get state attempt {attempts}")
+                progress_updates_queue.put([ndf_name,f"Get x_b attempt {attempts}"])
                 time.sleep(0.5)
                 container_connection.get(remote=f"/{ndf_name}.x_b",
                                          local=f"{ndf_name}.x_b")    
@@ -474,7 +480,7 @@ def execute_ndf_bladerow(ndf_file,
                                      log_level=pyturbogrid_core.PyTurboGrid.TurboGridLogLevel.CRITICAL)
     progress_updates_queue.put([bladerow+"/"+blade,f"pytg_instance created"])
 
-    progress_updates_queue.put([bladerow+"/"+blade,f"read_ndf: {ndf_file}"])
+    progress_updates_queue.put([bladerow+"/"+blade,f"read_ndf:: {ndf_file}"])
     pytg_instance.read_ndf(ndffilename=ndf_file,
                            cadfilename=blade+".x_b",
                            bladename=blade)
@@ -594,7 +600,7 @@ def execute_tginit_bladerow(tginit_file,
                                      log_level=pyturbogrid_core.PyTurboGrid.TurboGridLogLevel.CRITICAL)
     progress_updates_queue.put([blade_row+"/"+blade,f"pytg_instance created"])
 
-    progress_updates_queue.put([blade_row+"/"+blade,f"read_tginit: {tginit_file}"])
+    progress_updates_queue.put([blade_row+"/"+blade,f"read_tginit:: {tginit_file}"])
     pytg_instance.read_tginit(path=tginit_file,
                               bladerow=blade_row)
     
@@ -709,7 +715,7 @@ def execute_ndf_blade_row_ansys_labs(ndf_file,
                                      container_key_file):
     try:         
         start_dt = dt.now()
-        progress_updates_queue.put([bladerow+"/"+blade,f"Starting {blade} producer"])
+        progress_updates_queue.put([bladerow+"/"+blade,f"Starting {bladerow} producer"])
         progress_updates_queue.put([bladerow+"/"+blade,f"Start time: {start_dt}"])   
     
         pytg_instance = pyturbogrid_core.PyTurboGrid(
@@ -739,7 +745,7 @@ def execute_ndf_blade_row_ansys_labs(ndf_file,
         progress_updates_queue.put([bladerow+"/"+blade,f"To container->{local_filepath}"])
         container_connection.put(remote="/",local=local_filepath)
 
-        progress_updates_queue.put([bladerow+"/"+blade,f"read_ndf: {ndf_file}"])
+        progress_updates_queue.put([bladerow+"/"+blade,f"read_ndf:: {ndf_file}"])
         pytg_instance.read_ndf(ndffilename=os.path.split(ndf_file)[1],
                               cadfilename=blade+".x_b",
                               bladename=blade)
@@ -873,7 +879,7 @@ def execute_tginit_blade_row_ansys_labs(tginit_file,
                                         container_key_file):
     try:         
         start_dt = dt.now()
-        progress_updates_queue.put([blade_row+"/"+blade,f"Starting {blade} producer"])
+        progress_updates_queue.put([blade_row+"/"+blade,f"Starting {blade_row} producer"])
         progress_updates_queue.put([blade_row+"/"+blade,f"Start time: {start_dt}"])   
     
         pytg_instance = pyturbogrid_core.PyTurboGrid(
@@ -903,8 +909,8 @@ def execute_tginit_blade_row_ansys_labs(tginit_file,
         progress_updates_queue.put([blade_row+"/"+blade,f"To container->{local_filepath}"])
         container_connection.put(remote="/",local=local_filepath)
 
-        progress_updates_queue.put([blade_row+"/"+blade,f"read_tginit: {tginit_file}"])
-        pytg_instance.read_tginit(path="/"+os.path.split(tginit_file)[1],
+        progress_updates_queue.put([blade_row+"/"+blade,f"read_tginit:: {tginit_file}"])
+        pytg_instance.read_tginit(path=os.path.split(tginit_file)[1],
                                   bladerow=blade_row)
         progress_updates_queue.put([blade_row+"/"+blade,f"unsuspend"])
         pytg_instance.unsuspend(object="/TOPOLOGY SET")
@@ -1044,7 +1050,6 @@ def publish_progress_updates(progress_updates_queue,
         print(": ".join(item))
         if ":" in item[1] and len(item_parts := item[1].split(":")) == 2:
             if item[0] != "User Experience Time" and item_parts[0] != "NDF Reader Duration" and item[0] not in blade_count_infos:
-                print(item_parts[0], " into blade count infos")
                 blade_count_infos[item[0]] = {}
             if item_parts[0] == "Total vertices":
                 blade_count_infos[item[0]]["verts"] = item_parts[1]
