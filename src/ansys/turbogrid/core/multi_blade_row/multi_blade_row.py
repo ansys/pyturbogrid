@@ -473,7 +473,7 @@ def execute_ndf_bladerow(ndf_file,
                          report_stats_decimal_places,
                          report_mesh_quality_measures):
     start_dt = dt.now()
-    progress_updates_queue.put([bladerow+"/"+blade,f"Starting {blade} producer"])
+    progress_updates_queue.put([bladerow+"/"+blade,f"Starting {bladerow} producer"])
     progress_updates_queue.put([bladerow+"/"+blade,f"Start time: {start_dt}"])
 
     pytg_instance = launch_turbogrid(product_version="24.1.0",
@@ -520,7 +520,7 @@ def execute_tginit_bladerow(tginit_file,
                             report_stats_decimal_places,
                             report_mesh_quality_measures):
     start_dt = dt.now()
-    progress_updates_queue.put([blade_row+"/"+blade,f"Starting {blade} producer"])
+    progress_updates_queue.put([blade_row+"/"+blade,f"Starting {blade_row} producer"])
     progress_updates_queue.put([blade_row+"/"+blade,f"Start time: {start_dt}"])
 
     pytg_instance = launch_turbogrid(product_version="24.1.0",
