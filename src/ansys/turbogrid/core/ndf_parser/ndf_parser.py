@@ -11,7 +11,6 @@ class NDFParser:
 
     _ndf_file_full_name = ""
     _tree = None
-        
 
     def __init__(self, ndf_file_full_name: str):
         """
@@ -25,8 +24,7 @@ class NDFParser:
         self._ndf_file_full_name = ndf_file_full_name
         self._tree = ET.parse(self._ndf_file_full_name)
 
-
-    def get_blade_row_blades(self)-> dict:
+    def get_blade_row_blades(self) -> dict:
         """
         Get the name of the blade rows and blades in each row.
 

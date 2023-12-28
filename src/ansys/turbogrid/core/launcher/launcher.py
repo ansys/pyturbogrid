@@ -173,7 +173,7 @@ def launch_turbogrid(
         additional_kw_args=additional_kw_args,
         log_level=log_level,
         host_ip=host,
-        log_filename_suffix=log_filename_suffix
+        log_filename_suffix=log_filename_suffix,
     )
 
 
