@@ -37,7 +37,7 @@ if __name__ == "__main__":
                        case_folder,
                        ndf_file_name)
     mbr_instance.set_spanwise_counts(56, 73)
-    #mbr_instance.set_blade_rows_to_mesh(["segment4mainblade","segment6mainblade"])
-    mbr_instance.set_blade_row_gsfs(1.5)
+    # mbr_instance.set_blade_rows_to_mesh(["segment4mainblade","segment6mainblade"])
+    # mbr_instance.set_blade_row_gsfs(1.5)
     mbr_instance.set_blade_first_element_offsets(6e-6,{"segment4mainblade":1e-5})
     mbr_instance.execute()

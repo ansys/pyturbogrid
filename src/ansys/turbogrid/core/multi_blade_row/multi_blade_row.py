@@ -124,6 +124,7 @@ class MBR:
         self._custom_blade_settings = custom_blade_settings
     
     def execute(self):     
+        start_dt = dt.now()
         if self._blade_rows_to_mesh is None:
             self.set_blade_rows_to_mesh([])
         num_rows = len(self._blade_rows_to_mesh)
@@ -149,10 +150,13 @@ class MBR:
         reporter = threading.Thread(target=publish_progress_updates, 
                                     args=(progress_updates_queue, num_rows, self._ndf_file_full_path))
         reporter.start()
+        tginit_name = self._read_ndf(self._ndf_file_full_path,
+                                     list(self._blade_rows_to_mesh.keys())[0],
+                                     progress_updates_queue)
         work_details = []
         for blade_row in self._blade_rows_to_mesh:
             blade = self._blade_rows_to_mesh[blade_row][0]
-            work_details.append([self._ndf_file_full_path, 
+            work_details.append([os.path.join(os.getcwd(),tginit_name), 
                                  blade_row, 
                                  blade,
                                  blade_row_settings[blade_row], 
@@ -160,9 +164,8 @@ class MBR:
                                  self.report_stats_angle_unit,
                                  self.report_stats_decimal_places,
                                  self.report_mesh_quality_measures])
-        start_dt = dt.now()
         with Pool(num_producers) as producers:
-            producers.starmap(execute_bladerow, work_details)
+            producers.starmap(execute_tginit_bladerow, work_details)
         producers.close()
         producers.join()
 
@@ -221,7 +224,7 @@ class MBR:
                                  self.tg_container_key_file])
         start_dt = dt.now()
         with Pool(num_producers) as producers:
-            producers.starmap(execute_blade_row_ansys_labs, work_details)
+            producers.starmap(execute_tginit_blade_row_ansys_labs, work_details)
         producers.close()
         producers.join()
 
@@ -345,27 +348,133 @@ class MBR:
                 blade_row_settings[blade_row].extend(self._custom_blade_settings[blade])
         return blade_row_settings
 
+    def _read_ndf(self,
+                  ndf_file,
+                  blade_row,
+                  progress_updates_queue):
+        try:         
+            start_dt = dt.now()
+            ndf_name = os.path.split(ndf_file)[1]
+            ndf_name = ndf_name.split(".")[0]            
+            progress_updates_queue.put([ndf_name,f"Starting {ndf_name} ndf reader"])
+            progress_updates_queue.put([ndf_name,f"Start time: {start_dt}"])   
+        
+            pytg_instance = launch_turbogrid(product_version="24.1.0",
+                                    log_level=pyturbogrid_core.PyTurboGrid.TurboGridLogLevel.CRITICAL)
+            progress_updates_queue.put([ndf_name,f"pytg_instance created"])
+
+            progress_updates_queue.put([ndf_name,f"read_ndf: {ndf_file}"])
+            pytg_instance.read_ndf(ndffilename=ndf_file,
+                                   cadfilename=ndf_name+".x_b",
+                                   bladename=ndf_name)
+            pytg_instance.quit()               
+        except Exception as e:
+            progress_updates_queue.put([ndf_name,f"Reader error {e}"])        
+        stop_dt = dt.now()
+        delta_dt = stop_dt - start_dt
+        delta_dt = td(seconds=int(delta_dt/td(seconds=1)))
+        delta_dt_str_parts = str(delta_dt).split(":")
+        progress_updates_queue.put([ndf_name,
+                                    f"Stop time: {stop_dt}"])
+        progress_updates_queue.put([ndf_name,
+                                    f"NDF Reader Duration: {delta_dt_str_parts[0]} hours {delta_dt_str_parts[1]} minutes {delta_dt_str_parts[2]} seconds"])
+        return ndf_name+".tginit"        
+
+    def _read_ndf_ansys_labs(self,
+                             ndf_file,
+                             blade_row,
+                             progress_updates_queue,
+                             max_file_transfer_attempts,
+                             container_key_file):
+        try:         
+            start_dt = dt.now()
+            ndf_name = os.path.split(ndf_file)[1]
+            ndf_name = ndf_name.split(".")[0]            
+            progress_updates_queue.put([ndf_name,f"Starting ndf reader"])
+            progress_updates_queue.put([ndf_name,f"Start time: {start_dt}"])   
+        
+            pytg_instance = pyturbogrid_core.PyTurboGrid(
+                0,
+                pyturbogrid_core.PyTurboGrid.TurboGridLocationType.TURBOGRID_ANSYS_LABS,
+                "",
+                None,
+                None,
+                pyturbogrid_core.PyTurboGrid.TurboGridLogLevel.CRITICAL,
+                "",
+                "turbogrid",
+                "241-ndf",
+                ndf_name
+            )
+            progress_updates_queue.put([ndf_name,f"pytg_instance created"])
+            pytg_instance.block_each_message = True
+            progress_updates_queue.put([ndf_name,f"Connection"])
+            container_connection = Connection(
+                host=pytg_instance.ftp_ip,
+                user="root",
+                port=pytg_instance.ftp_port,
+                connect_kwargs={"key_filename": container_key_file},
+            )
+            progress_updates_queue.put([ndf_name,f"IP:{pytg_instance.ftp_ip} port:{pytg_instance.ftp_port}"])
+
+            local_filepath = ndf_file
+            progress_updates_queue.put([ndf_name,f"To container->{local_filepath}"])
+            container_connection.put(remote="/",local=local_filepath)
+
+            progress_updates_queue.put([ndf_name,f"read_ndf: {ndf_file}"])
+            pytg_instance.read_ndf(ndffilename="/"+os.path.split(ndf_file)[1],
+                                   cadfilename=ndf_name+".x_b",
+                                   bladerow=blade_row)
+            attempts = 0
+            while attempts == 0 or (os.path.isfile(f"{ndf_name}.tginit") is False and attempts <= max_file_transfer_attempts):
+                progress_updates_queue.put(ndf_name,f":Get state attempt {attempts}")
+                time.sleep(0.5)
+                container_connection.get(remote=f"/{ndf_name}.tginit",
+                                         local=f"{ndf_name}.tginit")    
+                attempts += 1
+            attempts = 0
+            while attempts == 0 or (os.path.isfile(f"{ndf_name}.x_b") is False and attempts <= max_file_transfer_attempts):
+                progress_updates_queue.put(ndf_name,f":Get state attempt {attempts}")
+                time.sleep(0.5)
+                container_connection.get(remote=f"/{ndf_name}.x_b",
+                                         local=f"{ndf_name}.x_b")    
+                attempts += 1
+            attempts = 0
+            pytg_instance.quit()   
+            
+        except Exception as e:
+            progress_updates_queue.put([ndf_name,f"Reader error {e}"])
+        
+        stop_dt = dt.now()
+        delta_dt = stop_dt - start_dt
+        delta_dt = td(seconds=int(delta_dt/td(seconds=1)))
+        delta_dt_str_parts = str(delta_dt).split(":")
+        progress_updates_queue.put([ndf_name,
+                                    f"Stop time: {stop_dt}"])
+        progress_updates_queue.put([ndf_name,
+                                    f"NDF Reader Duration: {delta_dt_str_parts[0]} hours {delta_dt_str_parts[1]} minutes {delta_dt_str_parts[2]} seconds"])
+        return ndf_name+".tginit"         
+
 #####################################
 # Global methods in the module
 #####################################
     
-def execute_bladerow(ndf_file,
-                     bladerow,
-                     blade,
-                     settings,
-                     progress_updates_queue,
-                     report_stats_angle_unit,
-                     report_stats_decimal_places,
-                     report_mesh_quality_measures):
+def execute_ndf_bladerow(ndf_file,
+                         bladerow,
+                         blade,
+                         settings,
+                         progress_updates_queue,
+                         report_stats_angle_unit,
+                         report_stats_decimal_places,
+                         report_mesh_quality_measures):
     start_dt = dt.now()
     progress_updates_queue.put([bladerow+"/"+blade,f"Starting {blade} producer"])
     progress_updates_queue.put([bladerow+"/"+blade,f"Start time: {start_dt}"])
 
     pytg_instance = launch_turbogrid(product_version="24.1.0",
-                                log_level=pyturbogrid_core.PyTurboGrid.TurboGridLogLevel.CRITICAL)
+                                     log_level=pyturbogrid_core.PyTurboGrid.TurboGridLogLevel.CRITICAL)
     progress_updates_queue.put([bladerow+"/"+blade,f"pytg_instance created"])
 
-    progress_updates_queue.put([bladerow+"/"+blade,f"read_ndf {ndf_file}"])
+    progress_updates_queue.put([bladerow+"/"+blade,f"read_ndf: {ndf_file}"])
     pytg_instance.read_ndf(ndffilename=ndf_file,
                            cadfilename=blade+".x_b",
                            bladename=blade)
@@ -469,16 +578,135 @@ def execute_bladerow(ndf_file,
     progress_updates_queue.put([bladerow+"/"+blade,
                                 "Done"])
     
-def execute_blade_row_ansys_labs(ndf_file,
-                                 bladerow,
-                                 blade, 
-                                 settings,
-                                 progress_updates_queue,
-                                 report_stats_angle_unit,
-                                 report_stats_decimal_places,
-                                 report_mesh_quality_measures,
-                                 max_file_transfer_attempts,
-                                 container_key_file):
+def execute_tginit_bladerow(tginit_file,
+                            blade_row,
+                            blade,
+                            settings,
+                            progress_updates_queue,
+                            report_stats_angle_unit,
+                            report_stats_decimal_places,
+                            report_mesh_quality_measures):
+    start_dt = dt.now()
+    progress_updates_queue.put([blade_row+"/"+blade,f"Starting {blade} producer"])
+    progress_updates_queue.put([blade_row+"/"+blade,f"Start time: {start_dt}"])
+
+    pytg_instance = launch_turbogrid(product_version="24.1.0",
+                                     log_level=pyturbogrid_core.PyTurboGrid.TurboGridLogLevel.CRITICAL)
+    progress_updates_queue.put([blade_row+"/"+blade,f"pytg_instance created"])
+
+    progress_updates_queue.put([blade_row+"/"+blade,f"read_tginit: {tginit_file}"])
+    pytg_instance.read_tginit(path=tginit_file,
+                              bladerow=blade_row)
+    
+    progress_updates_queue.put([blade_row+"/"+blade,f"unsuspend"])
+    pytg_instance.unsuspend(object="/TOPOLOGY SET")
+    progress_updates_queue.put([blade_row+"/"+blade,f"Applying meshing settings"])        
+    for setting in settings:
+        pytg_instance.set_obj_param(setting[0], setting[1])
+    ALL_DOMAINS = "ALL"    
+    progress_updates_queue.put([blade_row+"/"+blade,f"Getting CCLObjectDB"])  
+    ccl_db = CCLObjectDB(pytg_instance)
+    domain_list = [obj.get_name() for obj in ccl_db.get_objects_by_type("DOMAIN")]
+    domain_list.append(ALL_DOMAINS)
+    case_info = OrderedDict()
+    case_info["Case Name"] = blade
+    case_info["Number of Bladesets"] = ccl_db.get_object_by_path("/GEOMETRY/MACHINE DATA").get_value( "Bladeset Count")
+    case_info["Report Date"] = dt.today()
+    ms = mesh_statistics.MeshStatistics(pytg_instance)
+    domain_count = dict()
+    progress_updates_queue.put([blade_row+"/"+blade,f"Getting mesh statistics"])
+    for domain in domain_list:
+        ms.update_mesh_statistics(domain)
+        domain_count[ms.get_domain_label(domain)] = ms.get_mesh_statistics().copy()
+    ms.update_mesh_statistics(ALL_DOMAINS)
+    all_dom_stats = ms.get_mesh_statistics()
+    stat_table_rows_raw = ms.get_table_rows()
+    stat_table_rows = []
+    convert_to_degree = report_stats_angle_unit.lower()[0:3] == 'deg'
+    for row in stat_table_rows_raw:
+        if len(row) != 5 or row[0] == "Mesh Measure":
+            stat_table_rows.append(row)
+            continue
+        if row[0] not in report_mesh_quality_measures:
+            continue
+        new_row = [row[0]]
+        for i in range(1,5):
+            value_parts = row[i].split()
+            value = float(value_parts[0])
+            if len(value_parts) == 2:
+                if convert_to_degree and 'rad' in value_parts[1]:
+                    value = value*180.0/math.pi
+                    value_parts[1] = '[deg]'
+                if new_row[0] != "Minimum Volume":
+                    value = round(value, report_stats_decimal_places)
+                new_row.append(str(value)+" "+value_parts[1])
+            else:
+                value = round(value, report_stats_decimal_places)
+                new_row.append(str(value))
+        stat_table_rows.append(new_row)
+    hist_var_list = ["Connectivity Number", "Edge Length Ratio", "Element Volume Ratio",
+                    "Maximum Face Angle", "Minimum Face Angle", "Minimum Volume",
+                    "Orthogonality Angle", "Skewness"]
+    hist_var_list = [x for x in hist_var_list if x in report_mesh_quality_measures]
+    hist_dict = dict()
+    progress_updates_queue.put([blade_row+"/"+blade,f"Creating histograms statistics"])
+    for var in hist_var_list:
+        file_name = blade+"_tg_hist_" + var + ".png"
+        var_units = all_dom_stats[var]["Units"]
+        if var_units == "rad":
+            var_units = "deg"
+        ms.create_histogram(variable=var,
+                            use_percentages=True,
+                            bin_units=var_units,
+                            image_file=file_name,
+                            show=False)
+        hist_dict[var] = file_name
+    environment = Environment(loader=FileSystemLoader(os.path.dirname(__file__)))
+    html_template = environment.get_template("report_template.htmp")
+    html_context = {
+        "case_info": case_info,
+        "domain_count": domain_count,
+        "stat_table_rows": stat_table_rows,
+        "hist_dict": hist_dict,
+    }
+    progress_updates_queue.put([blade_row+"/"+blade,f"Writing report"])
+    filename = f"{blade}_tg_report.html"
+    content = html_template.render(html_context)
+    with open(filename, mode="w", encoding="utf-8") as message:
+        message.write(content)
+
+    progress_updates_queue.put([blade_row+"/"+blade,
+                                f"Completed {blade} producer"])
+    progress_updates_queue.put([blade_row+"/"+blade,
+                                f"Total vertices: {domain_count[ms.get_domain_label(ALL_DOMAINS)]['Vertices']['Count']}"])
+    progress_updates_queue.put([blade_row+"/"+blade,
+                                f"Total elements: {domain_count[ms.get_domain_label(ALL_DOMAINS)]['Elements']['Count']}"])
+    if domain_count[ms.get_domain_label(ALL_DOMAINS)]['Minimum Volume']['Minimum'] < 0:
+        progress_updates_queue.put([blade_row+"/"+blade,f"ERROR: Negative volume elements"])
+    pytg_instance.save_state(filename=blade+".tst")
+    pytg_instance.save_mesh(filename=blade+".def")
+    pytg_instance.quit()
+    stop_dt = dt.now()
+    delta_dt = stop_dt - start_dt
+    delta_dt = td(seconds=int(delta_dt/td(seconds=1)))
+    delta_dt_str_parts = str(delta_dt).split(":")
+    progress_updates_queue.put([blade_row+"/"+blade,
+                                f"Stop time: {stop_dt}"])
+    progress_updates_queue.put([blade_row+"/"+blade,
+                                f"Duration: {delta_dt_str_parts[0]} hours {delta_dt_str_parts[1]} minutes {delta_dt_str_parts[2]} seconds"])
+    progress_updates_queue.put([blade_row+"/"+blade,
+                                "Done"])
+    
+def execute_ndf_blade_row_ansys_labs(ndf_file,
+                                     bladerow,
+                                     blade, 
+                                     settings,
+                                     progress_updates_queue,
+                                     report_stats_angle_unit,
+                                     report_stats_decimal_places,
+                                     report_mesh_quality_measures,
+                                     max_file_transfer_attempts,
+                                     container_key_file):
     try:         
         start_dt = dt.now()
         progress_updates_queue.put([bladerow+"/"+blade,f"Starting {blade} producer"])
@@ -511,7 +739,7 @@ def execute_blade_row_ansys_labs(ndf_file,
         progress_updates_queue.put([bladerow+"/"+blade,f"To container->{local_filepath}"])
         container_connection.put(remote="/",local=local_filepath)
 
-        progress_updates_queue.put([bladerow+"/"+blade,f"read_ndf {ndf_file}"])
+        progress_updates_queue.put([bladerow+"/"+blade,f"read_ndf: {ndf_file}"])
         pytg_instance.read_ndf(ndffilename=os.path.split(ndf_file)[1],
                               cadfilename=blade+".x_b",
                               bladename=blade)
@@ -633,6 +861,169 @@ def execute_blade_row_ansys_labs(ndf_file,
     progress_updates_queue.put([bladerow+"/"+blade,
                "Done"])
 
+def execute_tginit_blade_row_ansys_labs(tginit_file,
+                                        blade_row,
+                                        blade, 
+                                        settings,
+                                        progress_updates_queue,
+                                        report_stats_angle_unit,
+                                        report_stats_decimal_places,
+                                        report_mesh_quality_measures,
+                                        max_file_transfer_attempts,
+                                        container_key_file):
+    try:         
+        start_dt = dt.now()
+        progress_updates_queue.put([blade_row+"/"+blade,f"Starting {blade} producer"])
+        progress_updates_queue.put([blade_row+"/"+blade,f"Start time: {start_dt}"])   
+    
+        pytg_instance = pyturbogrid_core.PyTurboGrid(
+            0,
+            pyturbogrid_core.PyTurboGrid.TurboGridLocationType.TURBOGRID_ANSYS_LABS,
+            "",
+            None,
+            None,
+            pyturbogrid_core.PyTurboGrid.TurboGridLogLevel.CRITICAL,
+            "",
+            "turbogrid",
+            "241-ndf",
+            blade
+        )
+        progress_updates_queue.put([blade_row+"/"+blade,f"pytg_instance created"])
+        pytg_instance.block_each_message = True
+        progress_updates_queue.put([blade_row+"/"+blade,f"Connection"])
+        container_connection = Connection(
+            host=pytg_instance.ftp_ip,
+            user="root",
+            port=pytg_instance.ftp_port,
+            connect_kwargs={"key_filename": container_key_file},
+        )
+        progress_updates_queue.put([blade_row+"/"+blade,f"IP:{pytg_instance.ftp_ip} port:{pytg_instance.ftp_port}"])
+
+        local_filepath = tginit_file
+        progress_updates_queue.put([blade_row+"/"+blade,f"To container->{local_filepath}"])
+        container_connection.put(remote="/",local=local_filepath)
+
+        progress_updates_queue.put([blade_row+"/"+blade,f"read_tginit: {tginit_file}"])
+        pytg_instance.read_tginit(path="/"+os.path.split(tginit_file)[1],
+                                  bladerow=blade_row)
+        progress_updates_queue.put([blade_row+"/"+blade,f"unsuspend"])
+        pytg_instance.unsuspend(object="/TOPOLOGY SET")
+        progress_updates_queue.put([blade_row+"/"+blade,f"Applying meshing settings"])  
+        for setting in settings:
+            pytg_instance.set_obj_param(setting[0], setting[1])
+        ALL_DOMAINS = "ALL"
+        progress_updates_queue.put([blade_row+"/"+blade,f"Getting CCLObjectDB"])  
+        ccl_db = CCLObjectDB(pytg_instance)
+        domain_list = [obj.get_name() for obj in ccl_db.get_objects_by_type("DOMAIN")]
+        domain_list.append(ALL_DOMAINS)
+        case_info = OrderedDict()
+        case_info["Case Name"] = blade
+        case_info["Number of Bladesets"] = ccl_db.get_object_by_path("/GEOMETRY/MACHINE DATA").get_value( "Bladeset Count")
+        case_info["Report Date"] = dt.today()
+        ms = mesh_statistics.MeshStatistics(pytg_instance)
+        domain_count = dict()
+        progress_updates_queue.put([blade_row+"/"+blade,f"Getting mesh statistics"])
+        for domain in domain_list:
+            ms.update_mesh_statistics(domain)
+            domain_count[ms.get_domain_label(domain)] = ms.get_mesh_statistics().copy()
+        ms.update_mesh_statistics(ALL_DOMAINS)
+        all_dom_stats = ms.get_mesh_statistics()
+        stat_table_rows_raw = ms.get_table_rows()
+        stat_table_rows = []
+        convert_to_degree = report_stats_angle_unit.lower()[0:3] == 'deg'
+        for row in stat_table_rows_raw:
+            if len(row) != 5 or row[0] == "Mesh Measure":
+                stat_table_rows.append(row)
+                continue
+            if row[0] not in report_mesh_quality_measures:
+                continue
+            new_row = [row[0]]
+            for i in range(1,5):
+                value_parts = row[i].split()
+                value = float(value_parts[0])
+                if len(value_parts) == 2:
+                    if convert_to_degree and 'rad' in value_parts[1]:
+                        value = value*180.0/math.pi
+                        value_parts[1] = '[deg]'
+                    if new_row[0] != "Minimum Volume":
+                        value = round(value, report_stats_decimal_places)
+                    new_row.append(str(value)+" "+value_parts[1])
+                else:
+                    value = round(value, report_stats_decimal_places)
+                    new_row.append(str(value))
+            stat_table_rows.append(new_row)
+        hist_var_list = ["Connectivity Number", "Edge Length Ratio", "Element Volume Ratio",
+                         "Maximum Face Angle", "Minimum Face Angle", "Minimum Volume",
+                         "Orthogonality Angle", "Skewness"]
+        hist_var_list = [x for x in hist_var_list if x in report_mesh_quality_measures]
+        hist_dict = dict()
+        progress_updates_queue.put([blade_row+"/"+blade,f"Creating histograms statistics"])
+        for var in hist_var_list:
+            file_name = blade+"_tg_hist_" + var + ".png"
+            var_units = all_dom_stats[var]["Units"]
+            if var_units == "rad":
+                var_units = "deg"
+            ms.create_histogram(variable=var,
+                                use_percentages=True,
+                                bin_units=var_units,
+                                image_file=file_name,
+                                show=False)
+            hist_dict[var] = file_name
+        environment = Environment(loader=FileSystemLoader(os.path.dirname(__file__)))
+        html_template = environment.get_template("report_template.htmp")
+        html_context = {
+            "case_info": case_info,
+            "domain_count": domain_count,
+            "stat_table_rows": stat_table_rows,
+            "hist_dict": hist_dict,
+        }
+        progress_updates_queue.put([blade_row+"/"+blade,f"Writing report"])
+        filename = f"{blade}_tg_report.html"
+        content = html_template.render(html_context)
+        with open(filename, mode="w", encoding="utf-8") as message:
+            message.write(content)
+
+        progress_updates_queue.put([blade_row+"/"+blade,
+                   f"Completed {blade} producer"])
+        progress_updates_queue.put([blade_row+"/"+blade,
+                   f"Total vertices: {domain_count[ms.get_domain_label(ALL_DOMAINS)]['Vertices']['Count']}"])
+        progress_updates_queue.put([blade_row+"/"+blade,
+                   f"Total elements: {domain_count[ms.get_domain_label(ALL_DOMAINS)]['Elements']['Count']}"])
+        if domain_count[ms.get_domain_label(ALL_DOMAINS)]['Minimum Volume']['Minimum'] < 0:
+            progress_updates_queue.put([blade_row+"/"+blade,f"ERROR: Negative volume elements"])
+
+        pytg_instance.save_state(filename=blade+".tst")
+        pytg_instance.save_mesh(filename=blade+".def")
+        attempts = 0
+        while attempts == 0 or (os.path.isfile(f"{blade}.tst") is False and attempts <= max_file_transfer_attempts):
+            print(blade,":Get state attempt", attempts)
+            time.sleep(0.5)
+            container_connection.get(remote=f"/{blade}.tst",
+                                     local=f"{blade}.tst")    
+            attempts += 1
+        attempts = 0
+        while attempts == 0 or (os.path.isfile(f"{blade}.def") is False and attempts <= max_file_transfer_attempts):
+            print(blade,":Get def attempt", attempts)
+            time.sleep(0.5)
+            container_connection.get(remote=f"/{blade}.def",
+                                     local=f"{blade}.def")  
+            attempts += 1
+        pytg_instance.quit()   
+        
+    except Exception as e:
+        progress_updates_queue.put([blade,f"Producer Error {e}"])
+    
+    stop_dt = dt.now()
+    delta_dt = stop_dt - start_dt
+    delta_dt = td(seconds=int(delta_dt/td(seconds=1)))
+    delta_dt_str_parts = str(delta_dt).split(":")
+    progress_updates_queue.put([blade_row+"/"+blade,
+               f"Stop time: {stop_dt}"])
+    progress_updates_queue.put([blade_row+"/"+blade,
+               f"Duration: {delta_dt_str_parts[0]} hours {delta_dt_str_parts[1]} minutes {delta_dt_str_parts[2]} seconds"])
+    progress_updates_queue.put([blade_row+"/"+blade,
+               "Done"])
+
 def publish_progress_updates(progress_updates_queue, 
                              num_prods, 
                              ndf_file_name):
@@ -652,7 +1043,8 @@ def publish_progress_updates(progress_updates_queue,
             num_prods_done += 1
         print(": ".join(item))
         if ":" in item[1] and len(item_parts := item[1].split(":")) == 2:
-            if item[0] not in blade_count_infos and item[0] != "User Experience Time":
+            if item[0] != "User Experience Time" and item_parts[0] != "NDF Reader Duration" and item[0] not in blade_count_infos:
+                print(item_parts[0], " into blade count infos")
                 blade_count_infos[item[0]] = {}
             if item_parts[0] == "Total vertices":
                 blade_count_infos[item[0]]["verts"] = item_parts[1]
