@@ -28,10 +28,10 @@ if __name__ == "__main__":
     working_directory = os.getcwd()
 
     # Set location for the NDF file
-    case_folder = r""
+    case_folder = r"E:\AnsysDev\pyAnsys\S947493_concepts_nrec\turb_axial_4stage_geom"
 
     # Set name of the NDF file
-    ndf_file_name = ""
+    ndf_file_name = "turb_axial_4stage_geom.ndf"
 
     # Create MBR instance, set up meshing settings and execute
     mbr_instance = MBR(working_directory, case_folder, ndf_file_name)
