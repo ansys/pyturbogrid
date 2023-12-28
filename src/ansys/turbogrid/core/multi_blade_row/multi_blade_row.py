@@ -279,14 +279,12 @@ class MBR:
         print("Stop time: ", stop_dt)
         delta_dt = stop_dt - start_dt
         delta_dt = td(seconds=int(delta_dt / td(seconds=1)))
-        delta_dt_str_parts = str(delta_dt).split(":")
-        print(
-            f"Duration: {delta_dt_str_parts[0]} hours {delta_dt_str_parts[1]} minutes {delta_dt_str_parts[2]} seconds"
-        )
+        deldt_parts = str(delta_dt).split(":")
+        print(f"Duration: {deldt_parts[0]} hours {deldt_parts[1]} minutes {deldt_parts[2]} seconds")
         progress_updates_queue.put(
             [
                 "User Experience Time",
-                f"Duration: {delta_dt_str_parts[0]} hours {delta_dt_str_parts[1]} minutes {delta_dt_str_parts[2]} seconds",
+                f"Duration: {deldt_parts[0]} hours {deldt_parts[1]} minutes {deldt_parts[2]} seconds",
             ]
         )
         progress_updates_queue.put(["Main", "Done"])
@@ -394,14 +392,12 @@ class MBR:
         print("Stop time: ", stop_dt)
         delta_dt = stop_dt - start_dt
         delta_dt = td(seconds=int(delta_dt / td(seconds=1)))
-        delta_dt_str_parts = str(delta_dt).split(":")
-        print(
-            f"Duration: {delta_dt_str_parts[0]} hours {delta_dt_str_parts[1]} minutes {delta_dt_str_parts[2]} seconds"
-        )
+        deldt_parts = str(delta_dt).split(":")
+        print(f"Duration: {deldt_parts[0]} hours {deldt_parts[1]} minutes {deldt_parts[2]} seconds")
         progress_updates_queue.put(
             [
                 "User Experience Time",
-                f"Duration: {delta_dt_str_parts[0]} hours {delta_dt_str_parts[1]} minutes {delta_dt_str_parts[2]} seconds",
+                f"Duration: {deldt_parts[0]} hours {deldt_parts[1]} minutes {deldt_parts[2]} seconds",
             ]
         )
         progress_updates_queue.put(["Main", "Done"])
@@ -553,12 +549,12 @@ class MBR:
         stop_dt = dt.now()
         delta_dt = stop_dt - start_dt
         delta_dt = td(seconds=int(delta_dt / td(seconds=1)))
-        delta_dt_str_parts = str(delta_dt).split(":")
+        deldt_parts = str(delta_dt).split(":")
         progress_updates_queue.put([ndf_name, f"Stop time: {stop_dt}"])
         progress_updates_queue.put(
             [
                 ndf_name,
-                f"NDF Reader Duration: {delta_dt_str_parts[0]} hours {delta_dt_str_parts[1]} minutes {delta_dt_str_parts[2]} seconds",
+                f"NDF Reader Duration: {deldt_parts[0]} hours {deldt_parts[1]} minutes {deldt_parts[2]} seconds",
             ]
         )
         return ndf_name + ".tginit"
@@ -613,12 +609,12 @@ def execute_ndf_bladerow(
     stop_dt = dt.now()
     delta_dt = stop_dt - start_dt
     delta_dt = td(seconds=int(delta_dt / td(seconds=1)))
-    delta_dt_str_parts = str(delta_dt).split(":")
+    deldt_parts = str(delta_dt).split(":")
     progress_updates_queue.put([bladerow + "/" + blade, f"Stop time: {stop_dt}"])
     progress_updates_queue.put(
         [
             bladerow + "/" + blade,
-            f"Duration: {delta_dt_str_parts[0]} hours {delta_dt_str_parts[1]} minutes {delta_dt_str_parts[2]} seconds",
+            f"Duration: {deldt_parts[0]} hours {deldt_parts[1]} minutes {deldt_parts[2]} seconds",
         ]
     )
     progress_updates_queue.put([bladerow + "/" + blade, "Done"])
@@ -668,12 +664,12 @@ def execute_tginit_bladerow(
     stop_dt = dt.now()
     delta_dt = stop_dt - start_dt
     delta_dt = td(seconds=int(delta_dt / td(seconds=1)))
-    delta_dt_str_parts = str(delta_dt).split(":")
+    deldt_parts = str(delta_dt).split(":")
     progress_updates_queue.put([blade_row + "/" + blade, f"Stop time: {stop_dt}"])
     progress_updates_queue.put(
         [
             blade_row + "/" + blade,
-            f"Duration: {delta_dt_str_parts[0]} hours {delta_dt_str_parts[1]} minutes {delta_dt_str_parts[2]} seconds",
+            f"Duration: {deldt_parts[0]} hours {deldt_parts[1]} minutes {deldt_parts[2]} seconds",
         ]
     )
     progress_updates_queue.put([blade_row + "/" + blade, "Done"])
@@ -769,12 +765,12 @@ def execute_ndf_blade_row_ansys_labs(
     stop_dt = dt.now()
     delta_dt = stop_dt - start_dt
     delta_dt = td(seconds=int(delta_dt / td(seconds=1)))
-    delta_dt_str_parts = str(delta_dt).split(":")
+    deldt_parts = str(delta_dt).split(":")
     progress_updates_queue.put([bladerow + "/" + blade, f"Stop time: {stop_dt}"])
     progress_updates_queue.put(
         [
             bladerow + "/" + blade,
-            f"Duration: {delta_dt_str_parts[0]} hours {delta_dt_str_parts[1]} minutes {delta_dt_str_parts[2]} seconds",
+            f"Duration: {deldt_parts[0]} hours {deldt_parts[1]} minutes {deldt_parts[2]} seconds",
         ]
     )
     progress_updates_queue.put([bladerow + "/" + blade, "Done"])
@@ -855,12 +851,12 @@ def read_ndf_ansys_labs(
     stop_dt = dt.now()
     delta_dt = stop_dt - start_dt
     delta_dt = td(seconds=int(delta_dt / td(seconds=1)))
-    delta_dt_str_parts = str(delta_dt).split(":")
+    deldt_parts = str(delta_dt).split(":")
     progress_updates_queue.put([ndf_name, f"Stop time: {stop_dt}"])
     progress_updates_queue.put(
         [
             ndf_name,
-            f"NDF Reader Duration: {delta_dt_str_parts[0]} hours {delta_dt_str_parts[1]} minutes {delta_dt_str_parts[2]} seconds",
+            f"NDF Reader Duration: {deldt_parts[0]} hours {deldt_parts[1]} minutes {deldt_parts[2]} seconds",
         ]
     )
     tgint_file_list.append(ndf_name + ".tginit")
@@ -956,12 +952,12 @@ def execute_tginit_blade_row_ansys_labs(
     stop_dt = dt.now()
     delta_dt = stop_dt - start_dt
     delta_dt = td(seconds=int(delta_dt / td(seconds=1)))
-    delta_dt_str_parts = str(delta_dt).split(":")
+    deldt_parts = str(delta_dt).split(":")
     progress_updates_queue.put([blade_row + "/" + blade, f"Stop time: {stop_dt}"])
     progress_updates_queue.put(
         [
             blade_row + "/" + blade,
-            f"Duration: {delta_dt_str_parts[0]} hours {delta_dt_str_parts[1]} minutes {delta_dt_str_parts[2]} seconds",
+            f"Duration: {deldt_parts[0]} hours {deldt_parts[1]} minutes {deldt_parts[2]} seconds",
         ]
     )
     progress_updates_queue.put([blade_row + "/" + blade, "Done"])
@@ -1046,7 +1042,7 @@ def write_mesh_report(
         )
         hist_dict[var] = file_name
     environment = Environment(loader=FileSystemLoader(os.path.dirname(__file__)))
-    html_template = environment.get_template("report_template.htmp")
+    html_template = environment.get_template("report_template.html")
     html_context = {
         "case_info": case_info,
         "domain_count": domain_count,
@@ -1118,7 +1114,7 @@ def publish_progress_updates(progress_updates_queue, num_prods, ndf_file_name):
     if len(blade_errors) == 0:
         blade_errors.append(f"No errors reported.")
     environment = Environment(loader=FileSystemLoader(os.path.dirname(__file__)))
-    html_template = environment.get_template("summary_template.htmp")
+    html_template = environment.get_template("summary_template.html")
     html_context = {
         "case_name": ndf_file_name,
         "case_time_infos": blade_time_infos,
