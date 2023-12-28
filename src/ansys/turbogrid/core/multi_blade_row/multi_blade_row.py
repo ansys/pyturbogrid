@@ -1,5 +1,5 @@
 # Copyright (c) 2023 ANSYS, Inc. All rights reserved
-"""Module for working on a multi blade-row turoomachinery case using PyTurboGrid instances in parallel."""
+"""Module for working on a multi blade-row turbomachinery case using PyTurboGrid instances in parallel."""
 
 import math
 import os
@@ -20,7 +20,7 @@ from jinja2 import Environment, FileSystemLoader
 
 class MBR:
     """
-    Facilitates working on a multi blade-row turoomachinery case using PyTurboGrid instances in parallel.
+    Facilitates working on a multi blade-row turbomachinery case using PyTurboGrid instances in parallel.
     """
 
     _working_dir:str = None
@@ -36,21 +36,25 @@ class MBR:
     _blade_first_element_offsets:dict = None
     _custom_blade_settings:dict = None
     
-    #
+    #: Number of decimal places to be used for values in the meshing reports 
     report_stats_decimal_places = 3
-    #
+    
+    #: The unit to be used for the angles in the meshign reports. 
+    #: Use "rad" for angles in radian. "deg" for angles in degrees.
     report_stats_angle_unit = "deg"
-    # use "rad" for angles in radian. "deg" for angles in degrees.
-    #
-    # List of the quality measures to be reported for each blade row
-    # Permitted entries are:
-    # "Connectivity Number", "Edge Length Ratio", "Element Volume Ratio",
-    # "Maximum Face Angle", "Minimum Face Angle", "Minimum Volume",
-    # "Orthogonality Angle", "Skewness"
+    
+    #: List of the quality measures to be reported for each blade row
+    #: Permitted entries are:
+    #: "Connectivity Number", "Edge Length Ratio", "Element Volume Ratio",
+    #: "Maximum Face Angle", "Minimum Face Angle", "Minimum Volume",
+    #: "Orthogonality Angle", "Skewness"
     report_mesh_quality_measures = ["Edge Length Ratio", "Minimum Face Angle", "Minimum Volume","Orthogonality Angle"]
-    #
+    
+    #: When working in Ansys Labs, the number of retry to be made for file transfer from 
+    #: container to the local folder.
     max_file_transfer_attempts = 20    
-    #
+    
+    #: When working in Ansys Labs, the name of the file containing the container key with full path.
     tg_container_key_file = ""
 
     def __init__(self, 
@@ -72,7 +76,15 @@ class MBR:
         self.set_blade_rows_to_mesh([])
     
     def set_blade_rows_to_mesh(self,
-                               blades_to_mesh:list[str]):
+                               blades_to_mesh:list):
+        """
+        Set the blade rows to be meshed.
+
+        Parameters
+        ----------
+        blades_to_mesh:list
+            Names of the main blade from each blade row to be meshed in a list.
+        """
         all_blade_rows = self._ndf_parser.get_blade_row_blades()
         blade_row_names_to_mesh = [x for x in all_blade_rows if (len(blades_to_mesh) == 0 or all_blade_rows[x][0] in blades_to_mesh)]
         self._blade_rows_to_mesh = {}
@@ -83,7 +95,15 @@ class MBR:
         #    print(f"Blade row {blade_row} blades: {self._blade_rows_to_mesh[blade_row]}")
 
     def set_multi_process_count(self, 
-                                multi_process_count):
+                                multi_process_count:int):
+        """
+        Set number of process to be used in parallel for meshing the selected blade rows.
+
+        Parameters
+        ----------
+        multi_process_count:int
+            The number of processes to be used in parallel.
+        """
         num_rows_to_process = len(self._blade_rows_to_mesh)
         if num_rows_to_process == 0:
             self._multi_process_count = 0
@@ -100,30 +120,74 @@ class MBR:
 
     def set_blade_row_gsfs(self,
                            assembly_gsf:float):
+        """
+        Set the global size factor to be used for all the blade rows.
+
+        Parameters
+        ----------
+        assembly_gsf:float
+            The Global Size Factor to be used for each blade row. 
+            If not called the default size factor of 1 will be used.
+        """
         self._blade_row_gsfs = self._get_blade_row_gsfs(assembly_gsf)
         # print(f"blade_row_gsfs {self._blade_row_gsfs}")
         
     def set_spanwise_counts(self,
                             stator_spanwise_count:int,
                             rotor_spanwise_count:int,
-                            rotor_blade_rows:list = []):
+                            rotor_blade_rows_blades:list = []):
+        """
+        Set the spanwise count of mesh elements for the different blade rows.
+
+        Parameters
+        ----------
+        stator_spanwise_count:int
+            The element count in the spanwise direction for stator blade rows.
+        rotor_spanwise_count:int
+            The element count in the spanwise direction for rotor blade rows.
+        rotor_blade_rows:list, default: []
+            List of main blade from each rotor blade row. If not provided,
+            All even numbered rows will be taken as rotor with row numbering starting at 1.
+        """
         self._blade_row_spanwise_counts = self._get_blade_row_spanwise_counts(stator_spanwise_count,
                                                                               rotor_spanwise_count,
-                                                                              rotor_blade_rows)        
-        # print(f"blade_row_spanwise_counts {self._blade_row_spanwise_counts}")
+                                                                              rotor_blade_rows_blades)        
         
     def set_blade_first_element_offsets(self,
                                         assembly_f_el_offset:float,
                                         custom_blade_f_el_offsets:dict = None):
+        """
+        Set the boundary layer first element offset for the blades.
+
+        Parameters
+        ----------
+        assembly_f_el_offset:float
+            The first element offset to be applied to all blade row blades.
+        custom_blade_f_el_offsets:dict, default: None
+            Custom first element offset for particular blades given in the form of a
+            dictionary: {'bladename':offset,...}
+        """
         self._blade_first_element_offsets = self._get_blade_feloffs(assembly_f_el_offset,
                                                                     custom_blade_f_el_offsets)
         # print(f"blade_first_element_offsets {self._blade_first_element_offsets}")
 
     def set_custom_blade_settings(self,
-                                  custom_blade_settings):
+                                  custom_blade_settings:dict):
+        """
+        Set the boundary layer first element offset for the blades.
+
+        Parameters
+        ----------
+        custom_blade_settings:dict
+            Special settings for particular blades in a dictionary in the form:
+            { blade_name: [("Full CCL Object Path","Param Name=Value"),...], ... }
+        """
         self._custom_blade_settings = custom_blade_settings
     
-    def execute(self):     
+    def execute(self):   
+        """
+        Execute the multi blade-row meshing process.
+        """
         start_dt = dt.now()
         if self._blade_rows_to_mesh is None:
             self.set_blade_rows_to_mesh([])
@@ -183,6 +247,9 @@ class MBR:
         os.chdir(original_dir)
         
     def execute_in_ansys_labs(self):
+        """
+        Execute the multi blade-row meshing process on Ansys Labs.
+        """
         start_dt = dt.now()
         if self._blade_rows_to_mesh is None:
             self.set_blade_rows_to_mesh([])
