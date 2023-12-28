@@ -34,6 +34,7 @@ class MBR:
     _multi_process_count:int = 0
     _blade_row_gsfs:dict = None
     _blade_first_element_offsets:dict = None
+    _blade_row_spanwise_counts:dict = None
     _custom_blade_settings:dict = None
     
     #: Number of decimal places to be used for values in the meshing reports 
@@ -50,6 +51,10 @@ class MBR:
     #: "Orthogonality Angle", "Skewness"
     report_mesh_quality_measures = ["Edge Length Ratio", "Minimum Face Angle", "Minimum Volume","Orthogonality Angle"]
     
+    #: Set True to write tginit first before processing blade rows in parallel by reading the tginit
+    #: instead of reading ndf in parallel and writing separate tginit for each blade row
+    write_tginit_first=False
+
     #: When working in Ansys Labs, the number of retry to be made for file transfer from 
     #: container to the local folder.
     max_file_transfer_attempts = 20    
@@ -214,24 +219,41 @@ class MBR:
         reporter = threading.Thread(target=publish_progress_updates, 
                                     args=(progress_updates_queue, num_rows, self._ndf_file_full_path))
         reporter.start()
-        tginit_name = self._read_ndf(self._ndf_file_full_path,
-                                     list(self._blade_rows_to_mesh.keys())[0],
-                                     progress_updates_queue)
-        work_details = []
-        for blade_row in self._blade_rows_to_mesh:
-            blade = self._blade_rows_to_mesh[blade_row][0]
-            work_details.append([os.path.join(os.getcwd(),tginit_name), 
-                                 blade_row, 
-                                 blade,
-                                 blade_row_settings[blade_row], 
-                                 progress_updates_queue,
-                                 self.report_stats_angle_unit,
-                                 self.report_stats_decimal_places,
-                                 self.report_mesh_quality_measures])
-        with Pool(num_producers) as producers:
-            producers.starmap(execute_tginit_bladerow, work_details)
-        producers.close()
-        producers.join()
+        if self.write_tginit_first:
+            tginit_name = self._read_ndf(self._ndf_file_full_path,
+                                        list(self._blade_rows_to_mesh.keys())[0],
+                                        progress_updates_queue)
+            work_details = []
+            for blade_row in self._blade_rows_to_mesh:
+                blade = self._blade_rows_to_mesh[blade_row][0]
+                work_details.append([os.path.join(os.getcwd(),tginit_name), 
+                                    blade_row, 
+                                    blade,
+                                    blade_row_settings[blade_row], 
+                                    progress_updates_queue,
+                                    self.report_stats_angle_unit,
+                                    self.report_stats_decimal_places,
+                                    self.report_mesh_quality_measures])
+            with Pool(num_producers) as producers:
+                producers.starmap(execute_tginit_bladerow, work_details)
+            producers.close()
+            producers.join()
+        else:
+            work_details = []
+            for blade_row in self._blade_rows_to_mesh:
+                blade = self._blade_rows_to_mesh[blade_row][0]
+                work_details.append([self._ndf_file_full_path,
+                                    blade_row, 
+                                    blade,
+                                    blade_row_settings[blade_row], 
+                                    progress_updates_queue,
+                                    self.report_stats_angle_unit,
+                                    self.report_stats_decimal_places,
+                                    self.report_mesh_quality_measures])
+            with Pool(num_producers) as producers:
+                producers.starmap(execute_ndf_bladerow, work_details)
+            producers.close()
+            producers.join()            
 
         stop_dt = dt.now()
         print("Start time: ", start_dt)
@@ -277,29 +299,56 @@ class MBR:
         reporter = Process(target=publish_progress_updates, 
                            args=(progress_updates_queue, num_rows, self._ndf_file_full_path))
         reporter.start()
-        # tginit_name = self._read_ndf_ansys_labs(self._ndf_file_full_path,  
-        #                                         list(self._blade_rows_to_mesh.keys())[0],
-        #                                         progress_updates_queue,
-        #                                         self.max_file_transfer_attempts,
-        #                                         self.tg_container_key_file)
-        # print("tginit is ",os.path.join(os.getcwd(),tginit_name))
-        work_details = []
-        for blade_row in blade_rows_to_mesh:        
-            blade = blade_rows_to_mesh[blade_row][0]
-            work_details.append([self._ndf_file_full_path,
-                                 blade_row,
-                                 blade, 
-                                 blade_row_settings[blade_row], 
-                                 progress_updates_queue,
-                                 self.report_stats_angle_unit,
-                                 self.report_stats_decimal_places,
-                                 self.report_mesh_quality_measures,
-                                 self.max_file_transfer_attempts,
-                                 self.tg_container_key_file])
-        with Pool(num_producers) as producers:
-            producers.starmap(execute_ndf_blade_row_ansys_labs, work_details)
-        producers.close()
-        producers.join()
+        if self.write_tginit_first:
+            tginit_name_list = progress_updates_mgr.list()
+            ndf_reader_proc = Process(target=read_ndf_ansys_labs,
+                                      args=(self._ndf_file_full_path, 
+                                                   list(self._blade_rows_to_mesh.keys())[0],
+                                                   progress_updates_queue,
+                                                   self.max_file_transfer_attempts,
+                                                   self.tg_container_key_file,
+                                                   tginit_name_list))
+            ndf_reader_proc.start()
+            ndf_reader_proc.join()
+            if len(tginit_name_list) == 0:
+                raise Exception("tginit not written")
+            tginit_name = tginit_name_list[0]
+            print("tginit is ",os.path.join(os.getcwd(),tginit_name))
+            work_details = []
+            for blade_row in blade_rows_to_mesh:        
+                blade = blade_rows_to_mesh[blade_row][0]
+                work_details.append([os.path.join(os.getcwd(),tginit_name),
+                                    blade_row,
+                                    blade, 
+                                    blade_row_settings[blade_row], 
+                                    progress_updates_queue,
+                                    self.report_stats_angle_unit,
+                                    self.report_stats_decimal_places,
+                                    self.report_mesh_quality_measures,
+                                    self.max_file_transfer_attempts,
+                                    self.tg_container_key_file])
+            with Pool(num_producers) as producers:
+                producers.starmap(execute_tginit_blade_row_ansys_labs, work_details)
+            producers.close()
+            producers.join()
+        else:
+            work_details = []
+            for blade_row in blade_rows_to_mesh:        
+                blade = blade_rows_to_mesh[blade_row][0]
+                work_details.append([self._ndf_file_full_path,
+                                    blade_row,
+                                    blade, 
+                                    blade_row_settings[blade_row], 
+                                    progress_updates_queue,
+                                    self.report_stats_angle_unit,
+                                    self.report_stats_decimal_places,
+                                    self.report_mesh_quality_measures,
+                                    self.max_file_transfer_attempts,
+                                    self.tg_container_key_file])
+            with Pool(num_producers) as producers:
+                producers.starmap(execute_ndf_blade_row_ansys_labs, work_details)
+            producers.close()
+            producers.join()
 
         stop_dt = dt.now()
         print("Start time: ", start_dt)
@@ -453,81 +502,7 @@ class MBR:
         progress_updates_queue.put([ndf_name,
                                     f"NDF Reader Duration: {delta_dt_str_parts[0]} hours {delta_dt_str_parts[1]} minutes {delta_dt_str_parts[2]} seconds"])
         return ndf_name+".tginit"        
-
-    def _read_ndf_ansys_labs(self,
-                             ndf_file,
-                             blade_row,
-                             progress_updates_queue,
-                             max_file_transfer_attempts,
-                             container_key_file):
-        try:         
-            start_dt = dt.now()
-            ndf_name = os.path.split(ndf_file)[1]
-            ndf_name = ndf_name.split(".")[0]            
-            progress_updates_queue.put([ndf_name,f"Starting ndf reader"])
-            progress_updates_queue.put([ndf_name,f"Start time: {start_dt}"])   
-        
-            pytg_instance = pyturbogrid_core.PyTurboGrid(
-                0,
-                pyturbogrid_core.PyTurboGrid.TurboGridLocationType.TURBOGRID_ANSYS_LABS,
-                "",
-                None,
-                None,
-                pyturbogrid_core.PyTurboGrid.TurboGridLogLevel.CRITICAL,
-                "",
-                "turbogrid",
-                "241-ndf",
-                "_"+ndf_name
-            )
-            progress_updates_queue.put([ndf_name,f"pytg_instance created"])
-            pytg_instance.block_each_message = True
-            progress_updates_queue.put([ndf_name,f"Connection"])
-            container_connection = Connection(
-                host=pytg_instance.ftp_ip,
-                user="root",
-                port=pytg_instance.ftp_port,
-                connect_kwargs={"key_filename": container_key_file},
-            )
-            progress_updates_queue.put([ndf_name,f"IP:{pytg_instance.ftp_ip} port:{pytg_instance.ftp_port}"])
-
-            local_filepath = ndf_file
-            progress_updates_queue.put([ndf_name,f"To container->{local_filepath}"])
-            container_connection.put(remote="/",local=local_filepath)
-
-            progress_updates_queue.put([ndf_name,f"read_ndf:: {ndf_file}"])
-            pytg_instance.read_ndf(ndffilename=os.path.split(ndf_file)[1],
-                                   cadfilename=ndf_name+".x_b",
-                                   bladerow=blade_row)
-            attempts = 0
-            while attempts == 0 or (os.path.isfile(f"{ndf_name}.tginit") is False and attempts <= max_file_transfer_attempts):
-                progress_updates_queue.put([ndf_name,f"Get tginit attempt {attempts}"])
-                time.sleep(0.5)
-                container_connection.get(remote=f"/{ndf_name}.tginit",
-                                         local=f"{ndf_name}.tginit")    
-                attempts += 1
-            attempts = 0
-            while attempts == 0 or (os.path.isfile(f"{ndf_name}.x_b") is False and attempts <= max_file_transfer_attempts):
-                progress_updates_queue.put([ndf_name,f"Get x_b attempt {attempts}"])
-                time.sleep(0.5)
-                container_connection.get(remote=f"/{ndf_name}.x_b",
-                                         local=f"{ndf_name}.x_b")    
-                attempts += 1
-            attempts = 0
-            pytg_instance.quit()   
-            
-        except Exception as e:
-            progress_updates_queue.put([ndf_name,f"Reader error {e}"])
-        
-        stop_dt = dt.now()
-        delta_dt = stop_dt - start_dt
-        delta_dt = td(seconds=int(delta_dt/td(seconds=1)))
-        delta_dt_str_parts = str(delta_dt).split(":")
-        progress_updates_queue.put([ndf_name,
-                                    f"Stop time: {stop_dt}"])
-        progress_updates_queue.put([ndf_name,
-                                    f"NDF Reader Duration: {delta_dt_str_parts[0]} hours {delta_dt_str_parts[1]} minutes {delta_dt_str_parts[2]} seconds"])
-        return ndf_name+".tginit"         
-
+     
 #####################################
 # Global methods in the module
 #####################################
@@ -717,6 +692,80 @@ def execute_ndf_blade_row_ansys_labs(ndf_file,
     progress_updates_queue.put([bladerow+"/"+blade,
                "Done"])
 
+def read_ndf_ansys_labs(ndf_file,
+                        blade_row,
+                        progress_updates_queue,
+                        max_file_transfer_attempts,
+                        container_key_file,
+                        tgint_file_list):
+    try:         
+        start_dt = dt.now()
+        ndf_name = os.path.split(ndf_file)[1]
+        ndf_name = ndf_name.split(".")[0]            
+        progress_updates_queue.put([ndf_name,f"Starting ndf reader"])
+        progress_updates_queue.put([ndf_name,f"Start time: {start_dt}"])   
+    
+        pytg_instance = pyturbogrid_core.PyTurboGrid(
+            0,
+            pyturbogrid_core.PyTurboGrid.TurboGridLocationType.TURBOGRID_ANSYS_LABS,
+            "",
+            None,
+            None,
+            pyturbogrid_core.PyTurboGrid.TurboGridLogLevel.CRITICAL,
+            "",
+            "turbogrid",
+            "241-ndf",
+            "_"+ndf_name
+        )
+        progress_updates_queue.put([ndf_name,f"pytg_instance created"])
+        pytg_instance.block_each_message = True
+        progress_updates_queue.put([ndf_name,f"Connection"])
+        container_connection = Connection(
+            host=pytg_instance.ftp_ip,
+            user="root",
+            port=pytg_instance.ftp_port,
+            connect_kwargs={"key_filename": container_key_file},
+        )
+        progress_updates_queue.put([ndf_name,f"IP:{pytg_instance.ftp_ip} port:{pytg_instance.ftp_port}"])
+
+        local_filepath = ndf_file
+        progress_updates_queue.put([ndf_name,f"To container->{local_filepath}"])
+        container_connection.put(remote="/",local=local_filepath)
+
+        progress_updates_queue.put([ndf_name,f"read_ndf:: {ndf_file}"])
+        pytg_instance.read_ndf(ndffilename=os.path.split(ndf_file)[1],
+                                cadfilename=ndf_name+".x_b",
+                                bladerow=blade_row)
+        attempts = 0
+        while attempts == 0 or (os.path.isfile(f"{ndf_name}.tginit") is False and attempts <= max_file_transfer_attempts):
+            progress_updates_queue.put([ndf_name,f"Get tginit attempt {attempts}"])
+            time.sleep(0.5)
+            container_connection.get(remote=f"/{ndf_name}.tginit",
+                                        local=f"{ndf_name}.tginit")    
+            attempts += 1
+        attempts = 0
+        while attempts == 0 or (os.path.isfile(f"{ndf_name}.x_b") is False and attempts <= max_file_transfer_attempts):
+            progress_updates_queue.put([ndf_name,f"Get x_b attempt {attempts}"])
+            time.sleep(0.5)
+            container_connection.get(remote=f"/{ndf_name}.x_b",
+                                        local=f"{ndf_name}.x_b")    
+            attempts += 1
+        attempts = 0
+        pytg_instance.quit()   
+        
+    except Exception as e:
+        progress_updates_queue.put([ndf_name,f"Reader error {e}"])
+    
+    stop_dt = dt.now()
+    delta_dt = stop_dt - start_dt
+    delta_dt = td(seconds=int(delta_dt/td(seconds=1)))
+    delta_dt_str_parts = str(delta_dt).split(":")
+    progress_updates_queue.put([ndf_name,
+                                f"Stop time: {stop_dt}"])
+    progress_updates_queue.put([ndf_name,
+                                f"NDF Reader Duration: {delta_dt_str_parts[0]} hours {delta_dt_str_parts[1]} minutes {delta_dt_str_parts[2]} seconds"])
+    tgint_file_list.append(ndf_name+".tginit")
+
 def execute_tginit_blade_row_ansys_labs(tginit_file,
                                         blade_row,
                                         blade, 
@@ -758,7 +807,9 @@ def execute_tginit_blade_row_ansys_labs(tginit_file,
         local_filepath = tginit_file
         progress_updates_queue.put([blade_row+"/"+blade,f"To container->{local_filepath}"])
         container_connection.put(remote="/",local=local_filepath)
-
+        local_filepath = tginit_file[:-7]+".x_b"
+        progress_updates_queue.put([blade_row+"/"+blade,f"To container->{local_filepath}"])
+        container_connection.put(remote="/",local=local_filepath)
         progress_updates_queue.put([blade_row+"/"+blade,f"read_tginit:: {tginit_file}"])
         pytg_instance.read_tginit(path=os.path.split(tginit_file)[1],
                                   bladerow=blade_row)
