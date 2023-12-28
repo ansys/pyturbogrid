@@ -689,14 +689,14 @@ def execute_ndf_blade_row_ansys_labs(ndf_file,
         pytg_instance.save_mesh(filename=blade+".def")
         attempts = 0
         while attempts == 0 or (os.path.isfile(f"{blade}.tst") is False and attempts <= max_file_transfer_attempts):
-            print(blade,":Get state attempt", attempts)
+            progress_updates_queue.put([bladerow+"/"+blade,f"Get state attempt {attempts}"])
             time.sleep(0.5)
             container_connection.get(remote=f"/{blade}.tst",
                                      local=f"{blade}.tst")    
             attempts += 1
         attempts = 0
         while attempts == 0 or (os.path.isfile(f"{blade}.def") is False and attempts <= max_file_transfer_attempts):
-            print(blade,":Get def attempt", attempts)
+            progress_updates_queue.put([bladerow+"/"+blade,f"Get def attempt {attempts}"])
             time.sleep(0.5)
             container_connection.get(remote=f"/{blade}.def",
                                      local=f"{blade}.def")  
@@ -778,14 +778,14 @@ def execute_tginit_blade_row_ansys_labs(tginit_file,
         pytg_instance.save_mesh(filename=blade+".def")
         attempts = 0
         while attempts == 0 or (os.path.isfile(f"{blade}.tst") is False and attempts <= max_file_transfer_attempts):
-            print(blade,":Get state attempt", attempts)
+            progress_updates_queue.put([blade_row+"/"+blade,f"Get state attempt {attempts}"])
             time.sleep(0.5)
             container_connection.get(remote=f"/{blade}.tst",
                                      local=f"{blade}.tst")    
             attempts += 1
         attempts = 0
         while attempts == 0 or (os.path.isfile(f"{blade}.def") is False and attempts <= max_file_transfer_attempts):
-            print(blade,":Get def attempt", attempts)
+            progress_updates_queue.put([blade_row+"/"+blade,f"Get def attempt {attempts}"])
             time.sleep(0.5)
             container_connection.get(remote=f"/{blade}.def",
                                      local=f"{blade}.def")  
