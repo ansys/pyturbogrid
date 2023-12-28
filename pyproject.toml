@@ -35,8 +35,8 @@ dependencies = [
     "ansys-turbogrid-api>=0.4.dev1",
     "matplotlib>=3.5.1",
     "importlib-metadata>=4.0",
-    "fabric>=3.2.2"
-    "Jinja2>=3.1.2"
+    "fabric>=3.2.2",
+    "Jinja2>=3.1.2",
 ]
 
 [project.optional-dependencies]
