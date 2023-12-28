@@ -490,86 +490,13 @@ def execute_ndf_bladerow(ndf_file,
     progress_updates_queue.put([bladerow+"/"+blade,f"Applying meshing settings"])        
     for setting in settings:
         pytg_instance.set_obj_param(setting[0], setting[1])
-    ALL_DOMAINS = "ALL"    
-    progress_updates_queue.put([bladerow+"/"+blade,f"Getting CCLObjectDB"])  
-    ccl_db = CCLObjectDB(pytg_instance)
-    domain_list = [obj.get_name() for obj in ccl_db.get_objects_by_type("DOMAIN")]
-    domain_list.append(ALL_DOMAINS)
-    case_info = OrderedDict()
-    case_info["Case Name"] = blade
-    case_info["Number of Bladesets"] = ccl_db.get_object_by_path("/GEOMETRY/MACHINE DATA").get_value( "Bladeset Count")
-    case_info["Report Date"] = dt.today()
-    ms = mesh_statistics.MeshStatistics(pytg_instance)
-    domain_count = dict()
-    progress_updates_queue.put([bladerow+"/"+blade,f"Getting mesh statistics"])
-    for domain in domain_list:
-        ms.update_mesh_statistics(domain)
-        domain_count[ms.get_domain_label(domain)] = ms.get_mesh_statistics().copy()
-    ms.update_mesh_statistics(ALL_DOMAINS)
-    all_dom_stats = ms.get_mesh_statistics()
-    stat_table_rows_raw = ms.get_table_rows()
-    stat_table_rows = []
-    convert_to_degree = report_stats_angle_unit.lower()[0:3] == 'deg'
-    for row in stat_table_rows_raw:
-        if len(row) != 5 or row[0] == "Mesh Measure":
-            stat_table_rows.append(row)
-            continue
-        if row[0] not in report_mesh_quality_measures:
-            continue
-        new_row = [row[0]]
-        for i in range(1,5):
-            value_parts = row[i].split()
-            value = float(value_parts[0])
-            if len(value_parts) == 2:
-                if convert_to_degree and 'rad' in value_parts[1]:
-                    value = value*180.0/math.pi
-                    value_parts[1] = '[deg]'
-                if new_row[0] != "Minimum Volume":
-                    value = round(value, report_stats_decimal_places)
-                new_row.append(str(value)+" "+value_parts[1])
-            else:
-                value = round(value, report_stats_decimal_places)
-                new_row.append(str(value))
-        stat_table_rows.append(new_row)
-    hist_var_list = ["Connectivity Number", "Edge Length Ratio", "Element Volume Ratio",
-                    "Maximum Face Angle", "Minimum Face Angle", "Minimum Volume",
-                    "Orthogonality Angle", "Skewness"]
-    hist_var_list = [x for x in hist_var_list if x in report_mesh_quality_measures]
-    hist_dict = dict()
-    progress_updates_queue.put([bladerow+"/"+blade,f"Creating histograms statistics"])
-    for var in hist_var_list:
-        file_name = blade+"_tg_hist_" + var + ".png"
-        var_units = all_dom_stats[var]["Units"]
-        if var_units == "rad":
-            var_units = "deg"
-        ms.create_histogram(variable=var,
-                            use_percentages=True,
-                            bin_units=var_units,
-                            image_file=file_name,
-                            show=False)
-        hist_dict[var] = file_name
-    environment = Environment(loader=FileSystemLoader(os.path.dirname(__file__)))
-    html_template = environment.get_template("report_template.htmp")
-    html_context = {
-        "case_info": case_info,
-        "domain_count": domain_count,
-        "stat_table_rows": stat_table_rows,
-        "hist_dict": hist_dict,
-    }
-    progress_updates_queue.put([bladerow+"/"+blade,f"Writing report"])
-    filename = f"{blade}_tg_report.html"
-    content = html_template.render(html_context)
-    with open(filename, mode="w", encoding="utf-8") as message:
-        message.write(content)
-
-    progress_updates_queue.put([bladerow+"/"+blade,
-                                f"Completed {blade} producer"])
-    progress_updates_queue.put([bladerow+"/"+blade,
-                                f"Total vertices: {domain_count[ms.get_domain_label(ALL_DOMAINS)]['Vertices']['Count']}"])
-    progress_updates_queue.put([bladerow+"/"+blade,
-                                f"Total elements: {domain_count[ms.get_domain_label(ALL_DOMAINS)]['Elements']['Count']}"])
-    if domain_count[ms.get_domain_label(ALL_DOMAINS)]['Minimum Volume']['Minimum'] < 0:
-        progress_updates_queue.put([bladerow+"/"+blade,f"ERROR: Negative volume elements"])
+    write_mesh_report(bladerow,
+                      blade,
+                      pytg_instance,
+                      progress_updates_queue,
+                      report_stats_angle_unit,
+                      report_mesh_quality_measures,
+                      report_stats_decimal_places)
     pytg_instance.save_state(filename=blade+".tst")
     pytg_instance.save_mesh(filename=blade+".def")
     pytg_instance.quit()
@@ -609,86 +536,13 @@ def execute_tginit_bladerow(tginit_file,
     progress_updates_queue.put([blade_row+"/"+blade,f"Applying meshing settings"])        
     for setting in settings:
         pytg_instance.set_obj_param(setting[0], setting[1])
-    ALL_DOMAINS = "ALL"    
-    progress_updates_queue.put([blade_row+"/"+blade,f"Getting CCLObjectDB"])  
-    ccl_db = CCLObjectDB(pytg_instance)
-    domain_list = [obj.get_name() for obj in ccl_db.get_objects_by_type("DOMAIN")]
-    domain_list.append(ALL_DOMAINS)
-    case_info = OrderedDict()
-    case_info["Case Name"] = blade
-    case_info["Number of Bladesets"] = ccl_db.get_object_by_path("/GEOMETRY/MACHINE DATA").get_value( "Bladeset Count")
-    case_info["Report Date"] = dt.today()
-    ms = mesh_statistics.MeshStatistics(pytg_instance)
-    domain_count = dict()
-    progress_updates_queue.put([blade_row+"/"+blade,f"Getting mesh statistics"])
-    for domain in domain_list:
-        ms.update_mesh_statistics(domain)
-        domain_count[ms.get_domain_label(domain)] = ms.get_mesh_statistics().copy()
-    ms.update_mesh_statistics(ALL_DOMAINS)
-    all_dom_stats = ms.get_mesh_statistics()
-    stat_table_rows_raw = ms.get_table_rows()
-    stat_table_rows = []
-    convert_to_degree = report_stats_angle_unit.lower()[0:3] == 'deg'
-    for row in stat_table_rows_raw:
-        if len(row) != 5 or row[0] == "Mesh Measure":
-            stat_table_rows.append(row)
-            continue
-        if row[0] not in report_mesh_quality_measures:
-            continue
-        new_row = [row[0]]
-        for i in range(1,5):
-            value_parts = row[i].split()
-            value = float(value_parts[0])
-            if len(value_parts) == 2:
-                if convert_to_degree and 'rad' in value_parts[1]:
-                    value = value*180.0/math.pi
-                    value_parts[1] = '[deg]'
-                if new_row[0] != "Minimum Volume":
-                    value = round(value, report_stats_decimal_places)
-                new_row.append(str(value)+" "+value_parts[1])
-            else:
-                value = round(value, report_stats_decimal_places)
-                new_row.append(str(value))
-        stat_table_rows.append(new_row)
-    hist_var_list = ["Connectivity Number", "Edge Length Ratio", "Element Volume Ratio",
-                    "Maximum Face Angle", "Minimum Face Angle", "Minimum Volume",
-                    "Orthogonality Angle", "Skewness"]
-    hist_var_list = [x for x in hist_var_list if x in report_mesh_quality_measures]
-    hist_dict = dict()
-    progress_updates_queue.put([blade_row+"/"+blade,f"Creating histograms statistics"])
-    for var in hist_var_list:
-        file_name = blade+"_tg_hist_" + var + ".png"
-        var_units = all_dom_stats[var]["Units"]
-        if var_units == "rad":
-            var_units = "deg"
-        ms.create_histogram(variable=var,
-                            use_percentages=True,
-                            bin_units=var_units,
-                            image_file=file_name,
-                            show=False)
-        hist_dict[var] = file_name
-    environment = Environment(loader=FileSystemLoader(os.path.dirname(__file__)))
-    html_template = environment.get_template("report_template.htmp")
-    html_context = {
-        "case_info": case_info,
-        "domain_count": domain_count,
-        "stat_table_rows": stat_table_rows,
-        "hist_dict": hist_dict,
-    }
-    progress_updates_queue.put([blade_row+"/"+blade,f"Writing report"])
-    filename = f"{blade}_tg_report.html"
-    content = html_template.render(html_context)
-    with open(filename, mode="w", encoding="utf-8") as message:
-        message.write(content)
-
-    progress_updates_queue.put([blade_row+"/"+blade,
-                                f"Completed {blade} producer"])
-    progress_updates_queue.put([blade_row+"/"+blade,
-                                f"Total vertices: {domain_count[ms.get_domain_label(ALL_DOMAINS)]['Vertices']['Count']}"])
-    progress_updates_queue.put([blade_row+"/"+blade,
-                                f"Total elements: {domain_count[ms.get_domain_label(ALL_DOMAINS)]['Elements']['Count']}"])
-    if domain_count[ms.get_domain_label(ALL_DOMAINS)]['Minimum Volume']['Minimum'] < 0:
-        progress_updates_queue.put([blade_row+"/"+blade,f"ERROR: Negative volume elements"])
+    write_mesh_report(blade_row,
+                      blade,
+                      pytg_instance,
+                      progress_updates_queue,
+                      report_stats_angle_unit,
+                      report_mesh_quality_measures,
+                      report_stats_decimal_places)
     pytg_instance.save_state(filename=blade+".tst")
     pytg_instance.save_mesh(filename=blade+".def")
     pytg_instance.quit()
@@ -754,87 +608,13 @@ def execute_ndf_blade_row_ansys_labs(ndf_file,
         progress_updates_queue.put([bladerow+"/"+blade,f"Applying meshing settings"])  
         for setting in settings:
             pytg_instance.set_obj_param(setting[0], setting[1])
-        ALL_DOMAINS = "ALL"
-        progress_updates_queue.put([bladerow+"/"+blade,f"Getting CCLObjectDB"])  
-        ccl_db = CCLObjectDB(pytg_instance)
-        domain_list = [obj.get_name() for obj in ccl_db.get_objects_by_type("DOMAIN")]
-        domain_list.append(ALL_DOMAINS)
-        case_info = OrderedDict()
-        case_info["Case Name"] = blade
-        case_info["Number of Bladesets"] = ccl_db.get_object_by_path("/GEOMETRY/MACHINE DATA").get_value( "Bladeset Count")
-        case_info["Report Date"] = dt.today()
-        ms = mesh_statistics.MeshStatistics(pytg_instance)
-        domain_count = dict()
-        progress_updates_queue.put([bladerow+"/"+blade,f"Getting mesh statistics"])
-        for domain in domain_list:
-            ms.update_mesh_statistics(domain)
-            domain_count[ms.get_domain_label(domain)] = ms.get_mesh_statistics().copy()
-        ms.update_mesh_statistics(ALL_DOMAINS)
-        all_dom_stats = ms.get_mesh_statistics()
-        stat_table_rows_raw = ms.get_table_rows()
-        stat_table_rows = []
-        convert_to_degree = report_stats_angle_unit.lower()[0:3] == 'deg'
-        for row in stat_table_rows_raw:
-            if len(row) != 5 or row[0] == "Mesh Measure":
-                stat_table_rows.append(row)
-                continue
-            if row[0] not in report_mesh_quality_measures:
-                continue
-            new_row = [row[0]]
-            for i in range(1,5):
-                value_parts = row[i].split()
-                value = float(value_parts[0])
-                if len(value_parts) == 2:
-                    if convert_to_degree and 'rad' in value_parts[1]:
-                        value = value*180.0/math.pi
-                        value_parts[1] = '[deg]'
-                    if new_row[0] != "Minimum Volume":
-                        value = round(value, report_stats_decimal_places)
-                    new_row.append(str(value)+" "+value_parts[1])
-                else:
-                    value = round(value, report_stats_decimal_places)
-                    new_row.append(str(value))
-            stat_table_rows.append(new_row)
-        hist_var_list = ["Connectivity Number", "Edge Length Ratio", "Element Volume Ratio",
-                         "Maximum Face Angle", "Minimum Face Angle", "Minimum Volume",
-                         "Orthogonality Angle", "Skewness"]
-        hist_var_list = [x for x in hist_var_list if x in report_mesh_quality_measures]
-        hist_dict = dict()
-        progress_updates_queue.put([bladerow+"/"+blade,f"Creating histograms statistics"])
-        for var in hist_var_list:
-            file_name = blade+"_tg_hist_" + var + ".png"
-            var_units = all_dom_stats[var]["Units"]
-            if var_units == "rad":
-                var_units = "deg"
-            ms.create_histogram(variable=var,
-                                use_percentages=True,
-                                bin_units=var_units,
-                                image_file=file_name,
-                                show=False)
-            hist_dict[var] = file_name
-        environment = Environment(loader=FileSystemLoader(os.path.dirname(__file__)))
-        html_template = environment.get_template("report_template.htmp")
-        html_context = {
-            "case_info": case_info,
-            "domain_count": domain_count,
-            "stat_table_rows": stat_table_rows,
-            "hist_dict": hist_dict,
-        }
-        progress_updates_queue.put([bladerow+"/"+blade,f"Writing report"])
-        filename = f"{blade}_tg_report.html"
-        content = html_template.render(html_context)
-        with open(filename, mode="w", encoding="utf-8") as message:
-            message.write(content)
-
-        progress_updates_queue.put([bladerow+"/"+blade,
-                   f"Completed {blade} producer"])
-        progress_updates_queue.put([bladerow+"/"+blade,
-                   f"Total vertices: {domain_count[ms.get_domain_label(ALL_DOMAINS)]['Vertices']['Count']}"])
-        progress_updates_queue.put([bladerow+"/"+blade,
-                   f"Total elements: {domain_count[ms.get_domain_label(ALL_DOMAINS)]['Elements']['Count']}"])
-        if domain_count[ms.get_domain_label(ALL_DOMAINS)]['Minimum Volume']['Minimum'] < 0:
-            progress_updates_queue.put([bladerow+"/"+blade,f"ERROR: Negative volume elements"])
-
+        write_mesh_report(bladerow,
+                          blade,
+                          pytg_instance,
+                          progress_updates_queue,
+                          report_stats_angle_unit,
+                          report_mesh_quality_measures,
+                          report_stats_decimal_places)
         pytg_instance.save_state(filename=blade+".tst")
         pytg_instance.save_mesh(filename=blade+".def")
         attempts = 0
@@ -917,87 +697,13 @@ def execute_tginit_blade_row_ansys_labs(tginit_file,
         progress_updates_queue.put([blade_row+"/"+blade,f"Applying meshing settings"])  
         for setting in settings:
             pytg_instance.set_obj_param(setting[0], setting[1])
-        ALL_DOMAINS = "ALL"
-        progress_updates_queue.put([blade_row+"/"+blade,f"Getting CCLObjectDB"])  
-        ccl_db = CCLObjectDB(pytg_instance)
-        domain_list = [obj.get_name() for obj in ccl_db.get_objects_by_type("DOMAIN")]
-        domain_list.append(ALL_DOMAINS)
-        case_info = OrderedDict()
-        case_info["Case Name"] = blade
-        case_info["Number of Bladesets"] = ccl_db.get_object_by_path("/GEOMETRY/MACHINE DATA").get_value( "Bladeset Count")
-        case_info["Report Date"] = dt.today()
-        ms = mesh_statistics.MeshStatistics(pytg_instance)
-        domain_count = dict()
-        progress_updates_queue.put([blade_row+"/"+blade,f"Getting mesh statistics"])
-        for domain in domain_list:
-            ms.update_mesh_statistics(domain)
-            domain_count[ms.get_domain_label(domain)] = ms.get_mesh_statistics().copy()
-        ms.update_mesh_statistics(ALL_DOMAINS)
-        all_dom_stats = ms.get_mesh_statistics()
-        stat_table_rows_raw = ms.get_table_rows()
-        stat_table_rows = []
-        convert_to_degree = report_stats_angle_unit.lower()[0:3] == 'deg'
-        for row in stat_table_rows_raw:
-            if len(row) != 5 or row[0] == "Mesh Measure":
-                stat_table_rows.append(row)
-                continue
-            if row[0] not in report_mesh_quality_measures:
-                continue
-            new_row = [row[0]]
-            for i in range(1,5):
-                value_parts = row[i].split()
-                value = float(value_parts[0])
-                if len(value_parts) == 2:
-                    if convert_to_degree and 'rad' in value_parts[1]:
-                        value = value*180.0/math.pi
-                        value_parts[1] = '[deg]'
-                    if new_row[0] != "Minimum Volume":
-                        value = round(value, report_stats_decimal_places)
-                    new_row.append(str(value)+" "+value_parts[1])
-                else:
-                    value = round(value, report_stats_decimal_places)
-                    new_row.append(str(value))
-            stat_table_rows.append(new_row)
-        hist_var_list = ["Connectivity Number", "Edge Length Ratio", "Element Volume Ratio",
-                         "Maximum Face Angle", "Minimum Face Angle", "Minimum Volume",
-                         "Orthogonality Angle", "Skewness"]
-        hist_var_list = [x for x in hist_var_list if x in report_mesh_quality_measures]
-        hist_dict = dict()
-        progress_updates_queue.put([blade_row+"/"+blade,f"Creating histograms statistics"])
-        for var in hist_var_list:
-            file_name = blade+"_tg_hist_" + var + ".png"
-            var_units = all_dom_stats[var]["Units"]
-            if var_units == "rad":
-                var_units = "deg"
-            ms.create_histogram(variable=var,
-                                use_percentages=True,
-                                bin_units=var_units,
-                                image_file=file_name,
-                                show=False)
-            hist_dict[var] = file_name
-        environment = Environment(loader=FileSystemLoader(os.path.dirname(__file__)))
-        html_template = environment.get_template("report_template.htmp")
-        html_context = {
-            "case_info": case_info,
-            "domain_count": domain_count,
-            "stat_table_rows": stat_table_rows,
-            "hist_dict": hist_dict,
-        }
-        progress_updates_queue.put([blade_row+"/"+blade,f"Writing report"])
-        filename = f"{blade}_tg_report.html"
-        content = html_template.render(html_context)
-        with open(filename, mode="w", encoding="utf-8") as message:
-            message.write(content)
-
-        progress_updates_queue.put([blade_row+"/"+blade,
-                   f"Completed {blade} producer"])
-        progress_updates_queue.put([blade_row+"/"+blade,
-                   f"Total vertices: {domain_count[ms.get_domain_label(ALL_DOMAINS)]['Vertices']['Count']}"])
-        progress_updates_queue.put([blade_row+"/"+blade,
-                   f"Total elements: {domain_count[ms.get_domain_label(ALL_DOMAINS)]['Elements']['Count']}"])
-        if domain_count[ms.get_domain_label(ALL_DOMAINS)]['Minimum Volume']['Minimum'] < 0:
-            progress_updates_queue.put([blade_row+"/"+blade,f"ERROR: Negative volume elements"])
-
+        write_mesh_report(blade_row,
+                          blade,
+                          pytg_instance,
+                          progress_updates_queue,
+                          report_stats_angle_unit,
+                          report_mesh_quality_measures,
+                          report_stats_decimal_places)
         pytg_instance.save_state(filename=blade+".tst")
         pytg_instance.save_mesh(filename=blade+".def")
         attempts = 0
@@ -1029,6 +735,94 @@ def execute_tginit_blade_row_ansys_labs(tginit_file,
                f"Duration: {delta_dt_str_parts[0]} hours {delta_dt_str_parts[1]} minutes {delta_dt_str_parts[2]} seconds"])
     progress_updates_queue.put([blade_row+"/"+blade,
                "Done"])
+    
+def write_mesh_report(blade_row,
+                      blade,
+                      pytg_instance,
+                      progress_updates_queue,
+                      report_stats_angle_unit,
+                      report_mesh_quality_measures,
+                      report_stats_decimal_places):
+    ALL_DOMAINS = "ALL"
+    progress_updates_queue.put([blade_row+"/"+blade,f"Getting CCLObjectDB"])  
+    ccl_db = CCLObjectDB(pytg_instance)
+    domain_list = [obj.get_name() for obj in ccl_db.get_objects_by_type("DOMAIN")]
+    domain_list.append(ALL_DOMAINS)
+    case_info = OrderedDict()
+    case_info["Case Name"] = blade
+    case_info["Number of Bladesets"] = ccl_db.get_object_by_path("/GEOMETRY/MACHINE DATA").get_value( "Bladeset Count")
+    case_info["Report Date"] = dt.today()
+    ms = mesh_statistics.MeshStatistics(pytg_instance)
+    domain_count = dict()
+    progress_updates_queue.put([blade_row+"/"+blade,f"Getting mesh statistics"])
+    for domain in domain_list:
+        ms.update_mesh_statistics(domain)
+        domain_count[ms.get_domain_label(domain)] = ms.get_mesh_statistics().copy()
+    ms.update_mesh_statistics(ALL_DOMAINS)
+    all_dom_stats = ms.get_mesh_statistics()
+    stat_table_rows_raw = ms.get_table_rows()
+    stat_table_rows = []
+    convert_to_degree = report_stats_angle_unit.lower()[0:3] == 'deg'
+    for row in stat_table_rows_raw:
+        if len(row) != 5 or row[0] == "Mesh Measure":
+            stat_table_rows.append(row)
+            continue
+        if row[0] not in report_mesh_quality_measures:
+            continue
+        new_row = [row[0]]
+        for i in range(1,5):
+            value_parts = row[i].split()
+            value = float(value_parts[0])
+            if len(value_parts) == 2:
+                if convert_to_degree and 'rad' in value_parts[1]:
+                    value = value*180.0/math.pi
+                    value_parts[1] = '[deg]'
+                if new_row[0] != "Minimum Volume":
+                    value = round(value, report_stats_decimal_places)
+                new_row.append(str(value)+" "+value_parts[1])
+            else:
+                value = round(value, report_stats_decimal_places)
+                new_row.append(str(value))
+        stat_table_rows.append(new_row)
+    hist_var_list = ["Connectivity Number", "Edge Length Ratio", "Element Volume Ratio",
+                        "Maximum Face Angle", "Minimum Face Angle", "Minimum Volume",
+                        "Orthogonality Angle", "Skewness"]
+    hist_var_list = [x for x in hist_var_list if x in report_mesh_quality_measures]
+    hist_dict = dict()
+    progress_updates_queue.put([blade_row+"/"+blade,f"Creating histograms statistics"])
+    for var in hist_var_list:
+        file_name = blade+"_tg_hist_" + var + ".png"
+        var_units = all_dom_stats[var]["Units"]
+        if var_units == "rad":
+            var_units = "deg"
+        ms.create_histogram(variable=var,
+                            use_percentages=True,
+                            bin_units=var_units,
+                            image_file=file_name,
+                            show=False)
+        hist_dict[var] = file_name
+    environment = Environment(loader=FileSystemLoader(os.path.dirname(__file__)))
+    html_template = environment.get_template("report_template.htmp")
+    html_context = {
+        "case_info": case_info,
+        "domain_count": domain_count,
+        "stat_table_rows": stat_table_rows,
+        "hist_dict": hist_dict,
+    }
+    progress_updates_queue.put([blade_row+"/"+blade,f"Writing report"])
+    filename = f"{blade}_tg_report.html"
+    content = html_template.render(html_context)
+    with open(filename, mode="w", encoding="utf-8") as message:
+        message.write(content)
+
+    progress_updates_queue.put([blade_row+"/"+blade,
+                f"Completed {blade} producer"])
+    progress_updates_queue.put([blade_row+"/"+blade,
+                f"Total vertices: {domain_count[ms.get_domain_label(ALL_DOMAINS)]['Vertices']['Count']}"])
+    progress_updates_queue.put([blade_row+"/"+blade,
+                f"Total elements: {domain_count[ms.get_domain_label(ALL_DOMAINS)]['Elements']['Count']}"])
+    if domain_count[ms.get_domain_label(ALL_DOMAINS)]['Minimum Volume']['Minimum'] < 0:
+        progress_updates_queue.put([blade_row+"/"+blade,f"ERROR: Negative volume elements"])
 
 def publish_progress_updates(progress_updates_queue, 
                              num_prods, 
