@@ -366,13 +366,14 @@ class MBR:
             progress_updates_queue.put([ndf_name,f"Start time: {start_dt}"])   
         
             pytg_instance = launch_turbogrid(product_version="24.1.0",
-                                    log_level=pyturbogrid_core.PyTurboGrid.TurboGridLogLevel.CRITICAL)
+                                    log_level=pyturbogrid_core.PyTurboGrid.TurboGridLogLevel.CRITICAL,
+                                    log_filename_suffix="_"+ndf_name)
             progress_updates_queue.put([ndf_name,f"pytg_instance created"])
 
             progress_updates_queue.put([ndf_name,f"read_ndf:: {ndf_file}"])
             pytg_instance.read_ndf(ndffilename=ndf_file,
                                    cadfilename=ndf_name+".x_b",
-                                   bladename=ndf_name)
+                                   bladerow=blade_row)
             pytg_instance.quit()               
         except Exception as e:
             progress_updates_queue.put([ndf_name,f"Reader error {e}"])        
@@ -409,7 +410,7 @@ class MBR:
                 "",
                 "turbogrid",
                 "241-ndf",
-                ndf_name
+                "_"+ndf_name
             )
             progress_updates_queue.put([ndf_name,f"pytg_instance created"])
             pytg_instance.block_each_message = True
@@ -477,7 +478,8 @@ def execute_ndf_bladerow(ndf_file,
     progress_updates_queue.put([bladerow+"/"+blade,f"Start time: {start_dt}"])
 
     pytg_instance = launch_turbogrid(product_version="24.1.0",
-                                     log_level=pyturbogrid_core.PyTurboGrid.TurboGridLogLevel.CRITICAL)
+                                     log_level=pyturbogrid_core.PyTurboGrid.TurboGridLogLevel.CRITICAL,
+                                     log_filename_suffix="_"+blade)
     progress_updates_queue.put([bladerow+"/"+blade,f"pytg_instance created"])
 
     progress_updates_queue.put([bladerow+"/"+blade,f"read_ndf:: {ndf_file}"])
@@ -524,7 +526,8 @@ def execute_tginit_bladerow(tginit_file,
     progress_updates_queue.put([blade_row+"/"+blade,f"Start time: {start_dt}"])
 
     pytg_instance = launch_turbogrid(product_version="24.1.0",
-                                     log_level=pyturbogrid_core.PyTurboGrid.TurboGridLogLevel.CRITICAL)
+                                     log_level=pyturbogrid_core.PyTurboGrid.TurboGridLogLevel.CRITICAL,
+                                     log_filename_suffix="_"+blade)
     progress_updates_queue.put([blade_row+"/"+blade,f"pytg_instance created"])
 
     progress_updates_queue.put([blade_row+"/"+blade,f"read_tginit:: {tginit_file}"])
@@ -582,7 +585,7 @@ def execute_ndf_blade_row_ansys_labs(ndf_file,
             "",
             "turbogrid",
             "241-ndf",
-            blade
+            "_"+blade
         )
         progress_updates_queue.put([bladerow+"/"+blade,f"pytg_instance created"])
         pytg_instance.block_each_message = True
@@ -672,7 +675,7 @@ def execute_tginit_blade_row_ansys_labs(tginit_file,
             "",
             "turbogrid",
             "241-ndf",
-            blade
+            "_"+blade
         )
         progress_updates_queue.put([blade_row+"/"+blade,f"pytg_instance created"])
         pytg_instance.block_each_message = True
@@ -841,7 +844,7 @@ def publish_progress_updates(progress_updates_queue,
         # check for stop
         if item[1] == "Done":
             num_prods_done += 1
-        print(": ".join(item))
+        print(": ".join(item),flush=True)
         if ":" in item[1] and len(item_parts := item[1].split(":")) == 2:
             if item[0] != "User Experience Time" and item_parts[0] != "NDF Reader Duration" and item[0] not in blade_count_infos:
                 blade_count_infos[item[0]] = {}

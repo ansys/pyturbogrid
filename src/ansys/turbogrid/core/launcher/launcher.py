@@ -122,6 +122,7 @@ def launch_turbogrid(
     additional_kw_args: dict = None,
     port: Optional[int] = None,
     host: str = "127.0.0.1",
+    log_filename_suffix: str = "",
     **kwargs,
 ) -> pyturbogrid_core.PyTurboGrid:
     """Launch TurboGrid locally in server mode.
@@ -148,6 +149,8 @@ def launch_turbogrid(
         an available port is automatically selected.
     host : str, default: ``127.0.0.1 (this is the local host IP for windows and linux)``
         host for TurboGrid communications. The default is ``127.0.0.1, or the local Host``
+    log_filename_suffix : str, default: ""
+        suffix for name of the log files written out.
 
     Returns
     -------
@@ -170,6 +173,7 @@ def launch_turbogrid(
         additional_kw_args=additional_kw_args,
         log_level=log_level,
         host_ip=host,
+        log_filename_suffix=log_filename_suffix
     )
 
 
