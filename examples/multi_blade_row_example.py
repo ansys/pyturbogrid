@@ -1,10 +1,10 @@
-# Copyright (c) 2023 ANSYS, Inc. All rights reserved
+# Copyright (c) 2024 ANSYS, Inc. All rights reserved
 """
 .. _multi_blade_row_example:
 
 Multi blade row meshing example
 -------------------------------
-This basic example shows how to set up a multi blade row meshing instance and execute it in parallel
+This basic example shows how to set up a multi blade row meshing instance and execute it in parallel.
 
 """
 
