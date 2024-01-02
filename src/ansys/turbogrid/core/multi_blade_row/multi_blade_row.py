@@ -1,5 +1,5 @@
 # Copyright (c) 2023 ANSYS, Inc. All rights reserved
-"""Module for working on a multi blade-row turbomachinery case using PyTurboGrid instances in parallel."""
+"""Module for working on a multi blade row turbomachinery case using PyTurboGrid instances in parallel."""
 
 from collections import OrderedDict
 from datetime import datetime as dt
@@ -20,9 +20,9 @@ from ansys.turbogrid.core.mesh_statistics import mesh_statistics
 import ansys.turbogrid.core.ndf_parser.ndf_parser as ndfp
 
 
-class MBR:
+class MultiBladeRow:
     """
-    Facilitates working on a multi blade-row turbomachinery case using PyTurboGrid instances in parallel.
+    Facilitates working on a multi blade row turbomachinery case using PyTurboGrid instances in parallel.
     """
 
     _working_dir: str = None
@@ -35,14 +35,14 @@ class MBR:
     _blade_rows_to_mesh: dict = None
     _multi_process_count: int = 0
     _blade_row_gsfs: dict = None
-    _blade_first_element_offsets: dict = None
+    _blade_boundary_layer_offsets: dict = None
     _blade_row_spanwise_counts: dict = None
     _custom_blade_settings: dict = None
 
     #: Number of decimal places to be used for values in the meshing reports
     report_stats_decimal_places = 3
 
-    #: The unit to be used for the angles in the meshign reports.
+    #: The unit to be used for the angles in the meshing reports.
     #: Use "rad" for angles in radian. "deg" for angles in degrees.
     report_stats_angle_unit = "deg"
 
@@ -90,7 +90,7 @@ class MBR:
 
         Parameters
         ----------
-        blades_to_mesh:list
+        blades_to_mesh : list
             Names of the main blade from each blade row to be meshed in a list.
         """
         all_blade_rows = self._ndf_parser.get_blade_row_blades()
@@ -108,11 +108,11 @@ class MBR:
 
     def set_multi_process_count(self, multi_process_count: int):
         """
-        Set number of process to be used in parallel for meshing the selected blade rows.
+        Set number of processes to be used in parallel for meshing the selected blade rows.
 
         Parameters
         ----------
-        multi_process_count:int
+        multi_process_count : int
             The number of processes to be used in parallel.
         """
         num_rows_to_process = len(self._blade_rows_to_mesh)
@@ -129,13 +129,13 @@ class MBR:
         # print(f"{num_producers=}")
         self._multi_process_count = num_producers
 
-    def set_blade_row_gsfs(self, assembly_gsf: float):
+    def set_global_size_factor(self, assembly_gsf: float):
         """
         Set the global size factor to be used for all the blade rows.
 
         Parameters
         ----------
-        assembly_gsf:float
+        assembly_gsf : float
             The Global Size Factor to be used for each blade row.
             If not called the default size factor of 1 will be used.
         """
@@ -153,52 +153,54 @@ class MBR:
 
         Parameters
         ----------
-        stator_spanwise_count:int
+        stator_spanwise_count : int
             The element count in the spanwise direction for stator blade rows.
-        rotor_spanwise_count:int
+        rotor_spanwise_count : int
             The element count in the spanwise direction for rotor blade rows.
-        rotor_blade_rows:list, default: []
+        rotor_blade_rows : list, default: []
             List of main blade from each rotor blade row. If not provided,
-            All even numbered rows will be taken as rotor with row numbering starting at 1.
+            all even numbered rows will be taken as rotor with row numbering starting at 1.
         """
         self._blade_row_spanwise_counts = self._get_blade_row_spanwise_counts(
             stator_spanwise_count, rotor_spanwise_count, rotor_blade_rows_blades
         )
 
-    def set_blade_first_element_offsets(
-        self, assembly_f_el_offset: float, custom_blade_f_el_offsets: dict = None
+    def set_blade_boundary_layer_offsets(
+        self, assembly_bl_offset: float, custom_blade_bl_offsets: dict = None
     ):
         """
         Set the boundary layer first element offset for the blades.
 
         Parameters
         ----------
-        assembly_f_el_offset:float
+        assembly_bl_offset : float
             The first element offset to be applied to all blade row blades.
-        custom_blade_f_el_offsets:dict, default: None
+        custom_blade_bl_offsets:dict, default: None
             Custom first element offset for particular blades given in the form of a
-            dictionary: {'bladename':offset,...}
+            dictionary: {'bladename' : offset,...}
         """
-        self._blade_first_element_offsets = self._get_blade_feloffs(
-            assembly_f_el_offset, custom_blade_f_el_offsets
+        self._blade_boundary_layer_offsets = self._get_blade_bl_offs(
+            assembly_bl_offset, custom_blade_bl_offsets
         )
-        # print(f"blade_first_element_offsets {self._blade_first_element_offsets}")
+        # print(f"blade_boundary_layer_offsets {self._blade_boundary_layer_offsets}")
 
     def set_custom_blade_settings(self, custom_blade_settings: dict):
         """
-        Set the boundary layer first element offset for the blades.
+        Set custom meshing settings for particular blade rows.
 
         Parameters
         ----------
-        custom_blade_settings:dict
-            Special settings for particular blades in a dictionary in the form:
-            { blade_name: [("Full CCL Object Path","Param Name=Value"),...], ... }
+        custom_blade_settings : dict
+            Special settings for particular blade rows in a dictionary in the form:
+            { blade_name : [("Full CCL Object Path", "Param Name=Value"), ... ], ... }
+
+            Here each blade row has to be identified by the name of the main blade in the row.
         """
         self._custom_blade_settings = custom_blade_settings
 
     def execute(self):
         """
-        Execute the multi blade-row meshing process.
+        Execute the multi blade row meshing process.
         """
         start_dt = dt.now()
         if self._blade_rows_to_mesh is None:
@@ -293,7 +295,7 @@ class MBR:
 
     def execute_in_ansys_labs(self):
         """
-        Execute the multi blade-row meshing process on Ansys Labs.
+        Execute the multi blade row meshing process on Ansys Labs.
         """
         start_dt = dt.now()
         if self._blade_rows_to_mesh is None:
@@ -451,14 +453,14 @@ class MBR:
             blade_row_gsfs[blade_row] = assembly_gsf
         return blade_row_gsfs
 
-    def _get_blade_feloffs(self, assembly_f_el_offset: float, custom_blade_f_el_offsets: dict):
-        blade_feloffs = {}
+    def _get_blade_bl_offs(self, assembly_bl_offset: float, custom_blade_bl_offsets: dict):
+        blade_bl_offs = {}
         for blade_row in self._blade_rows_to_mesh:
             blade = self._blade_rows_to_mesh[blade_row][0]
-            blade_feloffs[blade] = assembly_f_el_offset
-            if custom_blade_f_el_offsets is not None and blade in custom_blade_f_el_offsets:
-                blade_feloffs[blade] = custom_blade_f_el_offsets[blade]
-        return blade_feloffs
+            blade_bl_offs[blade] = assembly_bl_offset
+            if custom_blade_bl_offsets is not None and blade in custom_blade_bl_offsets:
+                blade_bl_offs[blade] = custom_blade_bl_offsets[blade]
+        return blade_bl_offs
 
     def _get_blade_row_spanwise_counts(
         self, stator_spanwise_count, rotor_spanwise_count, rotor_blades
@@ -504,10 +506,10 @@ class MBR:
                     )
                 )
             if (
-                self._blade_first_element_offsets is not None
-                and blade in self._blade_first_element_offsets
+                self._blade_boundary_layer_offsets is not None
+                and blade in self._blade_boundary_layer_offsets
             ):
-                this_bl_f_el_off = self._blade_first_element_offsets[blade]
+                this_bl_f_el_off = self._blade_boundary_layer_offsets[blade]
                 blade_row_settings[blade_row].append(
                     (
                         "/MESH DATA",

@@ -32,7 +32,7 @@ class NDFParser:
         -------
         dict
             The names of the blade rows and blade in each row return in the form:
-            { "bladerow1":["blade1",]], "bladerow2":["blade2","splitter1",]], ...}.
+            { "bladerow1" : ["blade1", ], "bladerow2" : ["blade2", "splitter1", ], ... }
 
             If a blade row has no name in the NDF file, a name in the form "bladerowIndex"
             will be assigned where Index is the position of the row in the NDF file among the

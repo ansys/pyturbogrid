@@ -148,9 +148,9 @@ def launch_turbogrid(
         Port for TurboGrid communications. The default is ``None``, in which case
         an available port is automatically selected.
     host : str, default: ``127.0.0.1 (this is the local host IP for windows and linux)``
-        host for TurboGrid communications. The default is ``127.0.0.1, or the local Host``
+        Host for TurboGrid communications. The default is ``127.0.0.1, or the local host``
     log_filename_suffix : str, default: ""
-        suffix for name of the log files written out.
+        Suffix for name of the log files written out.
 
     Returns
     -------
