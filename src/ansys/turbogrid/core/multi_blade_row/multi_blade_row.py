@@ -534,18 +534,18 @@ class MultiBladeRow:
             progress_updates_queue.put([ndf_name, f"Starting {ndf_name} ndf reader"])
             progress_updates_queue.put([ndf_name, f"Start time: {start_dt}"])
 
-            pytg_instance = launch_turbogrid(
+            pyturbogrid_instance = launch_turbogrid(
                 product_version="24.1.0",
                 log_level=pyturbogrid_core.PyTurboGrid.TurboGridLogLevel.CRITICAL,
                 log_filename_suffix="_" + ndf_name,
             )
-            progress_updates_queue.put([ndf_name, f"pytg_instance created"])
+            progress_updates_queue.put([ndf_name, f"pyturbogrid instance created"])
 
             progress_updates_queue.put([ndf_name, f"read_ndf:: {ndf_file}"])
-            pytg_instance.read_ndf(
+            pyturbogrid_instance.read_ndf(
                 ndffilename=ndf_file, cadfilename=ndf_name + ".x_b", bladerow=blade_row
             )
-            pytg_instance.quit()
+            pyturbogrid_instance.quit()
         except Exception as e:
             progress_updates_queue.put([ndf_name, f"Reader error {e}"])
         stop_dt = dt.now()
@@ -581,33 +581,33 @@ def execute_ndf_bladerow(
     progress_updates_queue.put([bladerow + "/" + blade, f"Starting {bladerow} producer"])
     progress_updates_queue.put([bladerow + "/" + blade, f"Start time: {start_dt}"])
 
-    pytg_instance = launch_turbogrid(
+    pyturbogrid_instance = launch_turbogrid(
         product_version="24.1.0",
         log_level=pyturbogrid_core.PyTurboGrid.TurboGridLogLevel.CRITICAL,
         log_filename_suffix="_" + blade,
     )
-    progress_updates_queue.put([bladerow + "/" + blade, f"pytg_instance created"])
+    progress_updates_queue.put([bladerow + "/" + blade, f"pyturbogrid instance created"])
 
     progress_updates_queue.put([bladerow + "/" + blade, f"read_ndf:: {ndf_file}"])
-    pytg_instance.read_ndf(ndffilename=ndf_file, cadfilename=blade + ".x_b", bladename=blade)
+    pyturbogrid_instance.read_ndf(ndffilename=ndf_file, cadfilename=blade + ".x_b", bladename=blade)
 
     progress_updates_queue.put([bladerow + "/" + blade, f"unsuspend"])
-    pytg_instance.unsuspend(object="/TOPOLOGY SET")
+    pyturbogrid_instance.unsuspend(object="/TOPOLOGY SET")
     progress_updates_queue.put([bladerow + "/" + blade, f"Applying meshing settings"])
     for setting in settings:
-        pytg_instance.set_obj_param(setting[0], setting[1])
+        pyturbogrid_instance.set_obj_param(setting[0], setting[1])
     write_mesh_report(
         bladerow,
         blade,
-        pytg_instance,
+        pyturbogrid_instance,
         progress_updates_queue,
         report_stats_angle_unit,
         report_mesh_quality_measures,
         report_stats_decimal_places,
     )
-    pytg_instance.save_state(filename=blade + ".tst")
-    pytg_instance.save_mesh(filename=blade + ".def")
-    pytg_instance.quit()
+    pyturbogrid_instance.save_state(filename=blade + ".tst")
+    pyturbogrid_instance.save_mesh(filename=blade + ".def")
+    pyturbogrid_instance.quit()
     stop_dt = dt.now()
     delta_dt = stop_dt - start_dt
     delta_dt = td(seconds=int(delta_dt / td(seconds=1)))
@@ -636,33 +636,33 @@ def execute_tginit_bladerow(
     progress_updates_queue.put([blade_row + "/" + blade, f"Starting {blade_row} producer"])
     progress_updates_queue.put([blade_row + "/" + blade, f"Start time: {start_dt}"])
 
-    pytg_instance = launch_turbogrid(
+    pyturbogrid_instance = launch_turbogrid(
         product_version="24.1.0",
         log_level=pyturbogrid_core.PyTurboGrid.TurboGridLogLevel.CRITICAL,
         log_filename_suffix="_" + blade,
     )
-    progress_updates_queue.put([blade_row + "/" + blade, f"pytg_instance created"])
+    progress_updates_queue.put([blade_row + "/" + blade, f"pyturbogrid instance created"])
 
     progress_updates_queue.put([blade_row + "/" + blade, f"read_tginit:: {tginit_file}"])
-    pytg_instance.read_tginit(path=tginit_file, bladerow=blade_row)
+    pyturbogrid_instance.read_tginit(path=tginit_file, bladerow=blade_row)
 
     progress_updates_queue.put([blade_row + "/" + blade, f"unsuspend"])
-    pytg_instance.unsuspend(object="/TOPOLOGY SET")
+    pyturbogrid_instance.unsuspend(object="/TOPOLOGY SET")
     progress_updates_queue.put([blade_row + "/" + blade, f"Applying meshing settings"])
     for setting in settings:
-        pytg_instance.set_obj_param(setting[0], setting[1])
+        pyturbogrid_instance.set_obj_param(setting[0], setting[1])
     write_mesh_report(
         blade_row,
         blade,
-        pytg_instance,
+        pyturbogrid_instance,
         progress_updates_queue,
         report_stats_angle_unit,
         report_mesh_quality_measures,
         report_stats_decimal_places,
     )
-    pytg_instance.save_state(filename=blade + ".tst")
-    pytg_instance.save_mesh(filename=blade + ".def")
-    pytg_instance.quit()
+    pyturbogrid_instance.save_state(filename=blade + ".tst")
+    pyturbogrid_instance.save_mesh(filename=blade + ".def")
+    pyturbogrid_instance.quit()
     stop_dt = dt.now()
     delta_dt = stop_dt - start_dt
     delta_dt = td(seconds=int(delta_dt / td(seconds=1)))
@@ -694,7 +694,7 @@ def execute_ndf_blade_row_ansys_labs(
         progress_updates_queue.put([bladerow + "/" + blade, f"Starting {bladerow} producer"])
         progress_updates_queue.put([bladerow + "/" + blade, f"Start time: {start_dt}"])
 
-        pytg_instance = pyturbogrid_core.PyTurboGrid(
+        pyturbogrid_instance = pyturbogrid_core.PyTurboGrid(
             0,
             pyturbogrid_core.PyTurboGrid.TurboGridLocationType.TURBOGRID_ANSYS_LABS,
             "",
@@ -706,17 +706,17 @@ def execute_ndf_blade_row_ansys_labs(
             "241-ndf",
             "_" + blade,
         )
-        progress_updates_queue.put([bladerow + "/" + blade, f"pytg_instance created"])
-        pytg_instance.block_each_message = True
+        progress_updates_queue.put([bladerow + "/" + blade, f"pyturbogrid instance created"])
+        pyturbogrid_instance.block_each_message = True
         progress_updates_queue.put([bladerow + "/" + blade, f"Connection"])
         container_connection = Connection(
-            host=pytg_instance.ftp_ip,
+            host=pyturbogrid_instance.ftp_ip,
             user="root",
-            port=pytg_instance.ftp_port,
+            port=pyturbogrid_instance.ftp_port,
             connect_kwargs={"key_filename": container_key_file},
         )
         progress_updates_queue.put(
-            [bladerow + "/" + blade, f"IP:{pytg_instance.ftp_ip} port:{pytg_instance.ftp_port}"]
+            [bladerow + "/" + blade, f"IP:{pyturbogrid_instance.ftp_ip} port:{pyturbogrid_instance.ftp_port}"]
         )
 
         local_filepath = ndf_file
@@ -724,25 +724,25 @@ def execute_ndf_blade_row_ansys_labs(
         container_connection.put(remote="/", local=local_filepath)
 
         progress_updates_queue.put([bladerow + "/" + blade, f"read_ndf:: {ndf_file}"])
-        pytg_instance.read_ndf(
+        pyturbogrid_instance.read_ndf(
             ndffilename=os.path.split(ndf_file)[1], cadfilename=blade + ".x_b", bladename=blade
         )
         progress_updates_queue.put([bladerow + "/" + blade, f"unsuspend"])
-        pytg_instance.unsuspend(object="/TOPOLOGY SET")
+        pyturbogrid_instance.unsuspend(object="/TOPOLOGY SET")
         progress_updates_queue.put([bladerow + "/" + blade, f"Applying meshing settings"])
         for setting in settings:
-            pytg_instance.set_obj_param(setting[0], setting[1])
+            pyturbogrid_instance.set_obj_param(setting[0], setting[1])
         write_mesh_report(
             bladerow,
             blade,
-            pytg_instance,
+            pyturbogrid_instance,
             progress_updates_queue,
             report_stats_angle_unit,
             report_mesh_quality_measures,
             report_stats_decimal_places,
         )
-        pytg_instance.save_state(filename=blade + ".tst")
-        pytg_instance.save_mesh(filename=blade + ".def")
+        pyturbogrid_instance.save_state(filename=blade + ".tst")
+        pyturbogrid_instance.save_mesh(filename=blade + ".def")
         attempts = 0
         while attempts == 0 or (
             os.path.isfile(f"{blade}.tst") is False and attempts <= max_file_transfer_attempts
@@ -759,7 +759,7 @@ def execute_ndf_blade_row_ansys_labs(
             time.sleep(0.5)
             container_connection.get(remote=f"/{blade}.def", local=f"{blade}.def")
             attempts += 1
-        pytg_instance.quit()
+        pyturbogrid_instance.quit()
 
     except Exception as e:
         progress_updates_queue.put([blade, f"Producer Error {e}"])
@@ -793,7 +793,7 @@ def read_ndf_ansys_labs(
         progress_updates_queue.put([ndf_name, f"Starting ndf reader"])
         progress_updates_queue.put([ndf_name, f"Start time: {start_dt}"])
 
-        pytg_instance = pyturbogrid_core.PyTurboGrid(
+        pyturbogrid_instance = pyturbogrid_core.PyTurboGrid(
             0,
             pyturbogrid_core.PyTurboGrid.TurboGridLocationType.TURBOGRID_ANSYS_LABS,
             "",
@@ -805,17 +805,17 @@ def read_ndf_ansys_labs(
             "241-ndf",
             "_" + ndf_name,
         )
-        progress_updates_queue.put([ndf_name, f"pytg_instance created"])
-        pytg_instance.block_each_message = True
+        progress_updates_queue.put([ndf_name, f"pyturbogrid instance created"])
+        pyturbogrid_instance.block_each_message = True
         progress_updates_queue.put([ndf_name, f"Connection"])
         container_connection = Connection(
-            host=pytg_instance.ftp_ip,
+            host=pyturbogrid_instance.ftp_ip,
             user="root",
-            port=pytg_instance.ftp_port,
+            port=pyturbogrid_instance.ftp_port,
             connect_kwargs={"key_filename": container_key_file},
         )
         progress_updates_queue.put(
-            [ndf_name, f"IP:{pytg_instance.ftp_ip} port:{pytg_instance.ftp_port}"]
+            [ndf_name, f"IP:{pyturbogrid_instance.ftp_ip} port:{pyturbogrid_instance.ftp_port}"]
         )
 
         local_filepath = ndf_file
@@ -823,7 +823,7 @@ def read_ndf_ansys_labs(
         container_connection.put(remote="/", local=local_filepath)
 
         progress_updates_queue.put([ndf_name, f"read_ndf:: {ndf_file}"])
-        pytg_instance.read_ndf(
+        pyturbogrid_instance.read_ndf(
             ndffilename=os.path.split(ndf_file)[1],
             cadfilename=ndf_name + ".x_b",
             bladerow=blade_row,
@@ -845,7 +845,7 @@ def read_ndf_ansys_labs(
             container_connection.get(remote=f"/{ndf_name}.x_b", local=f"{ndf_name}.x_b")
             attempts += 1
         attempts = 0
-        pytg_instance.quit()
+        pyturbogrid_instance.quit()
 
     except Exception as e:
         progress_updates_queue.put([ndf_name, f"Reader error {e}"])
@@ -881,7 +881,7 @@ def execute_tginit_blade_row_ansys_labs(
         progress_updates_queue.put([blade_row + "/" + blade, f"Starting {blade_row} producer"])
         progress_updates_queue.put([blade_row + "/" + blade, f"Start time: {start_dt}"])
 
-        pytg_instance = pyturbogrid_core.PyTurboGrid(
+        pyturbogrid_instance = pyturbogrid_core.PyTurboGrid(
             0,
             pyturbogrid_core.PyTurboGrid.TurboGridLocationType.TURBOGRID_ANSYS_LABS,
             "",
@@ -893,17 +893,17 @@ def execute_tginit_blade_row_ansys_labs(
             "241-ndf",
             "_" + blade,
         )
-        progress_updates_queue.put([blade_row + "/" + blade, f"pytg_instance created"])
-        pytg_instance.block_each_message = True
+        progress_updates_queue.put([blade_row + "/" + blade, f"pyturbogrid instance created"])
+        pyturbogrid_instance.block_each_message = True
         progress_updates_queue.put([blade_row + "/" + blade, f"Connection"])
         container_connection = Connection(
-            host=pytg_instance.ftp_ip,
+            host=pyturbogrid_instance.ftp_ip,
             user="root",
-            port=pytg_instance.ftp_port,
+            port=pyturbogrid_instance.ftp_port,
             connect_kwargs={"key_filename": container_key_file},
         )
         progress_updates_queue.put(
-            [blade_row + "/" + blade, f"IP:{pytg_instance.ftp_ip} port:{pytg_instance.ftp_port}"]
+            [blade_row + "/" + blade, f"IP:{pyturbogrid_instance.ftp_ip} port:{pyturbogrid_instance.ftp_port}"]
         )
 
         local_filepath = tginit_file
@@ -913,23 +913,23 @@ def execute_tginit_blade_row_ansys_labs(
         progress_updates_queue.put([blade_row + "/" + blade, f"To container->{local_filepath}"])
         container_connection.put(remote="/", local=local_filepath)
         progress_updates_queue.put([blade_row + "/" + blade, f"read_tginit:: {tginit_file}"])
-        pytg_instance.read_tginit(path=os.path.split(tginit_file)[1], bladerow=blade_row)
+        pyturbogrid_instance.read_tginit(path=os.path.split(tginit_file)[1], bladerow=blade_row)
         progress_updates_queue.put([blade_row + "/" + blade, f"unsuspend"])
-        pytg_instance.unsuspend(object="/TOPOLOGY SET")
+        pyturbogrid_instance.unsuspend(object="/TOPOLOGY SET")
         progress_updates_queue.put([blade_row + "/" + blade, f"Applying meshing settings"])
         for setting in settings:
-            pytg_instance.set_obj_param(setting[0], setting[1])
+            pyturbogrid_instance.set_obj_param(setting[0], setting[1])
         write_mesh_report(
             blade_row,
             blade,
-            pytg_instance,
+            pyturbogrid_instance,
             progress_updates_queue,
             report_stats_angle_unit,
             report_mesh_quality_measures,
             report_stats_decimal_places,
         )
-        pytg_instance.save_state(filename=blade + ".tst")
-        pytg_instance.save_mesh(filename=blade + ".def")
+        pyturbogrid_instance.save_state(filename=blade + ".tst")
+        pyturbogrid_instance.save_mesh(filename=blade + ".def")
         attempts = 0
         while attempts == 0 or (
             os.path.isfile(f"{blade}.tst") is False and attempts <= max_file_transfer_attempts
@@ -946,7 +946,7 @@ def execute_tginit_blade_row_ansys_labs(
             time.sleep(0.5)
             container_connection.get(remote=f"/{blade}.def", local=f"{blade}.def")
             attempts += 1
-        pytg_instance.quit()
+        pyturbogrid_instance.quit()
 
     except Exception as e:
         progress_updates_queue.put([blade, f"Producer Error {e}"])
@@ -968,7 +968,7 @@ def execute_tginit_blade_row_ansys_labs(
 def write_mesh_report(
     blade_row,
     blade,
-    pytg_instance,
+    pyturbogrid_instance,
     progress_updates_queue,
     report_stats_angle_unit,
     report_mesh_quality_measures,
@@ -976,7 +976,7 @@ def write_mesh_report(
 ):
     ALL_DOMAINS = "ALL"
     progress_updates_queue.put([blade_row + "/" + blade, f"Getting CCLObjectDB"])
-    ccl_db = CCLObjectDB(pytg_instance)
+    ccl_db = CCLObjectDB(pyturbogrid_instance)
     domain_list = [obj.get_name() for obj in ccl_db.get_objects_by_type("DOMAIN")]
     domain_list.append(ALL_DOMAINS)
     case_info = OrderedDict()
@@ -985,7 +985,7 @@ def write_mesh_report(
         "/GEOMETRY/MACHINE DATA"
     ).get_value("Bladeset Count")
     case_info["Report Date"] = dt.today()
-    ms = mesh_statistics.MeshStatistics(pytg_instance)
+    ms = mesh_statistics.MeshStatistics(pyturbogrid_instance)
     domain_count = dict()
     progress_updates_queue.put([blade_row + "/" + blade, f"Getting mesh statistics"])
     for domain in domain_list:
