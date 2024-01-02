@@ -28,10 +28,10 @@ if __name__ == "__main__":
     working_directory = os.getcwd()
 
     # Set location for the NDF file.
-    case_folder = r"E:\AnsysDev\pyAnsys\S947493_concepts_nrec\turb_axial_4stage_geom"
+    case_folder = r"Full\Path\to\the\folder\having\the\NDF\file\for\the\case"
 
     # Set name of the NDF file.
-    ndf_file_name = "turb_axial_4stage_geom.ndf"
+    ndf_file_name = "Name_of_the_NDF_file_for_the_case.ndf"
 
     # Create MultiBladeRow instance, set up meshing settings and execute.
     mbr_instance = MultiBladeRow(working_directory, case_folder, ndf_file_name)
