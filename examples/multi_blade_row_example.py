@@ -20,7 +20,7 @@ from ansys.turbogrid.core.multi_blade_row.multi_blade_row import MultiBladeRow
 
 #################################################################################
 # Create and use an MultiBladeRow instance
-# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # Create an MultiBladeRow instance, set it up for a multi-blade row case and execute.
 
 if __name__ == "__main__":
@@ -28,10 +28,10 @@ if __name__ == "__main__":
     working_directory = os.getcwd()
 
     # Set location for the NDF file.
-    case_folder = r"Full\Path\to\the\folder\having\the\NDF\file\for\the\case"
+    case_folder = r"E:\AnsysDev\pyAnsys\S947493_concepts_nrec\turb_axial_4stage_geom"
 
     # Set name of the NDF file.
-    ndf_file_name = "Name_of_the_NDF_file_for_the_case.ndf"
+    ndf_file_name = "turb_axial_4stage_geom.ndf"
 
     # Create MultiBladeRow instance, set up meshing settings and execute.
     mbr_instance = MultiBladeRow(working_directory, case_folder, ndf_file_name)
