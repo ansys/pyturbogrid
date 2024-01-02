@@ -716,7 +716,10 @@ def execute_ndf_blade_row_ansys_labs(
             connect_kwargs={"key_filename": container_key_file},
         )
         progress_updates_queue.put(
-            [bladerow + "/" + blade, f"IP:{pyturbogrid_instance.ftp_ip} port:{pyturbogrid_instance.ftp_port}"]
+            [
+                bladerow + "/" + blade,
+                f"IP:{pyturbogrid_instance.ftp_ip} port:{pyturbogrid_instance.ftp_port}",
+            ]
         )
 
         local_filepath = ndf_file
@@ -903,7 +906,10 @@ def execute_tginit_blade_row_ansys_labs(
             connect_kwargs={"key_filename": container_key_file},
         )
         progress_updates_queue.put(
-            [blade_row + "/" + blade, f"IP:{pyturbogrid_instance.ftp_ip} port:{pyturbogrid_instance.ftp_port}"]
+            [
+                blade_row + "/" + blade,
+                f"IP:{pyturbogrid_instance.ftp_ip} port:{pyturbogrid_instance.ftp_port}",
+            ]
         )
 
         local_filepath = tginit_file
