@@ -21,7 +21,7 @@ from ansys.turbogrid.core.multi_blade_row.multi_blade_row import MultiBladeRow
 #################################################################################
 # Create and use a MultiBladeRow instance
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-# Create an MultiBladeRow instance, set it up for a multi blade row case and execute.
+# Create a MultiBladeRow instance, set it up for a multi blade row case and execute.
 
 if __name__ == "__main__":
     # Set working directory.
@@ -33,11 +33,14 @@ if __name__ == "__main__":
     # Set name of the NDF file.
     ndf_file_name = "Name_of_the_NDF_file_for_the_case.ndf"
 
-    # Create MultiBladeRow instance, set up meshing settings and execute.
+    # Create a MultiBladeRow instance.
     mbr_instance = MultiBladeRow(working_directory, case_folder, ndf_file_name)
+    
+    # Set up some settings.
     mbr_instance.set_spanwise_counts(56, 73)
-    # mbr_instance.set_blade_rows_to_mesh(["segment4mainblade","segment6mainblade"])
-    # mbr_instance.set_global_size_factor(1.5)
-    mbr_instance.set_blade_boundary_layer_offsets(6e-6, {"segment4mainblade": 1e-5})
+    mbr_instance.set_global_size_factor(1.5)
+    mbr_instance.set_blade_boundary_layer_offsets(6e-6)
     mbr_instance.write_tginit_first = True
+    
+    # Call the execute method to perform the meshing.
     mbr_instance.execute()
