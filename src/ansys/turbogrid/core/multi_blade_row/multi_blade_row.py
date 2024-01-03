@@ -559,10 +559,10 @@ def execute_ndf_bladerow(
     report_stats_decimal_places,
     report_mesh_quality_measures,
 ):
-    def pyturbogrid_instance_creator():
+    def pyturbogrid_instance_creator(log_suffix):
         return launch_turbogrid(
             log_level=pyturbogrid_core.PyTurboGrid.TurboGridLogLevel.CRITICAL,
-            log_filename_suffix="_" + blade,
+            log_filename_suffix="_" + log_suffix,
         )
 
     def file_reader(pyturbogrid_instance):
@@ -600,10 +600,10 @@ def execute_tginit_bladerow(
     report_stats_decimal_places,
     report_mesh_quality_measures,
 ):
-    def pyturbogrid_instance_creator():
+    def pyturbogrid_instance_creator(log_suffix):
         return launch_turbogrid(
             log_level=pyturbogrid_core.PyTurboGrid.TurboGridLogLevel.CRITICAL,
-            log_filename_suffix="_" + blade,
+            log_filename_suffix="_" + log_suffix,
         )
 
     def file_reader(pyturbogrid_instance):
@@ -839,7 +839,7 @@ def execute_blade_row_common(
         progress_updates_queue.put([blade_row + "/" + blade, f"Starting {blade_row} producer"])
         progress_updates_queue.put([blade_row + "/" + blade, f"Start time: {start_dt}"])
 
-        pyturbogrid_instance = pyturbogrid_instance_creator()
+        pyturbogrid_instance = pyturbogrid_instance_creator(blade)
         progress_updates_queue.put([blade_row + "/" + blade, f"pyturbogrid instance created"])
         pyturbogrid_instance.block_each_message = True
 
