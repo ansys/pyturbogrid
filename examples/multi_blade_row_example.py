@@ -35,12 +35,12 @@ if __name__ == "__main__":
 
     # Create a MultiBladeRow instance.
     mbr_instance = MultiBladeRow(working_directory, case_folder, ndf_file_name)
-    
+
     # Set up some settings.
     mbr_instance.set_spanwise_counts(56, 73)
     mbr_instance.set_global_size_factor(1.5)
     mbr_instance.set_blade_boundary_layer_offsets(6e-6)
     mbr_instance.write_tginit_first = True
-    
+
     # Call the execute method to perform the meshing.
     mbr_instance.execute()
