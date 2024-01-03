@@ -12,7 +12,6 @@ import time
 
 from ansys.turbogrid.api import pyturbogrid_core
 from ansys.turbogrid.api.CCL.ccl_object_db import CCLObjectDB
-import ansys.turbogrid.api.PyTurboGrid.TurboGridLocationType as TurboGridLocationType
 from fabric import Connection
 from jinja2 import Environment, FileSystemLoader
 
@@ -66,6 +65,9 @@ class MultiBladeRow:
     #: When working in Ansys Labs, the number of retry to be made for file transfer from
     #: container to the local folder.
     max_file_transfer_attempts = 20
+
+    #: An alias for the TurboGridLocationType in pyturbogrid_core.PyTurboGrid
+    TurboGridLocationType = pyturbogrid_core.PyTurboGrid.TurboGridLocationType
 
     #: When working in Ansys Labs, the name of the file containing the container key with full path.
     tg_container_key_file = ""
@@ -209,7 +211,7 @@ class MultiBladeRow:
         Parameters
         ----------
         mode : TurboGridLocationType, default: TurboGridLocationType.TURBOGRID_INSTALL
-            The mode of operation with respect to the PyTurboGrid instance being used.
+            The mode of operation with respect to the TurboGrid instance being used.
         """
         start_dt = dt.now()
         if self._blade_rows_to_mesh is None:
@@ -234,23 +236,28 @@ class MultiBladeRow:
         os.chdir(self._results_directory)
         progress_updates_mgr = Manager()
         progress_updates_queue = progress_updates_mgr.Queue()
-        if mode == pyturbogrid_core.PyTurboGrid.TurboGridLocationType.TURBOGRID_INSTALL:
+        if mode == self.TurboGridLocationType.TURBOGRID_INSTALL:
             reporter = threading.Thread(
                 target=publish_progress_updates,
                 args=(progress_updates_queue, num_rows, self._ndf_file_full_path),
             )
-        else:
+        elif mode == self.TurboGridLocationType.TURBOGRID_ANSYS_LABS:
             reporter = Process(
                 target=publish_progress_updates,
                 args=(progress_updates_queue, num_rows, self._ndf_file_full_path),
             )
+        else:
+            raise Exception("Unsupported TurboGrid Location Type")
+
         reporter.start()
-        if mode == pyturbogrid_core.PyTurboGrid.TurboGridLocationType.TURBOGRID_INSTALL:
+        if mode == self.TurboGridLocationType.TURBOGRID_INSTALL:
             self._execute_local(progress_updates_queue, blade_row_settings, num_producers)
-        elif mode == pyturbogrid_core.PyTurboGrid.TurboGridLocationType.TURBOGRID_ANSYS_LABS:
+        elif mode == self.TurboGridLocationType.TURBOGRID_ANSYS_LABS:
             self._execute_ansys_labs(
                 progress_updates_mgr, progress_updates_queue, blade_row_settings, num_producers
             )
+        else:
+            raise Exception("Unsupported TurboGrid Location Type")
 
         stop_dt = dt.now()
         print("Start time: ", start_dt)
@@ -511,7 +518,6 @@ class MultiBladeRow:
             progress_updates_queue.put([ndf_name, f"Start time: {start_dt}"])
 
             pyturbogrid_instance = launch_turbogrid(
-                product_version="24.1.0",
                 log_level=pyturbogrid_core.PyTurboGrid.TurboGridLogLevel.CRITICAL,
                 log_filename_suffix="_" + ndf_name,
             )
@@ -545,7 +551,7 @@ class MultiBladeRow:
 
 def execute_ndf_bladerow(
     ndf_file,
-    bladerow,
+    blade_row,
     blade,
     settings,
     progress_updates_queue,
@@ -555,7 +561,6 @@ def execute_ndf_bladerow(
 ):
     def pyturbogrid_instance_creator():
         return launch_turbogrid(
-            product_version="24.1.0",
             log_level=pyturbogrid_core.PyTurboGrid.TurboGridLogLevel.CRITICAL,
             log_filename_suffix="_" + blade,
         )
@@ -567,7 +572,7 @@ def execute_ndf_bladerow(
 
     execute_blade_row_common(
         ndf_file,
-        bladerow,
+        blade_row,
         blade,
         settings,
         progress_updates_queue,
@@ -597,7 +602,6 @@ def execute_tginit_bladerow(
 ):
     def pyturbogrid_instance_creator():
         return launch_turbogrid(
-            product_version="24.1.0",
             log_level=pyturbogrid_core.PyTurboGrid.TurboGridLogLevel.CRITICAL,
             log_filename_suffix="_" + blade,
         )
@@ -687,7 +691,7 @@ def container_connection_files_getter(
 
 def execute_ndf_blade_row_ansys_labs(
     ndf_file,
-    bladerow,
+    blade_row,
     blade,
     settings,
     progress_updates_queue,
@@ -704,7 +708,7 @@ def execute_ndf_blade_row_ansys_labs(
 
     execute_blade_row_common(
         ndf_file,
-        bladerow,
+        blade_row,
         blade,
         settings,
         progress_updates_queue,
@@ -814,7 +818,7 @@ def execute_tginit_blade_row_ansys_labs(
 
 def execute_blade_row_common(
     file_path,
-    bladerow,
+    blade_row,
     blade,
     settings,
     progress_updates_queue,
@@ -832,11 +836,11 @@ def execute_blade_row_common(
 ):
     try:
         start_dt = dt.now()
-        progress_updates_queue.put([bladerow + "/" + blade, f"Starting {bladerow} producer"])
-        progress_updates_queue.put([bladerow + "/" + blade, f"Start time: {start_dt}"])
+        progress_updates_queue.put([blade_row + "/" + blade, f"Starting {blade_row} producer"])
+        progress_updates_queue.put([blade_row + "/" + blade, f"Start time: {start_dt}"])
 
         pyturbogrid_instance = pyturbogrid_instance_creator()
-        progress_updates_queue.put([bladerow + "/" + blade, f"pyturbogrid instance created"])
+        progress_updates_queue.put([blade_row + "/" + blade, f"pyturbogrid instance created"])
         pyturbogrid_instance.block_each_message = True
 
         if container_connection_creator is not None:
@@ -845,20 +849,20 @@ def execute_blade_row_common(
                 pyturbogrid_instance,
                 files_to_transfer,
                 progress_updates_queue,
-                bladerow + "/" + blade,
+                blade_row + "/" + blade,
             )
         else:
             container_connection = None
 
-        progress_updates_queue.put([bladerow + "/" + blade, f"read:: {file_path}"])
+        progress_updates_queue.put([blade_row + "/" + blade, f"read:: {file_path}"])
         file_reader(pyturbogrid_instance)
-        progress_updates_queue.put([bladerow + "/" + blade, f"unsuspend"])
+        progress_updates_queue.put([blade_row + "/" + blade, f"unsuspend"])
         pyturbogrid_instance.unsuspend(object="/TOPOLOGY SET")
-        progress_updates_queue.put([bladerow + "/" + blade, f"Applying meshing settings"])
+        progress_updates_queue.put([blade_row + "/" + blade, f"Applying meshing settings"])
         for setting in settings:
             pyturbogrid_instance.set_obj_param(setting[0], setting[1])
         write_mesh_report(
-            bladerow,
+            blade_row,
             blade,
             pyturbogrid_instance,
             progress_updates_queue,
@@ -884,14 +888,14 @@ def execute_blade_row_common(
     delta_dt = stop_dt - start_dt
     delta_dt = td(seconds=int(delta_dt / td(seconds=1)))
     deldt_parts = str(delta_dt).split(":")
-    progress_updates_queue.put([bladerow + "/" + blade, f"Stop time: {stop_dt}"])
+    progress_updates_queue.put([blade_row + "/" + blade, f"Stop time: {stop_dt}"])
     progress_updates_queue.put(
         [
-            bladerow + "/" + blade,
+            blade_row + "/" + blade,
             f"Duration: {deldt_parts[0]} hours {deldt_parts[1]} minutes {deldt_parts[2]} seconds",
         ]
     )
-    progress_updates_queue.put([bladerow + "/" + blade, "Done"])
+    progress_updates_queue.put([blade_row + "/" + blade, "Done"])
 
 
 def write_mesh_report(
