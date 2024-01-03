@@ -21,7 +21,7 @@ from ansys.turbogrid.core.multi_blade_row.multi_blade_row import MultiBladeRow
 #################################################################################
 # Create and use an MultiBladeRow instance
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-# Create an MultiBladeRow instance, set it up for a multi-blade row case and execute.
+# Create an MultiBladeRow instance, set it up for a multi blade row case and execute.
 
 if __name__ == "__main__":
     # Set working directory.
