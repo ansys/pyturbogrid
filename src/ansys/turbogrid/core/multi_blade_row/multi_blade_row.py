@@ -877,6 +877,7 @@ def execute_blade_row_common(
                 container_connection,
                 max_file_transfer_attempts,
                 progress_updates_queue,
+                blade_row + "/" + blade,
                 files_to_get_from_connection,
             )
         pyturbogrid_instance.quit()
