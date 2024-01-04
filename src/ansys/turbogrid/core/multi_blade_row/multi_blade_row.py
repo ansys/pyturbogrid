@@ -85,7 +85,7 @@ class MultiBladeRow:
             will be taken as relative to the working directory. Further, the results directory
             will be named with an "_results" suffix for the case directory name and placed in the
             working directory.
-        ndf_file_full_name : str
+        ndf_file_name : str
             Name of the NDF file containing the blade rows for the multi blade row case. This file
             is assumed to be present in the case_directory provided above.
         """
@@ -102,7 +102,8 @@ class MultiBladeRow:
         Parameters
         ----------
         blades_to_mesh : list
-            Names of the main blade from each blade row to be meshed in a list.
+            Names of the main blade from each blade row to be meshed in a list. If an empty
+            list is provided, all blade rows will be selected for meshing.
         """
         all_blade_rows = self._ndf_parser.get_blade_row_blades()
         blade_row_names_to_mesh = [
@@ -125,8 +126,8 @@ class MultiBladeRow:
         ----------
         multi_process_count : int
             The number of processes to be used in parallel. This will be limited to the smaller of
-            the number of blade rows to mesh and the cpu count of the system running the TurboGrid
-            instances.
+            the number of blade rows to mesh and the cpu count of the system. A value of zero will
+            use the maximum possible number of processes.
         """
         num_rows_to_process = len(self._blade_rows_to_mesh)
         if num_rows_to_process == 0:
@@ -405,7 +406,7 @@ class MultiBladeRow:
 
     def _set_working_directory(self, working_dir: str):
         if not os.path.isdir(working_dir):
-            raise (Exception(f"Folder {working_dir} does not exists."))
+            raise Exception(f"Folder {working_dir} does not exists.")
         self._working_dir = working_dir
         # print(f"Working directory set to: {self._working_dir}")
 
