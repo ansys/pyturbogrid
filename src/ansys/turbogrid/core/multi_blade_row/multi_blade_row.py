@@ -223,6 +223,10 @@ class MultiBladeRow:
         ----------
         mode : TurboGridLocationType, default: TurboGridLocationType.TURBOGRID_INSTALL
             The mode of operation with respect to the TurboGrid instance being used.
+            Permitted values are:
+            TurboGridLocationType.TURBOGRID_INSTALL if locally installed TurboGrid has to be used and
+            TurboGridLocationType.TURBOGRID_ANSYS_LABS if TurboGrid running in a container on Ansys Labs
+            has to be used.
         """
         start_dt = dt.now()
         if self._blade_rows_to_mesh is None:
