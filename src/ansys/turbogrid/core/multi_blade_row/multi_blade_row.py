@@ -39,14 +39,14 @@ class MultiBladeRow:
     _blade_row_spanwise_counts: dict = None
     _custom_blade_settings: dict = None
 
-    #: Number of decimal places to be used for values in the meshing reports
+    #: Number of decimal places to be used for values in the meshing reports.
     report_stats_decimal_places = 3
 
     #: The unit to be used for the angles in the meshing reports.
-    #: Use "rad" for angles in radian. "deg" for angles in degrees.
+    #: Use "rad" for angles in radian and "deg" for angles in degrees.
     report_stats_angle_unit = "deg"
 
-    #: List of the quality measures to be reported for each blade row
+    #: List of the quality measures to be reported for each blade row.
     #: Permitted entries are:
     #: "Connectivity Number", "Edge Length Ratio", "Element Volume Ratio",
     #: "Maximum Face Angle", "Minimum Face Angle", "Minimum Volume",
@@ -59,17 +59,17 @@ class MultiBladeRow:
     ]
 
     #: Set True to write tginit first before processing blade rows in parallel by reading the tginit
-    #: instead of reading ndf in parallel and writing separate tginit for each blade row
+    #: instead of reading ndf in parallel and writing separate tginit for each blade row.
     write_tginit_first = False
 
-    #: When working in Ansys Labs, the number of retry to be made for file transfer from
-    #: container to the local folder.
+    #: When working in Ansys Labs, the number of attempts to be made for file transfer from
+    #: container to the local working directory results folder.
     max_file_transfer_attempts = 20
 
-    #: An alias for the TurboGridLocationType in pyturbogrid_core.PyTurboGrid
+    #: An alias for the TurboGridLocationType in pyturbogrid_core.PyTurboGrid.
     TurboGridLocationType = pyturbogrid_core.PyTurboGrid.TurboGridLocationType
 
-    #: When working in Ansys Labs, the name of the file containing the container key with full path.
+    #: When working in Ansys Labs, the name with full path of the file containing the container key.
     tg_container_key_file = ""
 
     def __init__(self, working_dir: str, case_directory: str, ndf_file_name: str):
@@ -78,8 +78,16 @@ class MultiBladeRow:
 
         Parameters
         ----------
+        working_dir : str
+            Directory to be used as the starting point of operation and to place the results folder.
+        case_directory : str
+            Directory containing the NDF file. If this is not given as an absolute full path, it
+            will be taken as relative to the working directory. Further, the results directory
+            will be named with an "_results" suffix for the case directory name and placed in the
+            working directory.
         ndf_file_full_name : str
-            Name with full path of the NDF file containing the blade rows for the multi blade row case.
+            Name of the NDF file containing the blade rows for the multi blade row case. This file
+            is assumed to be present in the case_directory provided above.
         """
         self._set_working_directory(working_dir)
         self._set_case_directory_and_ndf(case_directory, ndf_file_name)
@@ -116,7 +124,9 @@ class MultiBladeRow:
         Parameters
         ----------
         multi_process_count : int
-            The number of processes to be used in parallel.
+            The number of processes to be used in parallel. This will be limited to the smaller of
+            the number of blade rows to mesh and the cpu count of the system running the TurboGrid
+            instances.
         """
         num_rows_to_process = len(self._blade_rows_to_mesh)
         if num_rows_to_process == 0:
@@ -140,7 +150,7 @@ class MultiBladeRow:
         ----------
         assembly_gsf : float
             The Global Size Factor to be used for each blade row.
-            If not called the default size factor of 1 will be used.
+            If not called, the default size factor of 1 will be used.
         """
         self._blade_row_gsfs = self._get_blade_row_gsfs(assembly_gsf)
         # print(f"blade_row_gsfs {self._blade_row_gsfs}")
@@ -178,7 +188,7 @@ class MultiBladeRow:
         ----------
         assembly_bl_offset : float
             The first element offset to be applied to all blade row blades.
-        custom_blade_bl_offsets:dict, default: None
+        custom_blade_bl_offsets : dict, default: None
             Custom first element offset for particular blades given in the form of a
             dictionary: {'bladename' : offset,...}
         """
