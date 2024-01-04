@@ -20,6 +20,8 @@ launcher
 Matplotlib
 mesh_statistics
 mesh_vars
+multi_blade_row
+ndf_parser
 product_version
 Pythonic
 pyturbogrid_core
