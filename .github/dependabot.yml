@@ -1,9 +1,9 @@
 version: 2
-registries:
-  python-azure:
-    type: python-index
-    url: https://pkgs.dev.azure.com/pyansys/_packaging/pyansys/pypi/simple/
-    token: ${{ secrets.PYANSYS_PYPI_PRIVATE_READ_PAT }}
+#registries:
+#  python-azure:
+#    type: python-index
+#    url: https://pkgs.dev.azure.com/pyansys/_packaging/pyansys/pypi/simple/
+#    token: ${{ secrets.PYANSYS_PYPI_PRIVATE_READ_PAT }}
 
 updates:
   - package-ecosystem: "pip"
