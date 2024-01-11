@@ -9,8 +9,8 @@ updates:
   - package-ecosystem: "pip"
     directory: "/" # Location of package manifests
     insecure-external-code-execution: allow
-    registries:
-      - python-azure
+    #registries:
+    #  - python-azure
     schedule:
       interval: "daily"
     labels:
@@ -21,21 +21,6 @@ updates:
     reviewers: 
       - "acohen-work"
       - "zlilek-work"
-
-  - package-ecosystem: "pip"
-    directory: "/" # Location of package manifests
-    insecure-external-code-execution: allow
-    schedule:
-      interval: "daily"
-    labels:
-      - "maintenance"
-      - "dependencies"
-    ignore:
-      - dependency-name: "grpcio"
-      - dependency-name: "ansys-turbogrid-api"
-    reviewers: 
-      - "acohen-work"
-      - "zlilek-work" 
 
   - package-ecosystem: "github-actions"
     directory: "/"
