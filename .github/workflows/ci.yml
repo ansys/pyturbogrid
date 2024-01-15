@@ -34,7 +34,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: "Ansys code style checks"
-        uses: ansys/actions/code-style@v4 # This action looks in .pre-commit-config.yaml for code check tasks.
+        uses: ansys/actions/code-style@v5 # This action looks in .pre-commit-config.yaml for code check tasks.
         with:
           python-version: ${{ env.MAIN_PYTHON_VERSION }}
 
@@ -43,7 +43,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Ansys documentation style checks
-        uses: ansys/actions/doc-style@v4
+        uses: ansys/actions/doc-style@v5
         with:
           token: ${{ secrets.GITHUB_TOKEN }}  
   
@@ -53,7 +53,7 @@ jobs:
     runs-on: ubuntu-latest
     needs: [docs-style]
     steps:
-      - uses: ansys/actions/doc-build@v4
+      - uses: ansys/actions/doc-build@v5
         with:
           python-version: ${{ env.MAIN_PYTHON_VERSION }}
   
@@ -67,7 +67,7 @@ jobs:
         os: [windows-latest, ubuntu-latest]
         python-version: ['3.10', '3.11']
     steps:
-      - uses: ansys/actions/build-wheelhouse@v4
+      - uses: ansys/actions/build-wheelhouse@v5
         with:
           library-name: ${{ env.LIBRARY_NAME }}
           library-namespace: ${{ env.LIBRARY_NAMESPACE }}
@@ -81,7 +81,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: "Build library source and wheel artifacts"
-        uses: ansys/actions/build-library@v4
+        uses: ansys/actions/build-library@v5
         with:
           library-name: ${{ env.LIBRARY_NAME }}
           python-version: ${{ env.MAIN_PYTHON_VERSION }}
@@ -99,21 +99,21 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: "Release to the private PyPI repository"
-        uses: ansys/actions/release-pypi-private@v4
+        uses: ansys/actions/release-pypi-private@v5
         with:
           library-name: ${{ env.LIBRARY_NAME }}
           twine-username: "__token__"
           twine-token: ${{ secrets.PYANSYS_PYPI_PRIVATE_PAT }}
 
       - name: Release to the public PyPI repository
-        uses: ansys/actions/release-pypi-public@v4
+        uses: ansys/actions/release-pypi-public@v5
         with:
           library-name: ${{ env.LIBRARY_NAME }}
           twine-username: "__token__"
           twine-token: ${{ secrets.PYPI_TOKEN }}
 
       - name: "Release to GitHub"
-        uses: ansys/actions/release-github@v4
+        uses: ansys/actions/release-github@v5
         with:
           library-name: ${{ env.LIBRARY_NAME }}
 
@@ -123,7 +123,7 @@ jobs:
     runs-on: ubuntu-latest
     needs: [build-library]
     steps:
-      - uses: ansys/actions/doc-deploy-dev@v4
+      - uses: ansys/actions/doc-deploy-dev@v5
         with:
           cname: ${{ env.DOCUMENTATION_CNAME }}
           token: ${{ secrets.GITHUB_TOKEN }}
@@ -134,7 +134,7 @@ jobs:
     runs-on: ubuntu-latest
     needs: [release]
     steps:
-      - uses: ansys/actions/doc-deploy-stable@v4
+      - uses: ansys/actions/doc-deploy-stable@v5
         with:
           cname: ${{ env.DOCUMENTATION_CNAME }}
           token: ${{ secrets.GITHUB_TOKEN }}
