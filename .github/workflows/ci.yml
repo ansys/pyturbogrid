@@ -16,7 +16,7 @@ env:
   LIBRARY_NAME: 'ansys-turbogrid-core' # The repo name
   LIBRARY_NAMESPACE: 'ansys.turbogrid.core'
   DOCUMENTATION_CNAME: 'turbogrid.docs.pyansys.com'
-  PIP_EXTRA_INDEX_URL: 'https://${{ secrets.PYANSYS_PYPI_PRIVATE_PAT }}@pkgs.dev.azure.com/pyansys/_packaging/pyansys/pypi/simple/'
+  #PIP_EXTRA_INDEX_URL: 'https://${{ secrets.PYANSYS_PYPI_PRIVATE_PAT }}@pkgs.dev.azure.com/pyansys/_packaging/pyansys/pypi/simple/'
 
 # This deals with concurrent runs of this script.
 concurrency:
