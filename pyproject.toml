@@ -82,17 +82,6 @@ line_length = 120
 default_section = "THIRDPARTY"
 src_paths = ["doc", "src", "tests"]
 
-[[tool.poetry.source]]
-name = "privatepypi"
-url = "https://pkgs.dev.azure.com/pyansys/_packaging/pyansys/pypi/simple/"
-default = false
-secondary = true
-
-[tool.poetry.dependencies]
-python = ">=3.7,<4.0"
-ansys-turbogrid-api = {source = "privatepypi"}
-
-
 [tool.coverage.run]
 source = ["ansys.turbogrid.core"]
 
