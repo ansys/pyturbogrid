@@ -58,7 +58,7 @@ jobs:
         with:
           python-version: ${{ env.MAIN_PYTHON_VERSION }}
   
-  smoke-tests:
+  wheelhouse:
     name: "Build wheelhouse for ${{ matrix.os }} and Python ${{ matrix.python-version }}"
     runs-on: ${{ matrix.os }}
     needs: [code-style]
@@ -75,9 +75,10 @@ jobs:
           python-version: ${{ matrix.python-version }}
 
 
+  smoke-tests:
     name: "Tests for ${{ matrix.os }} and Python ${{ matrix.python-version }}"
     runs-on: ${{ matrix.os }}
-    needs: [code-style]
+    needs: [wheelhouse, code-style]
     strategy:
       fail-fast: false
       matrix:
