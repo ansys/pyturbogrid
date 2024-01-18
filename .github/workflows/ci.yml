@@ -85,6 +85,13 @@ jobs:
           docker network ls
           docker pull ghcr.io/ansys/ansys-api-turbogrid/tglin_reduced:241    
 
+      - name: Create Key
+        uses: mobiledevops/secret-to-file-action@v1
+        with:
+          base64-encoded-secret: ${{ secrets.CONTAINER_ACCESS_KEY }}
+          filename: "tg_container_key"
+          working-directory: "." 
+
       - name: Spin Up TurboGrid Container
         run: |
           docker image ls
@@ -92,7 +99,6 @@ jobs:
           pip install pytest-cov
           pip install fabric
           pip install .
-          echo -e ${{ secrets.CONTAINER_ACCESS_KEY }} > tg_container_key
           python3 -u -m pytest -vs --execution_mode=CONTAINERIZED --license_file=${{ env.ANSYSLMD_LICENSE_FILE }} --image_name=ghcr.io/ansys/ansys-api-turbogrid/tglin_reduced:241 --cfxtg_command_name=cfxtgpynoviewer --cfx_version=241 --ssh_key_filename=./tg_container_key
 
 
