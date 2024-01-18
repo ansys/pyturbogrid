@@ -10,4 +10,8 @@ except ModuleNotFoundError:  # pragma: no cover
 
 # Read from the pyproject.toml
 # major, minor, patch
-__version__ = importlib_metadata.version("ansys-turbogrid-core")
+__version__ = "0.0.0"
+try:
+    __version__ = importlib_metadata.version("ansys-turbogrid-core")
+except importlib_metadata.PackageNotFoundError:
+    pass

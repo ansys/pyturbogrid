@@ -6,12 +6,33 @@ import os
 from pathlib import Path
 
 from ansys.turbogrid.api import pyturbogrid_core
+import pytest
 
 from ansys.turbogrid.core.mesh_statistics import mesh_statistics
+from conftest import Helpers, TestExecutionMode
+
+dir_path: str = os.path.dirname(os.path.realpath(__file__))
 
 
-def test_get_mesh_statistics_basic(pyturbogrid: pyturbogrid_core.PyTurboGrid):
-    pyturbogrid.read_state(filename="tests/rotor37/Rotor37State.tst")
+def test_get_mesh_statistics_basic(pyturbogrid: pyturbogrid_core.PyTurboGrid, helpers: Helpers):
+    if pytest.execution_mode == TestExecutionMode.REMOTE:
+        pyturbogrid.block_each_message = True
+
+    if pytest.execution_mode == TestExecutionMode.CONTAINERIZED:
+        pyturbogrid.block_each_message = True
+        container = helpers.get_container_connection(pytest.ftp_port)
+        print(f"transfer files to container {dir_path}")
+        helpers.transfer_files_to_container(
+            container,
+            f"{dir_path}/rotor37/",
+            ["Rotor37State.tst", "BladeGen.inf", "hub.curve", "shroud.curve", "profile.curve"],
+        )
+        print(f"files transferred")
+
+    tg_file_path: str = (
+        f"{dir_path}/rotor37/" if pytest.execution_mode != TestExecutionMode.CONTAINERIZED else "/"
+    )
+    pyturbogrid.read_state(filename=f"{tg_file_path}/Rotor37State.tst")
     pyturbogrid.unsuspend(object="/TOPOLOGY SET")
 
     ms = mesh_statistics.MeshStatistics(pyturbogrid)
@@ -28,8 +49,27 @@ def test_get_mesh_statistics_basic(pyturbogrid: pyturbogrid_core.PyTurboGrid):
     assert single_var["Limits Type"] == "Minimum"
 
 
-def test_get_mesh_statistics_with_domain(pyturbogrid: pyturbogrid_core.PyTurboGrid):
-    pyturbogrid.read_state(filename="tests/rotor37/Rotor37State.tst")
+def test_get_mesh_statistics_with_domain(
+    pyturbogrid: pyturbogrid_core.PyTurboGrid, helpers: Helpers
+):
+    if pytest.execution_mode == TestExecutionMode.REMOTE:
+        pyturbogrid.block_each_message = True
+
+    if pytest.execution_mode == TestExecutionMode.CONTAINERIZED:
+        pyturbogrid.block_each_message = True
+        container = helpers.get_container_connection(pytest.ftp_port)
+        print(f"transfer files to container {dir_path}")
+        helpers.transfer_files_to_container(
+            container,
+            f"{dir_path}/rotor37/",
+            ["Rotor37State.tst", "BladeGen.inf", "hub.curve", "shroud.curve", "profile.curve"],
+        )
+        print(f"files transferred")
+
+    tg_file_path: str = (
+        f"{dir_path}/rotor37/" if pytest.execution_mode != TestExecutionMode.CONTAINERIZED else "/"
+    )
+    pyturbogrid.read_state(filename=f"{tg_file_path}/Rotor37State.tst")
     pyturbogrid.unsuspend(object="/TOPOLOGY SET")
 
     ms = mesh_statistics.MeshStatistics(pyturbogrid)
@@ -57,8 +97,25 @@ def test_get_mesh_statistics_with_domain(pyturbogrid: pyturbogrid_core.PyTurboGr
     assert all_dom_count == passage_dom_count + inlet_dom_count + outlet_dom_count
 
 
-def test_update_mesh_statistics(pyturbogrid: pyturbogrid_core.PyTurboGrid):
-    pyturbogrid.read_state(filename="tests/rotor37/Rotor37State.tst")
+def test_update_mesh_statistics(pyturbogrid: pyturbogrid_core.PyTurboGrid, helpers: Helpers):
+    if pytest.execution_mode == TestExecutionMode.REMOTE:
+        pyturbogrid.block_each_message = True
+
+    if pytest.execution_mode == TestExecutionMode.CONTAINERIZED:
+        pyturbogrid.block_each_message = True
+        container = helpers.get_container_connection(pytest.ftp_port)
+        print(f"transfer files to container {dir_path}")
+        helpers.transfer_files_to_container(
+            container,
+            f"{dir_path}/rotor37/",
+            ["Rotor37State.tst", "BladeGen.inf", "hub.curve", "shroud.curve", "profile.curve"],
+        )
+        print(f"files transferred")
+
+    tg_file_path: str = (
+        f"{dir_path}/rotor37/" if pytest.execution_mode != TestExecutionMode.CONTAINERIZED else "/"
+    )
+    pyturbogrid.read_state(filename=f"{tg_file_path}/Rotor37State.tst")
     pyturbogrid.unsuspend(object="/TOPOLOGY SET")
 
     ms = mesh_statistics.MeshStatistics(pyturbogrid)
@@ -75,8 +132,25 @@ def test_update_mesh_statistics(pyturbogrid: pyturbogrid_core.PyTurboGrid):
     assert new_elem_count > old_elem_count
 
 
-def test_create_histogram(pyturbogrid: pyturbogrid_core.PyTurboGrid):
-    pyturbogrid.read_state(filename="tests/rotor37/Rotor37State.tst")
+def test_create_histogram(pyturbogrid: pyturbogrid_core.PyTurboGrid, helpers: Helpers):
+    if pytest.execution_mode == TestExecutionMode.REMOTE:
+        pyturbogrid.block_each_message = True
+
+    if pytest.execution_mode == TestExecutionMode.CONTAINERIZED:
+        pyturbogrid.block_each_message = True
+        container = helpers.get_container_connection(pytest.ftp_port)
+        print(f"transfer files to container {dir_path}")
+        helpers.transfer_files_to_container(
+            container,
+            f"{dir_path}/rotor37/",
+            ["Rotor37State.tst", "BladeGen.inf", "hub.curve", "shroud.curve", "profile.curve"],
+        )
+        print(f"files transferred")
+
+    tg_file_path: str = (
+        f"{dir_path}/rotor37/" if pytest.execution_mode != TestExecutionMode.CONTAINERIZED else "/"
+    )
+    pyturbogrid.read_state(filename=f"{tg_file_path}/Rotor37State.tst")
     pyturbogrid.unsuspend(object="/TOPOLOGY SET")
 
     ms = mesh_statistics.MeshStatistics(pyturbogrid)
@@ -101,8 +175,25 @@ def test_create_histogram(pyturbogrid: pyturbogrid_core.PyTurboGrid):
         os.remove(image_file)
 
 
-def test_write_table_to_csv(pyturbogrid: pyturbogrid_core.PyTurboGrid):
-    pyturbogrid.read_state(filename="tests/rotor37/Rotor37State.tst")
+def test_write_table_to_csv(pyturbogrid: pyturbogrid_core.PyTurboGrid, helpers: Helpers):
+    if pytest.execution_mode == TestExecutionMode.REMOTE:
+        pyturbogrid.block_each_message = True
+
+    if pytest.execution_mode == TestExecutionMode.CONTAINERIZED:
+        pyturbogrid.block_each_message = True
+        container = helpers.get_container_connection(pytest.ftp_port)
+        print(f"transfer files to container {dir_path}")
+        helpers.transfer_files_to_container(
+            container,
+            f"{dir_path}/rotor37/",
+            ["Rotor37State.tst", "BladeGen.inf", "hub.curve", "shroud.curve", "profile.curve"],
+        )
+        print(f"files transferred")
+
+    tg_file_path: str = (
+        f"{dir_path}/rotor37/" if pytest.execution_mode != TestExecutionMode.CONTAINERIZED else "/"
+    )
+    pyturbogrid.read_state(filename=f"{tg_file_path}/Rotor37State.tst")
     pyturbogrid.unsuspend(object="/TOPOLOGY SET")
 
     ms = mesh_statistics.MeshStatistics(pyturbogrid)
@@ -125,8 +216,25 @@ def test_write_table_to_csv(pyturbogrid: pyturbogrid_core.PyTurboGrid):
         os.remove(csv_file)
 
 
-def test_get_table_as_text(pyturbogrid: pyturbogrid_core.PyTurboGrid):
-    pyturbogrid.read_state(filename="tests/rotor37/Rotor37State.tst")
+def test_get_table_as_text(pyturbogrid: pyturbogrid_core.PyTurboGrid, helpers: Helpers):
+    if pytest.execution_mode == TestExecutionMode.REMOTE:
+        pyturbogrid.block_each_message = True
+
+    if pytest.execution_mode == TestExecutionMode.CONTAINERIZED:
+        pyturbogrid.block_each_message = True
+        container = helpers.get_container_connection(pytest.ftp_port)
+        print(f"transfer files to container {dir_path}")
+        helpers.transfer_files_to_container(
+            container,
+            f"{dir_path}/rotor37/",
+            ["Rotor37State.tst", "BladeGen.inf", "hub.curve", "shroud.curve", "profile.curve"],
+        )
+        print(f"files transferred")
+
+    tg_file_path: str = (
+        f"{dir_path}/rotor37/" if pytest.execution_mode != TestExecutionMode.CONTAINERIZED else "/"
+    )
+    pyturbogrid.read_state(filename=f"{tg_file_path}/Rotor37State.tst")
     pyturbogrid.unsuspend(object="/TOPOLOGY SET")
 
     ms = mesh_statistics.MeshStatistics(pyturbogrid, "Inlet")
