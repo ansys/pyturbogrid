@@ -82,6 +82,8 @@ class deployed_tg_container:
         print(f"TG container ready")
 
     def __del__(self):
+        print("\n######### Container Console Output #########")
+        subprocess.run(f"{self.prepend_command} docker logs {self.container_name}", shell=True)
         print("\n######### Dispose of container #########")
         subprocess.run(
             f"{self.prepend_command} docker container stop {self.container_name}", shell=True
