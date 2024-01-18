@@ -70,7 +70,8 @@ class deployed_tg_container:
             f"-e ANSYSLMD_LICENSE_FILE={self.license_server} {additional_env_string}"
             f"-p {self.socket_port}:{self.socket_port} "
             f"-p {self.ftp_port}:{self.ftp_port} "
-            f"-d {self.image_name} /bin/bash -c '/usr/local/bin/start_sshd.sh {self.ftp_port} {logical_and} {self.cfxtg_command}'"
+            f"-d {self.image_name} /bin/bash -c '/usr/local/bin/start_sshd.sh "
+            f" {self.ftp_port} {logical_and} {self.cfxtg_command}'"
         )
         print(f"docker_command: {docker_command}")
         print(f"start tg...")
