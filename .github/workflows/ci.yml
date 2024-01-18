@@ -82,7 +82,7 @@ jobs:
       - name: Pull TurboGrid Linux Image
         run: |
           docker network ls
-          docker pull ghcr.io/ansys/ansys-api-turbogrid/tg_reduced:241    
+          docker pull ghcr.io/ansys/ansys-api-turbogrid/tglin_reduced:241    
 
 # The build job is responsible for creating the build artifact and uploading it to PYPI using twine.
   build-library:
