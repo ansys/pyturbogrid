@@ -12,6 +12,7 @@ on:
 
 # Environment Variables
 env:
+  ANSYSLMD_LICENSE_FILE: 1055@${{ secrets.LICENSE_SERVER }}
   MAIN_PYTHON_VERSION: '3.10' # We need 3.9 for building sphinx
   LIBRARY_NAME: 'ansys-turbogrid-core' # The repo name
   LIBRARY_NAMESPACE: 'ansys.turbogrid.core'
@@ -83,6 +84,16 @@ jobs:
         run: |
           docker network ls
           docker pull ghcr.io/ansys/ansys-api-turbogrid/tglin_reduced:241    
+
+      - name: Spin Up TurboGrid Container
+        run: |
+          docker image ls
+          pip install pytest
+          pip install pytest-cov
+          pip install fabric
+          pip install .
+          python3 -u -m pytest -vs --execution_mode=CONTAINERIZED --license_file=${{ env.ANSYSLMD_LICENSE_FILE }} --image_name=ghcr.io/ansys/ansys-api-turbogrid/tglin_reduced:241 --cfxtg_command_name=cfxtgpynoviewer --cfx_version=241 --ssh_key_filename=./image_files/tg_container_key
+
 
 # The build job is responsible for creating the build artifact and uploading it to PYPI using twine.
   build-library:
