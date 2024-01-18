@@ -65,14 +65,24 @@ jobs:
       fail-fast: false
       matrix:
         os: [windows-latest, ubuntu-latest]
-        python-version: ['3.10', '3.11']
+        python-version: ['3.8', '3.9', '3.10', '3.11']
     steps:
       - uses: ansys/actions/build-wheelhouse@v5
         with:
           library-name: ${{ env.LIBRARY_NAME }}
-          library-namespace: ${{ env.LIBRARY_NAMESPACE }}
           operating-system: ${{ matrix.os }}
           python-version: ${{ matrix.python-version }}
+      - name: Login to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ secrets.GH_USERNAME }}
+          password: ${{ secrets.GHCRLOGINTOKEN }}
+
+      - name: Pull TurboGrid Linux Image
+        run: |
+          docker network ls
+          docker pull ghcr.io/ansys/ansys-api-turbogrid/tg_reduced:$241    
 
 # The build job is responsible for creating the build artifact and uploading it to PYPI using twine.
   build-library:
