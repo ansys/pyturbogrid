@@ -164,6 +164,8 @@ PyClientOutgoing.txt
 SCHEDULER SEQUENCE.dat
 SUPER PROFILER OVER 50ms.dat
 SUPER PROFILER.dat
-
+PyClientConsole*.txt
+PyClientOutgoing*.txt
+TurboGridLog*.txt
 # VSCode settings
 .vscode
