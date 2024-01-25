@@ -12,6 +12,7 @@ on:
 
 # Environment Variables
 env:
+  ANSYSLMD_LICENSE_FILE: 1055@${{ secrets.LICENSE_SERVER }}
   MAIN_PYTHON_VERSION: '3.10' # We need 3.9 for building sphinx
   LIBRARY_NAME: 'ansys-turbogrid-core' # The repo name
   LIBRARY_NAMESPACE: 'ansys.turbogrid.core'
@@ -57,27 +58,71 @@ jobs:
         with:
           python-version: ${{ env.MAIN_PYTHON_VERSION }}
   
-  smoke-tests:
+  wheelhouse:
     name: "Build wheelhouse for ${{ matrix.os }} and Python ${{ matrix.python-version }}"
     runs-on: ${{ matrix.os }}
     needs: [code-style]
     strategy:
       fail-fast: false
       matrix:
-        os: [windows-latest, ubuntu-latest]
-        python-version: ['3.10', '3.11']
+        os: [windows-latest]
+        python-version: ['3.8', '3.9', '3.10', '3.11']
     steps:
       - uses: ansys/actions/build-wheelhouse@v5
         with:
           library-name: ${{ env.LIBRARY_NAME }}
-          library-namespace: ${{ env.LIBRARY_NAMESPACE }}
           operating-system: ${{ matrix.os }}
           python-version: ${{ matrix.python-version }}
+
+
+  smoke-tests:
+    name: "Build wheelhouse and Test for ${{ matrix.os }} and Python ${{ matrix.python-version }}"
+    runs-on: ${{ matrix.os }}
+    needs: [code-style]
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest]
+        python-version: ['3.8', '3.9', '3.10', '3.11']
+    steps:
+      - uses: ansys/actions/build-wheelhouse@v5
+        with:
+          library-name: ${{ env.LIBRARY_NAME }}
+          operating-system: ${{ matrix.os }}
+          python-version: ${{ matrix.python-version }}        
+      - name: Login to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ secrets.GH_USERNAME }}
+          password: ${{ secrets.GHCRLOGINTOKEN }}
+
+      - name: Pull TurboGrid Linux Image
+        run: |
+          docker network ls
+          docker pull ghcr.io/ansys/ansys-api-turbogrid/tglin_reduced:241    
+
+      - name: Create Key
+        uses: mobiledevops/secret-to-file-action@v1
+        with:
+          base64-encoded-secret: ${{ secrets.CONTAINER_ACCESS_KEY }}
+          filename: "tg_container_key"
+          working-directory: "." 
+
+      - name: Spin Up TurboGrid Container
+        run: |
+          docker image ls
+          pip install pytest
+          pip install pytest-cov
+          pip install fabric
+          pip install .
+          python3 -u -m pytest -vs --execution_mode=CONTAINERIZED --license_file=${{ env.ANSYSLMD_LICENSE_FILE }} --image_name=ghcr.io/ansys/ansys-api-turbogrid/tglin_reduced:241 --cfxtg_command_name=cfxtgpynoviewer --cfx_version=241 --ssh_key_filename=./tg_container_key
+
 
 # The build job is responsible for creating the build artifact and uploading it to PYPI using twine.
   build-library:
     name: Build library
-    needs: [smoke-tests, docs-build]
+    needs: [wheelhouse, smoke-tests, docs-build]
     runs-on: ubuntu-latest
     steps:
       - name: "Build library source and wheel artifacts"
