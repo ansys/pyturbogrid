@@ -169,3 +169,6 @@ PyClientOutgoing*.txt
 TurboGridLog*.txt
 # VSCode settings
 .vscode
+
+AxiFan-01A-MultiRow.tginit
+AxiFan-01A-MultiRow.x_b

@@ -21,11 +21,11 @@ else:
 
 # For now, this relies on the installed package because of github reasons.
 # If you want to use a 'local' api module, you can use the following:
-# pyturbogrid_api_root = os.getenv("PYTURBOGRID_API_ROOT")
-# if pyturbogrid_api_root:
-#     sys.path.append(f"{pyturbogrid_api_root}/src")
-# else:
-#     raise RuntimeError("PYTURBOGRID_API_ROOT must be defined")
+pyturbogrid_api_root = os.getenv("PYTURBOGRID_API_ROOT")
+if pyturbogrid_api_root:
+    sys.path.append(f"{pyturbogrid_api_root}/src")
+else:
+    raise RuntimeError("PYTURBOGRID_API_ROOT must be defined")
 
 from ansys.turbogrid.api import pyturbogrid_core
 
