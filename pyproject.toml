@@ -50,7 +50,7 @@ doc = [
     "autodocsumm==0.2.11",
     "ipyvtklink==0.2.3",
     "jupyter_sphinx==0.5.3",
-    "jupytext==1.14.6",
+    "jupytext==1.16.1",
     "nbconvert==7.14.1",
     "nbsphinx==0.9.3",
     "notebook==7.0.7",
