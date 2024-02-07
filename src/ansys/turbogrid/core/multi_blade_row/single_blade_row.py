@@ -8,13 +8,12 @@
 # or to represent its running state.
 # SBRs are stateful and meaningless without their parent.
 # Since SBRs are threads launched by the parent, they inherit from threading.Thread
+# Note that SBRs collect the public methods from the underlying PyTurboGrid objects
 
-import threading
 
+class single_blade_row:
+    pytg: any
 
-class single_blade_row(threading.Thread):
     def __init__(self):
-        super().__init__()
-
-    def run(self):
         pass
+        # setattr(self, key, getattr(self.data_driven_storage, key))
