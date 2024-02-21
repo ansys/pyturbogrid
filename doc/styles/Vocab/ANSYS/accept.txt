@@ -46,4 +46,4 @@ set_global_size_factor
 set_topology_choice
 set_topology_list
 unsuspend
-API
+(?!)api
