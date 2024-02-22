@@ -13,6 +13,8 @@ updates:
     #  - python-azure
     schedule:
       interval: "daily"
+    assignees:
+      - "pyansys-ci-bot"
     labels:
       - "maintenance"
       - "dependencies"
@@ -26,6 +28,8 @@ updates:
     directory: "/"
     schedule:
       interval: "daily"
+    assignees:
+      - "pyansys-ci-bot"
     labels:
       - "maintenance"
     reviewers: 
