@@ -109,6 +109,20 @@ jobs:
           filename: "tg_container_key"
           working-directory: "." 
 
+      - name: Check if file exists
+        id: check_file
+        run: |
+          if [ -f "tg_container_key" ]; then
+            echo "::set-output name=file_exists::true"
+            echo "::set-output name=file_size::$(stat -c%s tg_container_key)"
+          else
+            echo "::set-output name=file_exists::false"
+          fi
+
+      - name: Display file size if it exists
+        if: steps.check_file.outputs.file_exists == 'true'
+        run: echo "File 'tg_container_key' exists and its size is ${ { steps.check_file.outputs.file_size }} bytes"
+
       - name: Spin Up TurboGrid Container
         run: |
           docker image ls
