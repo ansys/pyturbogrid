@@ -113,18 +113,12 @@ jobs:
         id: check_file
         run: |
           if [ -f "tg_container_key" ]; then
-            echo "file_exists=true" >> $GITHUB_ENV
-            echo "file_size=$(stat -c%s tg_container_key)" >> $GITHUB_ENV
+            echo "File 'tg_container_key' exists and its size is $(stat -c%s tg_container_key) bytes"
           else
-            echo "file_exists=false" >> $GITHUB_ENV
+            echo "File tg_container_key does not exist"
             exit 1
           fi
-
-      - name: Display file size if it exists
-        if: $file_exists == 'true'
-        run: |
-          echo "File 'tg_container_key' exists and its size is $file_size bytes"
-        
+          
       - name: Spin Up TurboGrid Container
         run: |
           docker image ls
