@@ -114,9 +114,10 @@ jobs:
         run: |
           if [ -f "tg_container_key" ]; then
             echo "file_exists=true" >> $GITHUB_OUTPUT
-            echo "file_size=$(stat -c%s filename.file)" >> $GITHUB_OUTPUT
+            echo "file_size=$(stat -c%s file_exists)" >> $GITHUB_OUTPUT
           else
             echo "file_exists=false" >> $GITHUB_OUTPUT
+            exit 1
           fi
 
       - name: Display file size if it exists
