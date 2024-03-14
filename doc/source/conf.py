@@ -61,7 +61,6 @@ html_theme_options = {
         "json_url": f"https://{cname}/versions.json",
         "version_match": get_version_match(__version__),
     },
-    "check_switcher": False,
     "github_url": "https://github.com/ansys/pyturbogrid",
     "show_prev_next": True,
     "show_breadcrumbs": True,
