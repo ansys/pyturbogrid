@@ -21,6 +21,10 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
+
+# To run these tests, navigate your terminal to the root of this project (pyturbogrid)
+# and use the command pytest -v. -s can be added as well to see all of the console output.
+
 import os
 from pathlib import Path
 
