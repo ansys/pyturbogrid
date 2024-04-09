@@ -94,4 +94,8 @@ autodoc_default_options = {
     "special-members": "__init__",
 }
 
-linkcheck_ignore = ["https://github.com/ansys/pyturbogrid/issues"]
+# Ignore ansys.com links because they come back stale
+linkcheck_ignore = [
+    "https://github.com/ansys/pyturbogrid/issues",
+    r"https://www.ansys.com/.*"
+]
