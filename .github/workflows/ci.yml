@@ -103,7 +103,7 @@ jobs:
           docker pull ghcr.io/ansys/ansys-api-turbogrid/tglin_reduced:241    
 
       - name: Create Key
-        uses: mobiledevops/secret-to-file-action@v1
+        uses: Acohen-work/secret-to-file-action@v1
         with:
           base64-encoded-secret: ${{ secrets.CONTAINER_ACCESS_KEY }}
           filename: "tg_container_key"
