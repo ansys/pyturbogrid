@@ -94,8 +94,8 @@ jobs:
         uses: docker/login-action@v3
         with:
           registry: ghcr.io
-          username: ${{ secrets.GH_USERNAME }}
-          password: ${{ secrets.GHCRLOGINTOKEN }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Pull TurboGrid Linux Image
         run: |
@@ -109,6 +109,16 @@ jobs:
           filename: "tg_container_key"
           working-directory: "." 
 
+      - name: Check if file exists
+        id: check_file
+        run: |
+          if [ -f "tg_container_key" ]; then
+            echo "File 'tg_container_key' exists and its size is $(stat -c%s tg_container_key) bytes"
+          else
+            echo "File tg_container_key does not exist"
+            exit 1
+          fi
+          
       - name: Spin Up TurboGrid Container
         run: |
           docker image ls

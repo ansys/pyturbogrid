@@ -1,9 +1,32 @@
-# Copyright (c) 2024 ANSYS, Inc. All rights reserved
+# Copyright (C) 2023 - 2024 ANSYS, Inc. and/or its affiliates.
+# SPDX-FileCopyrightText: 2023 ANSYS, Inc. All rights reserved
+# SPDX-License-Identifier: MIT
 #
+#
+# Permission is hereby granted, free of charge, to any person obtaining a copy
+# of this software and associated documentation files (the "Software"), to deal
+# in the Software without restriction, including without limitation the rights
+# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+# copies of the Software, and to permit persons to whom the Software is
+# furnished to do so, subject to the following conditions:
+#
+# The above copyright notice and this permission notice shall be included in all
+# copies or substantial portions of the Software.
+#
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+# SOFTWARE.
+
+
 # A multi_blade_row (MBR) instance represents a single rotating machine.
 # MBR will spawn a single_blade_row (SBR) for each blade that is being considered.
 # MBR job dispatch has two concepts. Jobs may be dispatched to a single row,
 # or multiple rows in parallel.
+"""Module for working on a multi blade row turbomachinery case using PyTurboGrid instances in parallel."""
 
 import os
 import ansys.turbogrid.core.ndf_parser.ndf_parser as ndf_parser
