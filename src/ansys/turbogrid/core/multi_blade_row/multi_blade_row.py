@@ -72,16 +72,16 @@ class multi_blade_row:
         ndf_name = os.path.basename(ndf_path)
         ndf_file_name, ndf_file_extension = os.path.splitext(ndf_name)
         print(f"{ndf_name=}")
-        # pyturbogrid_instance = launch_turbogrid(
-        #     log_level=pyturbogrid_core.PyTurboGrid.TurboGridLogLevel.DEBUG,
-        #     log_filename_suffix="_" + ndf_name,
-        # )
-        # pyturbogrid_instance.read_ndf(
-        #     ndffilename=ndf_path,
-        #     cadfilename=ndf_file_name + ".x_b",
-        #     bladerow=self.all_blade_row_keys[0],
-        # )
-        # pyturbogrid_instance.quit()
+        pyturbogrid_instance = launch_turbogrid(
+            log_level=pyturbogrid_core.PyTurboGrid.TurboGridLogLevel.DEBUG,
+            log_filename_suffix="_" + ndf_name,
+        )
+        pyturbogrid_instance.read_ndf(
+            ndffilename=ndf_path,
+            cadfilename=ndf_file_name + ".x_b",
+            bladerow=self.all_blade_row_keys[0],
+        )
+        pyturbogrid_instance.quit()
         self.tg_worker_instances = {key: single_blade_row() for key in self.all_blade_row_keys}
         self.base_gsf = {key: 1.0 for key in self.all_blade_row_keys}
         with concurrent.futures.ThreadPoolExecutor(

@@ -25,14 +25,9 @@ all_spanwise_element_counts = {}
 
 def run_mbr() -> list:
     machine = MBR()
-    # machine.init_from_tgmachine(
-    #     f"{install_path}/tests/mbr/5_stage_hannover/5_stage_hannover.TGMachine"
-    # )
-    machine.init_from_tgmachine(f"{install_path}/tests/mbr/DTCG50Compressor/DTCG50.TGMachine")
+    machine.init_from_ndf(f"{install_path}/tests/ndf/AxialFanMultiRow.ndf")
     machine.plot_machine()
     # machine.save_meshes()
-    # machine.init_from_ndf(f"{dir_path}/ndf/AxiFan-01A-MultiRow.ndf")
-    # machine.init_from_ndf(f"{dir_path}/ndf/turb_axial_4stage_geom.ndf")
     # return
     blade_rows = machine.get_blade_row_names()
     # original_face_areas = machine.get_average_base_face_areas()

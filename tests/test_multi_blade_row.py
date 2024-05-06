@@ -17,7 +17,9 @@ from ansys.turbogrid.core.multi_blade_row.multi_blade_row import multi_blade_row
 
 def test_multi_blade_row_basic():
     machine = MBR()
-    machine.init_from_tgmachine(f"{dir_path}/mbr/DTCG50Compressor/DTCG50.TGMachine")
+    machine.init_from_ndf(f"{install_path}/tests/ndf/AxialFanMultiRow.ndf")
+    # This is a planned point-data initialization file format
+    # machine.init_from_tgmachine(f"{dir_path}/~.TGMachine")
     blade_rows = machine.get_blade_row_names()
     original_face_areas = machine.get_average_base_face_areas()
     target_face_area = min(original_face_areas.values())
