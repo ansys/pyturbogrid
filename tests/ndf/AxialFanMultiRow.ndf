@@ -4,6 +4,7 @@
     Axial fan
     Multi-row
     Round-round blades
+    Shroud clearance
   </comment>
   <general-information>
     <version>v232</version>
@@ -1110,6 +1111,12 @@
               </profile-segment>
             </profile>
           </profile-objects>
+          <shroud-tip-clearance>
+            <tip-gap-definition>
+              <le-gap>8.0e-04</le-gap>
+              <te-gap>8.0e-04</te-gap>
+            </tip-gap-definition>
+          </shroud-tip-clearance>
         </blade>
       </bladerow>
       <bladerow>

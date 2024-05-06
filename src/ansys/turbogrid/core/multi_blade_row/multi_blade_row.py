@@ -38,6 +38,7 @@ from pathlib import Path
 from functools import partial
 import concurrent.futures
 import json
+import queue
 
 
 class multi_blade_row:
@@ -52,9 +53,13 @@ class multi_blade_row:
         pass
 
     def __del__(self):
-        for tg_worker_name, tg_worker in self.tg_worker_instances.items():
-            tg_worker.pytg.quit()
-        pass
+        with concurrent.futures.ThreadPoolExecutor(
+            max_workers=len(self.tg_worker_instances)
+        ) as executor:
+            futures = [
+                executor.submit(self.__quit__, val) for key, val in self.tg_worker_instances.items()
+            ]
+            concurrent.futures.wait(futures)
 
     # a A TGInit parser would need to be written for this to work
     # def init_from_tginit(self, tginit_path: str):
@@ -221,14 +226,40 @@ class multi_blade_row:
             max_workers=len(self.tg_worker_instances)
         ) as executor:
             futures = [
-                executor.submit(self.__sve_mesh__, key, val)
+                executor.submit(self.__save_mesh__, key, val)
                 for key, val in self.tg_worker_instances.items()
             ]
             concurrent.futures.wait(futures)
 
+    def plot_machine(self):
+        import random
+        import pyvista as pv
+
+        p = pv.Plotter()
+        print("plot_machine")
+        threadsafe_queue: queue.Queue = queue.Queue()
+        with concurrent.futures.ThreadPoolExecutor(
+            max_workers=len(self.tg_worker_instances)
+        ) as executor:
+            job = partial(self.__write_boundary_polys__, threadsafe_queue)
+            futures = [executor.submit(job, val) for key, val in self.tg_worker_instances.items()]
+            concurrent.futures.wait(futures)
+
+        # for tg_worker_name, tg_worker_instance in self.tg_worker_instances.items():
+        #     print(f"  {tg_worker_name}")
+        #     for b_m in tg_worker_instance.pytg.getBoundaryGeometry():
+        #         p.add_mesh(b_m, color=[random.random(), random.random(), random.random()])
+        print("add meshes")
+        while threadsafe_queue.empty() == False:
+            p.add_mesh(
+                threadsafe_queue.get(), color=[random.random(), random.random(), random.random()]
+            )
+        print("show")
+        p.show(jupyter_backend="client")
+
     def __launch_instances__(self, ndf_file_name, tg_worker_name, tg_worker_instance):
         tg_worker_instance.pytg = launch_turbogrid(
-            log_level=pyturbogrid_core.PyTurboGrid.TurboGridLogLevel.DEBUG,
+            log_level=pyturbogrid_core.PyTurboGrid.TurboGridLogLevel.NETWORK_DEBUG,
             log_filename_suffix=f"_{ndf_file_name}_{tg_worker_name}",
             additional_kw_args={"local-root": "C:/ANSYSDev/gitSRC/CFX/CFXUE/src"},
         )
@@ -254,40 +285,43 @@ class multi_blade_row:
         tg_worker_name,
         tg_worker_instance,
     ):
-        tg_worker_instance.pytg = launch_turbogrid(
-            log_level=pyturbogrid_core.PyTurboGrid.TurboGridLogLevel.DEBUG,
-            log_filename_suffix=f"_{tg_worker_name}",
-            additional_kw_args={"local-root": "C:/ANSYSDev/gitSRC/CFX/CFXUE/src"},
-        )
-        tg_worker_instance.pytg.block_each_message = True
-        tg_worker_instance.pytg.read_inf(filename=os.path.join(base_dir, tg_worker_name))
-        if neighbor_dict[tg_worker_name][0]:
-            tg_worker_instance.pytg.set_obj_param(
-                object="/GEOMETRY/INLET",
-                param_val_pairs=f"Opening Mode = Adjacent blade, Input Filename = {os.path.join(base_dir, neighbor_dict[tg_worker_name][0])}",
+        try:
+            tg_worker_instance.pytg = launch_turbogrid(
+                log_level=pyturbogrid_core.PyTurboGrid.TurboGridLogLevel.NETWORK_DEBUG,
+                log_filename_suffix=f"_{tg_worker_name}",
+                additional_kw_args={"local-root": "C:/ANSYSDev/gitSRC/CFX/CFXUE/src"},
             )
-            tg_worker_instance.pytg.set_obj_param(
-                object="/MESH DATA",
-                param_val_pairs=f"Inlet Domain = Off",
-            )
-        else:
-            tg_worker_instance.pytg.set_obj_param(
-                object="/GEOMETRY/INLET", param_val_pairs=f"Opening Mode = Fully extend"
-            )
-        if neighbor_dict[tg_worker_name][1]:
-            tg_worker_instance.pytg.set_obj_param(
-                object="/GEOMETRY/OUTLET",
-                param_val_pairs=f"Opening Mode = Adjacent blade, Input Filename = {os.path.join(base_dir, neighbor_dict[tg_worker_name][1])}",
-            )
-            tg_worker_instance.pytg.set_obj_param(
-                object="/MESH DATA",
-                param_val_pairs=f"Outlet Domain = Off",
-            )
-        else:
-            tg_worker_instance.pytg.set_obj_param(
-                object="/GEOMETRY/OUTLET", param_val_pairs=f"Opening Mode = Fully extend"
-            )
-        tg_worker_instance.pytg.unsuspend(object="/TOPOLOGY SET")
+            tg_worker_instance.pytg.block_each_message = True
+            tg_worker_instance.pytg.read_inf(filename=os.path.join(base_dir, tg_worker_name))
+            if neighbor_dict[tg_worker_name][0]:
+                tg_worker_instance.pytg.set_obj_param(
+                    object="/GEOMETRY/INLET",
+                    param_val_pairs=f"Opening Mode = Adjacent blade, Input Filename = {os.path.join(base_dir, neighbor_dict[tg_worker_name][0])}",
+                )
+                tg_worker_instance.pytg.set_obj_param(
+                    object="/MESH DATA",
+                    param_val_pairs=f"Inlet Domain = Off",
+                )
+            else:
+                tg_worker_instance.pytg.set_obj_param(
+                    object="/GEOMETRY/INLET", param_val_pairs=f"Opening Mode = Fully extend"
+                )
+            if neighbor_dict[tg_worker_name][1]:
+                tg_worker_instance.pytg.set_obj_param(
+                    object="/GEOMETRY/OUTLET",
+                    param_val_pairs=f"Opening Mode = Adjacent blade, Input Filename = {os.path.join(base_dir, neighbor_dict[tg_worker_name][1])}",
+                )
+                tg_worker_instance.pytg.set_obj_param(
+                    object="/MESH DATA",
+                    param_val_pairs=f"Outlet Domain = Off",
+                )
+            else:
+                tg_worker_instance.pytg.set_obj_param(
+                    object="/GEOMETRY/OUTLET", param_val_pairs=f"Opening Mode = Fully extend"
+                )
+            tg_worker_instance.pytg.unsuspend(object="/TOPOLOGY SET")
+        except Exception as e:
+            print(f"{tg_worker_instance} exception on __launch_instances_inf__: {e}")
 
     def __set_gsf__(self, size_factor, tg_worker_name, tg_worker_instance):
         tg_worker_instance.pytg.set_global_size_factor(self.base_gsf[tg_worker_name] * size_factor)
@@ -308,5 +342,12 @@ class multi_blade_row:
             pass
         return ec
 
-    def __sve_mesh__(self, tg_worker_name, tg_worker_instance):
+    def __save_mesh__(self, tg_worker_name, tg_worker_instance):
         tg_worker_instance.pytg.save_mesh(tg_worker_name + ".def")
+
+    def __quit__(self, tg_worker_instance):
+        tg_worker_instance.pytg.quit()
+
+    def __write_boundary_polys__(self, threadsafe_queue: queue.Queue, tg_worker_instance):
+        for b_m in tg_worker_instance.pytg.getBoundaryGeometry():
+            threadsafe_queue.put(b_m)
