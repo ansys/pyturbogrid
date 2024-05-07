@@ -28,17 +28,19 @@
 # or multiple rows in parallel.
 """Module for working on a multi blade row turbomachinery case using PyTurboGrid instances in parallel."""
 
+import concurrent.futures
+import json
+import math
 import os
+import queue
 import ansys.turbogrid.core.ndf_parser.ndf_parser as ndf_parser
 
 from ansys.turbogrid.core.launcher.launcher import launch_turbogrid
 from ansys.turbogrid.core.multi_blade_row.single_blade_row import single_blade_row
-from ansys.turbogrid.api import pyturbogrid_core
-from pathlib import Path
+from ansys.turbogrid.api.pyturbogrid_core import PyTurboGrid
+from enum import IntEnum
 from functools import partial
-import concurrent.futures
-import json
-import queue
+from pathlib import Path
 
 
 class multi_blade_row:
@@ -47,6 +49,9 @@ class multi_blade_row:
     all_blade_rows: dict
     all_blade_row_keys: list
     base_gsf: dict[str, float]
+
+    class MachineSizingStrategy(IntEnum):
+        MIN_FACE_AREA = 1
 
     # Consider passing in the filename (whether ndf or tginit) as initializing as raii
     def __init__(self):
@@ -65,35 +70,43 @@ class multi_blade_row:
     # def init_from_tginit(self, tginit_path: str):
     #     pass
 
-    def init_from_ndf(self, ndf_path: str):
+    def init_from_ndf(
+        self,
+        ndf_path: str,
+        use_existing_tginit_cad: bool = False,
+        tg_log_level: PyTurboGrid.TurboGridLogLevel = PyTurboGrid.TurboGridLogLevel.INFO,
+    ):
         self.all_blade_rows = ndf_parser.NDFParser(ndf_path).get_blade_row_blades()
         self.all_blade_row_keys = list(self.all_blade_rows.keys())
         print(f"Blade Rows to mesh: {self.all_blade_rows}")
         ndf_name = os.path.basename(ndf_path)
         ndf_file_name, ndf_file_extension = os.path.splitext(ndf_name)
         print(f"{ndf_name=}")
-        pyturbogrid_instance = launch_turbogrid(
-            log_level=pyturbogrid_core.PyTurboGrid.TurboGridLogLevel.DEBUG,
-            log_filename_suffix="_" + ndf_name,
-        )
-        pyturbogrid_instance.read_ndf(
-            ndffilename=ndf_path,
-            cadfilename=ndf_file_name + ".x_b",
-            bladerow=self.all_blade_row_keys[0],
-        )
-        pyturbogrid_instance.quit()
+
+        if use_existing_tginit_cad == False:
+            pyturbogrid_instance = launch_turbogrid(
+                log_level=tg_log_level,
+                log_filename_suffix="_" + ndf_name,
+            )
+            pyturbogrid_instance.read_ndf(
+                ndffilename=ndf_path,
+                cadfilename=ndf_file_name + ".x_b",
+                bladerow=self.all_blade_row_keys[0],
+            )
+            pyturbogrid_instance.quit()
+
         self.tg_worker_instances = {key: single_blade_row() for key in self.all_blade_row_keys}
         self.base_gsf = {key: 1.0 for key in self.all_blade_row_keys}
         with concurrent.futures.ThreadPoolExecutor(
             max_workers=len(self.tg_worker_instances)
         ) as executor:
-            job = partial(self.__launch_instances__, ndf_file_name)
+            job = partial(self.__launch_instances__, ndf_file_name, tg_log_level)
             futures = [
                 executor.submit(job, key, val) for key, val in self.tg_worker_instances.items()
             ]
             concurrent.futures.wait(futures)
 
-    def init_from_tgmachine(self, tgmachine_path: str):
+    def init_from_tgmachine(self, tgmachine_path: str, tg_log_level):
         print(f"init_from_tgmachine tgmachine_path = {tgmachine_path}")
         tgmachine_file = open(tgmachine_path, "r")
         machine_info = json.load(tgmachine_file)
@@ -124,7 +137,10 @@ class multi_blade_row:
             max_workers=len(self.tg_worker_instances)
         ) as executor:
             job = partial(
-                self.__launch_instances_inf__, os.path.split(tgmachine_path)[0], self.neighbor_dict
+                self.__launch_instances_inf__,
+                tg_log_level,
+                os.path.split(tgmachine_path)[0],
+                self.neighbor_dict,
             )
             futures = [
                 executor.submit(job, key, val) for key, val in self.tg_worker_instances.items()
@@ -184,6 +200,19 @@ class multi_blade_row:
             object="/GEOMETRY/MACHINE DATA",
             param_val_pairs=f"Bladeset Count = {number_of_blade_sets}",
         )
+
+    def set_machine_sizing_strategy(self, strategy: MachineSizingStrategy):
+        # When 3.9 is dropped, we can use match/case
+        if strategy == self.MachineSizingStrategy.MIN_FACE_AREA:
+            original_face_areas = self.get_average_base_face_areas()
+            target_face_area = min(original_face_areas.values())
+            base_gsf = {
+                key: math.sqrt(original_face_area / target_face_area)
+                for key, original_face_area in original_face_areas.items()
+            }
+            self.set_machine_base_size_factors(base_gsf)
+        else:
+            raise Exception(f"MachineSizingStrategy {strategy.name} not supported")
 
     def set_machine_base_size_factors(self, size_factors: dict[str, float]):
         # print(f"set_machine_base_size_factors {size_factors}")
@@ -257,9 +286,9 @@ class multi_blade_row:
         print("show")
         p.show(jupyter_backend="client")
 
-    def __launch_instances__(self, ndf_file_name, tg_worker_name, tg_worker_instance):
+    def __launch_instances__(self, ndf_file_name, tg_log_level, tg_worker_name, tg_worker_instance):
         tg_worker_instance.pytg = launch_turbogrid(
-            log_level=pyturbogrid_core.PyTurboGrid.TurboGridLogLevel.NETWORK_DEBUG,
+            log_level=tg_log_level,
             log_filename_suffix=f"_{ndf_file_name}_{tg_worker_name}",
             additional_kw_args={"local-root": "C:/ANSYSDev/gitSRC/CFX/CFXUE/src"},
         )
@@ -280,6 +309,7 @@ class multi_blade_row:
 
     def __launch_instances_inf__(
         self,
+        tg_log_level,
         base_dir,
         neighbor_dict: dict[str, str | None],
         tg_worker_name,
@@ -287,7 +317,7 @@ class multi_blade_row:
     ):
         try:
             tg_worker_instance.pytg = launch_turbogrid(
-                log_level=pyturbogrid_core.PyTurboGrid.TurboGridLogLevel.NETWORK_DEBUG,
+                log_level=tg_log_level,
                 log_filename_suffix=f"_{tg_worker_name}",
                 additional_kw_args={"local-root": "C:/ANSYSDev/gitSRC/CFX/CFXUE/src"},
             )

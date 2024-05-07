@@ -176,3 +176,4 @@ tests/mbr/DTCG50Compressor/*.*
 tests/ndf/hannover_compressor.ndf
 tests/ndf/turb_axial_4stage_geom.ndf
 tests/ndf/AxiFan-01A-MultiRow.ndf
+examples/ndf_results/*.*
