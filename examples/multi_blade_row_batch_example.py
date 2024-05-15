@@ -1,5 +1,7 @@
 # Copyright (C) 2023 - 2024 ANSYS, Inc. and/or its affiliates.
+# Copyright (C) 2024 Concepts NREC, LLC.
 # SPDX-FileCopyrightText: 2024 ANSYS, Inc. All rights reserved
+# SPDX-FileCopyrightText: 2024 Concepts NREC, LLC All rights reserved
 # SPDX-License-Identifier: MIT
 #
 #
