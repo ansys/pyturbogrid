@@ -1,5 +1,7 @@
 # Copyright (C) 2023 - 2024 ANSYS, Inc. and/or its affiliates.
+# Copyright (C) 2024 Concepts NREC, LLC.
 # SPDX-FileCopyrightText: 2024 ANSYS, Inc. All rights reserved
+# SPDX-FileCopyrightText: 2024 Concepts NREC, LLC All rights reserved
 # SPDX-License-Identifier: MIT
 #
 #
@@ -37,6 +39,7 @@ This basic example shows how to set up a multi blade row meshing instance and ex
 # package has been installed.
 
 import os
+import pathlib
 
 from ansys.turbogrid.core.multi_blade_row.multi_blade_row import MultiBladeRow
 
@@ -49,14 +52,18 @@ if __name__ == "__main__":
     # Set working directory.
     working_directory = os.getcwd()
 
-    # Set location for the NDF file.
-    case_folder = r"Full\Path\to\the\folder\having\the\NDF\file\for\the\case"
+    # NDF file for this example.
+    # Credits for the design go to: https://www.conceptsnrec.com/home
+    # © Copyright 2024 Concepts NREC
+    ndf_file_name = "AxialFanMultiRow.ndf"
 
-    # Set name of the NDF file.
-    ndf_file_name = "Name_of_the_NDF_file_for_the_case.ndf"
+    # Build the path to the test data folder
+    test_data_path = pathlib.PurePath(__file__).parent.parent.as_posix()
+    test_data_path = os.path.join(test_data_path, "tests")
+    test_data_path = os.path.join(test_data_path, "ndf")
 
     # Create a MultiBladeRow instance.
-    mbr_instance = MultiBladeRow(working_directory, case_folder, ndf_file_name)
+    mbr_instance = MultiBladeRow(working_directory, test_data_path, ndf_file_name)
 
     # Set up some settings.
     mbr_instance.set_spanwise_counts(56, 73)
