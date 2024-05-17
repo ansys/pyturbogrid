@@ -55,6 +55,8 @@ def test_turbogrid_exe_paths():
     try:
         os.environ["AWP_ROOT232"] = "/myansys/v232"
         os.environ["AWP_ROOT241"] = "/myansys2/v241"
+        os.environ["AWP_ROOT242"] = "/myansys2/v242"
+        os.environ["AWP_ROOT251"] = "/myansys2/v251"
 
         latest_path = launcher.get_turbogrid_exe_path()
         version_path = launcher.get_turbogrid_exe_path(product_version="23.2")
@@ -68,13 +70,15 @@ def test_turbogrid_exe_paths():
         else:
             exe_suffix = ""
 
-        assert str(latest_path) == str(Path(r"/myansys2/v241/TurboGrid/bin/cfxtg")) + exe_suffix
+        assert str(latest_path) == str(Path(r"/myansys2/v251/TurboGrid/bin/cfxtg")) + exe_suffix
         assert str(version_path) == str(Path(r"/myansys/v232/TurboGrid/bin/cfxtg")) + exe_suffix
         assert str(pyturbogrid_env_path) == str(Path(r"/TGRoot/bin/cfxtg")) + exe_suffix
         assert str(specified_path) == str(Path(r"/MyPath/MyExe.exe"))
 
         del os.environ["AWP_ROOT232"]
         del os.environ["AWP_ROOT241"]
+        del os.environ["AWP_ROOT242"]
+        del os.environ["AWP_ROOT251"]
 
         with pytest.raises(RuntimeError, match="No Ansys version can be found."):
             print(launcher.get_latest_ansys_version())

@@ -35,19 +35,19 @@ import pytest
 
 from DeployTGContainer import deployed_tg_container, remote_tg_instance
 
-pyturbogrid_root = os.getenv("PYTURBOGRID_ROOT")
-if pyturbogrid_root:
-    sys.path.append(f"{pyturbogrid_root}/src")
-else:
-    sys.path.append("./src")
+# pyturbogrid_root = os.getenv("PYTURBOGRID_ROOT")
+# if pyturbogrid_root:
+#     sys.path.append(f"{pyturbogrid_root}/src")
+# else:
+#     sys.path.append("./src")
 
 # For now, this relies on the installed package because of github reasons.
 # If you want to use a 'local' api module, you can use the following:
-pyturbogrid_api_root = os.getenv("PYTURBOGRID_API_ROOT")
-if pyturbogrid_api_root:
-    sys.path.append(f"{pyturbogrid_api_root}/src")
-else:
-    raise RuntimeError("PYTURBOGRID_API_ROOT must be defined")
+# pyturbogrid_api_root = os.getenv("PYTURBOGRID_API_ROOT")
+# if pyturbogrid_api_root:
+#     sys.path.append(f"{pyturbogrid_api_root}/src")
+# else:
+#     raise RuntimeError("PYTURBOGRID_API_ROOT must be defined")
 
 from ansys.turbogrid.api import pyturbogrid_core
 
@@ -314,8 +314,6 @@ def helpers(pytestconfig):
 def pyturbogrid(pytestconfig, request) -> pyturbogrid_core.PyTurboGrid:
     pytest.socket_port = get_open_port()
 
-    turbogrid_versions = ["241", "232"]
-
     pytest.turbogrid_log_level = pyturbogrid_core.PyTurboGrid.TurboGridLogLevel[
         pytestconfig.getoption("log_level")
     ]
@@ -362,6 +360,14 @@ def pyturbogrid(pytestconfig, request) -> pyturbogrid_core.PyTurboGrid:
     pytest.additional_kw_args = get_additional_kw_args(
         local_root_env="PYTURBOGRID_TURBOGRID_LOCAL_ROOT"
     )
+
+    print(f"{pytest.socket_port=}")
+    print(f"{pytest.turbogrid_install_type=}")
+    print(f"{pytest.path_to_cfxtg=}")
+    print(f"{pytest.turbogrid_log_level=}")
+    print(f"{pytest.additional_args=}")
+    print(f"{pytest.additional_kw_args=}")
+    print(f"{request.node.name=}")
 
     pyturbogrid = pyturbogrid_core.PyTurboGrid(
         socket_port=pytest.socket_port,
