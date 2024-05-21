@@ -29,18 +29,19 @@
 """Module for working on a multi blade row turbomachinery case using PyTurboGrid instances in parallel."""
 
 import concurrent.futures
+from enum import IntEnum
+from functools import partial
 import json
 import math
 import os
+from pathlib import Path
 import queue
-import ansys.turbogrid.core.ndf_parser.ndf_parser as ndf_parser
+
+from ansys.turbogrid.api.pyturbogrid_core import PyTurboGrid
 
 from ansys.turbogrid.core.launcher.launcher import launch_turbogrid
 from ansys.turbogrid.core.multi_blade_row.single_blade_row import single_blade_row
-from ansys.turbogrid.api.pyturbogrid_core import PyTurboGrid
-from enum import IntEnum
-from functools import partial
-from pathlib import Path
+import ansys.turbogrid.core.ndf_parser.ndf_parser as ndf_parser
 
 
 class multi_blade_row:

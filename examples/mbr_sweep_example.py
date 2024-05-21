@@ -44,14 +44,13 @@ install_path = pathlib.PurePath(__file__).parent.parent.as_posix()
 
 from ansys.turbogrid.core.multi_blade_row.multi_blade_row import multi_blade_row as MBR
 
-
 all_face_areas = {}
 all_element_counts = {}
 
 
 #################################################################################
 # Create a multi_blade_row and initialize it
-# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # Use the Concepts NREC sample provided
 
 start_time = time.time()
@@ -73,7 +72,7 @@ machine.set_machine_sizing_strategy(MBR.MachineSizingStrategy.MIN_FACE_AREA)
 
 #################################################################################
 # Sweep a parameter
-# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# ~~~~~~~~~~~~~~~~~
 # In this case, increase the global size factor, and measure the (base) layer face areas, and the element counts.
 
 for factor in [1, 1.5, 2]:

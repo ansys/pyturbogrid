@@ -26,32 +26,14 @@ from enum import IntEnum
 import os
 import random
 import socket
-import sys
 import time
 from typing import Optional
 
+from ansys.turbogrid.api import pyturbogrid_core
 from fabric import Connection
 import pytest
 
 from DeployTGContainer import deployed_tg_container, remote_tg_instance
-
-# pyturbogrid_root = os.getenv("PYTURBOGRID_ROOT")
-# if pyturbogrid_root:
-#     sys.path.append(f"{pyturbogrid_root}/src")
-# else:
-#     sys.path.append("./src")
-
-# For now, this relies on the installed package because of github reasons.
-# If you want to use a 'local' api module, you can use the following:
-# pyturbogrid_api_root = os.getenv("PYTURBOGRID_API_ROOT")
-# if pyturbogrid_api_root:
-#     sys.path.append(f"{pyturbogrid_api_root}/src")
-# else:
-#     raise RuntimeError("PYTURBOGRID_API_ROOT must be defined")
-
-from ansys.turbogrid.api import pyturbogrid_core
-
-# from ansys.turbogrid.core.launcher.launcher import launch_turbogrid
 
 
 class TestExecutionMode(IntEnum):
