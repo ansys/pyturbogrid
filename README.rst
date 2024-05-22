@@ -107,7 +107,7 @@ contribute to PyTurboGrid.
    
        python -m pip install poetry
        python -m pip poetry lock
-       python -m pip poetry install --with user,doc,test
+       python -m pip poetry install --with doc,test
        # For Ansys-Internal developers:
        python -m pip poetry install --with dev,doc,test
        python -m pip poetry shell
