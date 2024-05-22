@@ -38,7 +38,7 @@ Jinja2 = ">=3.1.2"
 optional = true
 
 [tool.poetry.group.user.dependencies]
-ansys-turbogrid-api = ">=0.4.1"
+ansys-turbogrid-api = "==0.4.2"
 
 [tool.poetry.group.dev]
 optional = true
