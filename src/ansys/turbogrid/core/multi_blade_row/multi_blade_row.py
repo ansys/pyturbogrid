@@ -263,6 +263,7 @@ class multi_blade_row:
 
     def plot_machine(self):
         import random
+
         import pyvista as pv
 
         p = pv.Plotter()
