@@ -33,12 +33,7 @@ matplotlib = ">=3.5.1"
 importlib-metadata = ">=4.0"
 fabric = ">=3.2.2"
 Jinja2 = ">=3.1.2"
-
-[tool.poetry.group.user]
-optional = true
-
-[tool.poetry.group.user.dependencies]
-ansys-turbogrid-api = "==0.4.2"
+ansys-turbogrid-api = ">=0.4.2"
 
 [tool.poetry.group.dev]
 optional = true
