@@ -36,6 +36,7 @@ import math
 import os
 from pathlib import Path
 import queue
+from typing import Optional
 
 from ansys.turbogrid.api.pyturbogrid_core import PyTurboGrid
 
@@ -313,7 +314,7 @@ class multi_blade_row:
         self,
         tg_log_level,
         base_dir,
-        neighbor_dict: dict[str, str | None],
+        neighbor_dict: dict[str, Optional[str]],
         tg_worker_name,
         tg_worker_instance,
     ):
