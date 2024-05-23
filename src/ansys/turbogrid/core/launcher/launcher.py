@@ -142,6 +142,7 @@ def launch_turbogrid(
     product_version: str = None,
     turbogrid_path: str = None,
     log_level: pyturbogrid_core.PyTurboGrid.TurboGridLogLevel = pyturbogrid_core.PyTurboGrid.TurboGridLogLevel.INFO,
+    turbogrid_location_type=pyturbogrid_core.PyTurboGrid.TurboGridLocationType.TURBOGRID_INSTALL,
     additional_args_str: str = None,
     additional_kw_args: dict = None,
     port: Optional[int] = None,
@@ -187,11 +188,13 @@ def launch_turbogrid(
         )
 
     argVals = locals()
-    pathToCFXTG = get_turbogrid_exe_path(**argVals)
+    pathToCFXTG: str = turbogrid_path
+    if turbogrid_path == None:
+        pathToCFXTG = get_turbogrid_exe_path(**argVals)
 
     return pyturbogrid_core.PyTurboGrid(
         socket_port=port,
-        turbogrid_location_type=pyturbogrid_core.PyTurboGrid.TurboGridLocationType.TURBOGRID_INSTALL,
+        turbogrid_location_type=turbogrid_location_type,
         cfxtg_location=pathToCFXTG,
         additional_args_str=additional_args_str,
         additional_kw_args=additional_kw_args,

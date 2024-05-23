@@ -30,6 +30,7 @@ import time
 from typing import Optional
 
 from ansys.turbogrid.api import pyturbogrid_core
+from ansys.turbogrid.core.launcher.launcher import launch_turbogrid
 from fabric import Connection
 import pytest
 
@@ -116,7 +117,7 @@ def pytest_addoption(parser):
         help="The full path+filename to launch TurboGrid when --execution-mode==DIRECT",
     )
     parser.addoption(
-        "--log_level",
+        "--client_log_level",
         action="store",
         default="INFO",
         help="Sets the log level for the python client",
@@ -297,7 +298,7 @@ def pyturbogrid(pytestconfig, request) -> pyturbogrid_core.PyTurboGrid:
     pytest.socket_port = get_open_port()
 
     pytest.turbogrid_log_level = pyturbogrid_core.PyTurboGrid.TurboGridLogLevel[
-        pytestconfig.getoption("log_level")
+        pytestconfig.getoption("client_log_level")
     ]
     pytest.execution_mode = TestExecutionMode[pytestconfig.getoption("execution_mode")]
     # Regardless of this parameter, if we specified CONTAINERIZED above,
@@ -351,21 +352,26 @@ def pyturbogrid(pytestconfig, request) -> pyturbogrid_core.PyTurboGrid:
     print(f"{pytest.additional_kw_args=}")
     print(f"{request.node.name=}")
 
-    pyturbogrid = pyturbogrid_core.PyTurboGrid(
-        socket_port=pytest.socket_port,
-        turbogrid_location_type=pytest.turbogrid_install_type,
-        cfxtg_location=pytest.path_to_cfxtg,
-        log_level=pytest.turbogrid_log_level,
+    # If issues come up with launch_turbogrid, fall back to this style for testing:
+    # pyturbogrid = pyturbogrid_core.PyTurboGrid(
+    #     socket_port=pytest.socket_port,
+    #     turbogrid_location_type=pytest.turbogrid_install_type,
+    #     cfxtg_location=pytest.path_to_cfxtg,
+    #     log_level=pytest.turbogrid_log_level,
+    #     additional_args_str=pytest.additional_args,
+    #     additional_kw_args=pytest.additional_kw_args,
+    #     log_filename_suffix=request.node.name,
+    # )
+
+    pyturbogrid = launch_turbogrid(
+        turbogrid_path=pytest.path_to_cfxtg,
         additional_args_str=pytest.additional_args,
         additional_kw_args=pytest.additional_kw_args,
+        log_level=pytest.turbogrid_log_level,
+        port=pytest.socket_port,
+        turbogrid_location_type=pytest.turbogrid_install_type,
         log_filename_suffix=request.node.name,
     )
-
-    # pyturbogrid = launch_turbogrid(
-    #     additional_args_str=additional_args,
-    #     additional_kw_args=additional_kw_args,
-    #     port=pytest.socket_port,
-    # )
 
     yield pyturbogrid
     # Because of conf-testy things, we can't rely on the proper lifetime management here
