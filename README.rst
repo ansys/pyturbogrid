@@ -109,7 +109,7 @@ contribute to PyTurboGrid.
        python -m pip poetry lock
        python -m pip poetry install --with doc,test
        # For Ansys-Internal developers:
-       python -m pip poetry install --with dev,doc,test
+       # Uncomment the local git dependency instead for editable development
        python -m pip poetry shell
 
 Requirements

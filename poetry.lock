@@ -86,19 +86,18 @@ doc = ["Sphinx (==7.2.6)", "numpydoc (==1.6.0)", "requests (==2.31.0)", "sphinx-
 [[package]]
 name = "ansys-turbogrid-api"
 version = "0.4.2"
-description = "A python wrapper for Ansys TurboGrid Service"
+description = ""
 optional = false
-python-versions = ">=3.9,<4.0"
-files = []
-develop = true
+python-versions = ">=3.8"
+files = [
+    {file = "ansys_turbogrid_api-0.4.2-py310-none-any.whl", hash = "sha256:f74ec56260def4b341c94e30624f5badb276c14cdc71e6e2de5796b99aa8746b"},
+    {file = "ansys_turbogrid_api-0.4.2-py311-none-any.whl", hash = "sha256:e4c368338928d3788ca7510b775105e7186fb26dc1956d57c5d1bee6397f27f4"},
+    {file = "ansys_turbogrid_api-0.4.2-py312-none-any.whl", hash = "sha256:39488a9c3f686abde26940fbd202f26213c6e6a4fea0bcec1d38dfdb2f2a29c6"},
+    {file = "ansys_turbogrid_api-0.4.2-py39-none-any.whl", hash = "sha256:26c67403db2d7c619892f844101400153f6da7c04680ca5469bb86c21d2a7e4f"},
+]
 
 [package.dependencies]
-ansys-platform-instancemanagement = "^1.0"
-toml = "0.10.2"
-
-[package.source]
-type = "directory"
-url = "../ansys-api-turbogrid"
+ansys-platform-instancemanagement = ">=1.0,<2.0"
 
 [[package]]
 name = "anyascii"
@@ -1513,13 +1512,13 @@ referencing = ">=0.31.0"
 
 [[package]]
 name = "jupyter-client"
-version = "8.6.1"
+version = "8.6.2"
 description = "Jupyter protocol implementation and client libraries"
 optional = false
 python-versions = ">=3.8"
 files = [
-    {file = "jupyter_client-8.6.1-py3-none-any.whl", hash = "sha256:3b7bd22f058434e3b9a7ea4b1500ed47de2713872288c0d511d19926f99b459f"},
-    {file = "jupyter_client-8.6.1.tar.gz", hash = "sha256:e842515e2bab8e19186d89fdfea7abd15e39dd581f94e399f00e2af5a1652d3f"},
+    {file = "jupyter_client-8.6.2-py3-none-any.whl", hash = "sha256:50cbc5c66fd1b8f65ecb66bc490ab73217993632809b6e505687de18e9dea39f"},
+    {file = "jupyter_client-8.6.2.tar.gz", hash = "sha256:2bda14d55ee5ba58552a8c53ae43d215ad9868853489213f37da060ced54d8df"},
 ]
 
 [package.dependencies]
@@ -1532,7 +1531,7 @@ traitlets = ">=5.3"
 
 [package.extras]
 docs = ["ipykernel", "myst-parser", "pydata-sphinx-theme", "sphinx (>=4)", "sphinx-autodoc-typehints", "sphinxcontrib-github-alt", "sphinxcontrib-spelling"]
-test = ["coverage", "ipykernel (>=6.14)", "mypy", "paramiko", "pre-commit", "pytest", "pytest-cov", "pytest-jupyter[client] (>=0.4.1)", "pytest-timeout"]
+test = ["coverage", "ipykernel (>=6.14)", "mypy", "paramiko", "pre-commit", "pytest (<8.2.0)", "pytest-cov", "pytest-jupyter[client] (>=0.4.1)", "pytest-timeout"]
 
 [[package]]
 name = "jupyter-core"
@@ -4031,4 +4030,4 @@ testing = ["big-O", "jaraco.functools", "jaraco.itertools", "jaraco.test", "more
 [metadata]
 lock-version = "2.0"
 python-versions = ">=3.9,<4.0"
-content-hash = "21cb479d86f1dffe1afa67d704e2dcbd76cc687a9eb87c6df1948bd2dfd1f663"
+content-hash = "e282cfd65addc5ec0543444ed151730f327d2be59d675214482e4ac2a11592cd"
