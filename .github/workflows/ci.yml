@@ -100,7 +100,7 @@ jobs:
       - name: Pull TurboGrid Linux Image
         run: |
           docker network ls
-          docker pull ghcr.io/ansys/ansys-api-turbogrid/tglin_reduced:241    
+          docker pull ghcr.io/ansys/ansys-api-turbogrid/tglin_reduced:242    
 
       - name: Create Key
         uses: mobiledevops/secret-to-file-action@v1
