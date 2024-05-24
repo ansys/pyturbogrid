@@ -32,9 +32,10 @@ import random
 import socket
 import time
 from typing import Optional
-from ansys.turbogrid.core.launcher.DeployTGContainer import deployed_tg_container
 
 from ansys.turbogrid.api import pyturbogrid_core
+
+from ansys.turbogrid.core.launcher.DeployTGContainer import deployed_tg_container
 
 
 def _is_windows():

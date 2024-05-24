@@ -30,8 +30,6 @@ import time
 from typing import Optional
 
 from ansys.turbogrid.api import pyturbogrid_core
-from ansys.turbogrid.core.launcher.launcher import launch_turbogrid
-from ansys.turbogrid.core.launcher.launcher import launch_turbogrid_container
 from fabric import Connection
 import pytest
 
@@ -39,6 +37,7 @@ from ansys.turbogrid.core.launcher.DeployTGContainer import (
     deployed_tg_container,
     remote_tg_instance,
 )
+from ansys.turbogrid.core.launcher.launcher import launch_turbogrid, launch_turbogrid_container
 
 
 class TestExecutionMode(IntEnum):
