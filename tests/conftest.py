@@ -31,10 +31,14 @@ from typing import Optional
 
 from ansys.turbogrid.api import pyturbogrid_core
 from ansys.turbogrid.core.launcher.launcher import launch_turbogrid
+from ansys.turbogrid.core.launcher.launcher import launch_turbogrid_container
 from fabric import Connection
 import pytest
 
-from DeployTGContainer import deployed_tg_container, remote_tg_instance
+from ansys.turbogrid.core.launcher.DeployTGContainer import (
+    deployed_tg_container,
+    remote_tg_instance,
+)
 
 
 class TestExecutionMode(IntEnum):
@@ -123,6 +127,15 @@ def pytest_addoption(parser):
         help="Sets the log level for the python client",
         choices=("CRITICAL", "ERROR", "WARNING", "INFO", "NETWORK_DEBUG", "DEBUG"),
     )
+    parser.addoption(
+        "--tg_kw_args",
+        action="store",
+        default="{}",
+        help=(
+            "A dictionary for kw args to launch tg with. "
+            "Used by developers in specific situations"
+        ),
+    )
 
 
 def get_additional_args(debug_env: str) -> str:
@@ -188,36 +201,6 @@ def get_enum_value_from_env(
             f"Valid values include {valid_values_str}."
         )
     return enum_value
-
-
-def get_tg_container(pytestconfig, socket_port: int) -> deployed_tg_container:
-    container_name: str = pytestconfig.getoption("container_name")
-    # Generate a random integer with 10 digits
-    random_number = random.randint(10**9, 10**10 - 1)
-    container_name = container_name + str(random_number)
-    image_name: str = pytestconfig.getoption("image_name")
-    # The path to cfxtg_command is standardized by the container, so just replace the command name.
-    # This allows image developers to write custom cfxtg commands.
-    cfxtg_command: str = pytestconfig.getoption("cfxtg_command_name")
-    cfxtg_command = (
-        f"./v{pytestconfig.getoption('cfx_version')}/TurboGrid/bin/{cfxtg_command} "
-        f"-py -control-port {socket_port}"
-    )
-
-    license_server: str = pytestconfig.getoption("license_file")
-    pytest.ftp_port = get_open_port()
-
-    tg_instance = deployed_tg_container(
-        image_name,
-        socket_port,
-        pytest.ftp_port,
-        cfxtg_command,
-        license_server,
-        container_name,
-        pytestconfig.getoption("keep_stopped_containers"),
-        ast.literal_eval(pytestconfig.getoption("container_env_dict")),
-    )
-    return tg_instance
 
 
 def get_open_port():
@@ -320,7 +303,25 @@ def pyturbogrid(pytestconfig, request) -> pyturbogrid_core.PyTurboGrid:
 
     tg_execution_control: deployed_tg_container | remote_tg_instance | None = None
     if pytest.execution_mode == TestExecutionMode.CONTAINERIZED:
-        tg_execution_control = get_tg_container(pytestconfig, pytest.socket_port)
+        pytest.cfxtg_command_name = pytestconfig.getoption("cfxtg_command_name")
+        pytest.image_name = pytestconfig.getoption("image_name")
+        pytest.container_name = pytestconfig.getoption("container_name")
+        pytest.cfx_version = pytestconfig.getoption("cfx_version")
+        pytest.license_file = pytestconfig.getoption("license_file")
+        pytest.keep_stopped_containers = pytestconfig.getoption("keep_stopped_containers")
+        pytest.container_env_dict = pytestconfig.getoption("container_env_dict")
+        pytest.ssh_key_filename = pytestconfig.getoption("ssh_key_filename")
+        tg_execution_control = launch_turbogrid_container(
+            pytest.cfxtg_command_name,
+            pytest.image_name,
+            pytest.container_name,
+            pytest.cfx_version,
+            pytest.license_file,
+            pytest.keep_stopped_containers,
+            pytest.container_env_dict,
+        )
+        pytest.socket_port = tg_execution_control.socket_port
+        pytest.ftp_port = tg_execution_control.ftp_port
     if pytest.execution_mode == TestExecutionMode.REMOTE:
         tg_execution_control = remote_tg_instance(
             pytest.socket_port,

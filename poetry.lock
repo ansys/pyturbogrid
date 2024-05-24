@@ -87,18 +87,19 @@ doc = ["PyGitHub (==2.3.0)", "Sphinx (==7.3.7)", "numpydoc (==1.7.0)", "requests
 [[package]]
 name = "ansys-turbogrid-api"
 version = "0.4.3"
-description = ""
+description = "A python wrapper for Ansys TurboGrid Service"
 optional = false
-python-versions = ">=3.8"
-files = [
-    {file = "ansys_turbogrid_api-0.4.3-py310-none-any.whl", hash = "sha256:fbe1cab3009e24ca723adf6650ccabdf5a801d64d0f3ac83ab138996b9e58c05"},
-    {file = "ansys_turbogrid_api-0.4.3-py311-none-any.whl", hash = "sha256:819c471df62b6322d1a17da4989bbb5c3fed9391ed91240aafc5c1fb8d760909"},
-    {file = "ansys_turbogrid_api-0.4.3-py312-none-any.whl", hash = "sha256:343f51b8f99d8be6449e7c6ff9addc8545e7f4022b73cb894cd1938f1a3821fe"},
-    {file = "ansys_turbogrid_api-0.4.3-py39-none-any.whl", hash = "sha256:ff100e4c0e1faa2f4e2705bb1cdbaa231fec6185bcd4010d9a5a80ebe262765d"},
-]
+python-versions = ">=3.9,<4.0"
+files = []
+develop = true
 
 [package.dependencies]
-ansys-platform-instancemanagement = ">=1.0,<2.0"
+ansys-platform-instancemanagement = "^1.0"
+toml = "0.10.2"
+
+[package.source]
+type = "directory"
+url = "../ansys-api-turbogrid"
 
 [[package]]
 name = "anyio"
@@ -3780,13 +3781,13 @@ files = [
 
 [[package]]
 name = "typing-extensions"
-version = "4.11.0"
+version = "4.12.0"
 description = "Backported and Experimental Type Hints for Python 3.8+"
 optional = false
 python-versions = ">=3.8"
 files = [
-    {file = "typing_extensions-4.11.0-py3-none-any.whl", hash = "sha256:c1f94d72897edaf4ce775bb7558d5b79d8126906a14ea5ed1635921406c0387a"},
-    {file = "typing_extensions-4.11.0.tar.gz", hash = "sha256:83f085bd5ca59c80295fc2a82ab5dac679cbe02b9f33f7d83af68e241bea51b0"},
+    {file = "typing_extensions-4.12.0-py3-none-any.whl", hash = "sha256:b349c66bea9016ac22978d800cfff206d5f9816951f12a7d0ec5578b0a819594"},
+    {file = "typing_extensions-4.12.0.tar.gz", hash = "sha256:8cbcdc8606ebcb0d95453ad7dc5065e6237b6aa230a31e81d0f440c30fed5fd8"},
 ]
 
 [[package]]
@@ -4020,4 +4021,4 @@ testing = ["big-O", "jaraco.functools", "jaraco.itertools", "jaraco.test", "more
 [metadata]
 lock-version = "2.0"
 python-versions = ">=3.9,<4.0"
-content-hash = "d1f96b93fab7945a045d067bb43a1bbd0ccbdba96952d09b9018d95a4b741b66"
+content-hash = "74665d2179f549c7a158e67a171fcc1de32b114c9100818d18641ad24defcacd"

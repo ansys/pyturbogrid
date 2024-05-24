@@ -23,11 +23,16 @@
 
 """Module for launching a local instance of Ansys TurboGrid."""
 
+import ast
 from enum import Enum
 import os
 from pathlib import Path
 import platform
+import random
+import socket
+import time
 from typing import Optional
+from ansys.turbogrid.core.launcher.DeployTGContainer import deployed_tg_container
 
 from ansys.turbogrid.api import pyturbogrid_core
 
@@ -235,3 +240,54 @@ def launch_turbogrid_ansys_labs(
         pim_app_name="turbogrid",
         pim_app_ver=product_version,
     )
+
+
+def get_open_port():
+    with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
+        s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+        # using '0' will tell the OS to pick a random port that is available.
+        s.bind(("", 0))
+        s.listen(1)
+        port = s.getsockname()[1]
+        # Shutdown is not needed because the socket is not connected.
+        # Also, this will throw and error in windows
+        # s.shutdown(socket.SHUT_RDWR)
+        s.close()
+    # Wait a second to let the OS do things
+    time.sleep(1)
+    return port
+
+
+def launch_turbogrid_container(
+    cfxtg_command_name,
+    image_name,
+    container_name,
+    cfx_version,
+    license_file,
+    keep_stopped_containers,
+    container_env_dict,
+) -> deployed_tg_container:
+    # Generate a random integer with 10 digits
+    random_number = random.randint(10**9, 10**10 - 1)
+    container_name = container_name + str(random_number)
+
+    # The path to cfxtg_command is standardized by the container, so just replace the command name.
+    # This allows image developers to write custom cfxtg commands.
+    ftp_port = get_open_port()
+    socket_port = get_open_port()
+    cfxtg_command: str = cfxtg_command_name
+    cfxtg_command = (
+        f"./v{cfx_version}/TurboGrid/bin/{cfxtg_command} " f"-py -control-port {socket_port}"
+    )
+
+    tg_instance = deployed_tg_container(
+        image_name,
+        socket_port,
+        ftp_port,
+        cfxtg_command,
+        license_file,
+        container_name,
+        keep_stopped_containers,
+        ast.literal_eval(container_env_dict),
+    )
+    return tg_instance
