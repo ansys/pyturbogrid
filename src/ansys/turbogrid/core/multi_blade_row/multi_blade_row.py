@@ -410,8 +410,6 @@ class multi_blade_row:
         p.show(jupyter_backend="client")
 
     def __launch_instances__(self, ndf_file_name, tg_log_level, tg_worker_name, tg_worker_instance):
-        print(f"{self=}")
-        print(f"{self.__dict__=}")
         try:
 
             tg_port = None
@@ -429,7 +427,6 @@ class multi_blade_row:
                     self.tg_container_launch_settings["container_env_dict"],
                 )
                 tg_port = tg_worker_instance.tg_execution_control.socket_port
-            print(self.tg_kw_args)
             tg_worker_instance.pytg = launch_turbogrid(
                 log_level=tg_log_level,
                 log_filename_suffix=f"_{ndf_file_name}_{tg_worker_name}",

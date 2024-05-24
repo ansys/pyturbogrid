@@ -24,7 +24,7 @@
 # SOFTWARE.
 
 """
-.. _multi_blade_row_example:
+.. _multi_blade_row_batch_example:
 
 Multi blade row meshing example
 -------------------------------

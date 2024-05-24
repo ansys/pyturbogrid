@@ -64,7 +64,7 @@ def test_multi_blade_row_basic(pytestconfig):
         turbogrid_location_type=pytest.turbogrid_install_type,
         tg_container_launch_settings=tg_container_launch_settings,
         tg_kw_args=json.loads(pytestconfig.getoption("tg_kw_args")),
-        use_existing_tginit_cad=True,
+        # use_existing_tginit_cad=True,
     )
 
     # This is a planned point-data initialization file format
