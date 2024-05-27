@@ -71,9 +71,9 @@ def test_multi_blade_row_basic(pytestconfig):
     # machine.init_from_tgmachine(f"{dir_path}/~.TGMachine")
     # blade_rows = machine.get_blade_row_names()
     print(f"Average Face Area Before: {machine.get_average_base_face_areas()}")
-    before_cannonical = {"bladerow1": 0.007804461, "bladerow2": 0.004956871}
-    assert machine.get_average_base_face_areas() == before_cannonical
+    before_canonical = {"bladerow1": 0.007804461, "bladerow2": 0.004956871}
+    assert machine.get_average_base_face_areas() == before_canonical
     machine.set_machine_sizing_strategy(MBR.MachineSizingStrategy.MIN_FACE_AREA)
     print(f"Average Face Area After: {machine.get_average_base_face_areas()}")
-    after_cannonical = {"bladerow1": 0.005001607, "bladerow2": 0.004956871}
-    assert machine.get_average_base_face_areas() == after_cannonical
+    after_canonical = {"bladerow1": 0.005001607, "bladerow2": 0.004956871}
+    assert machine.get_average_base_face_areas() == after_canonical
