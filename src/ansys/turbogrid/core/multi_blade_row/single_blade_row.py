@@ -22,7 +22,7 @@
 # SOFTWARE.
 
 
-# A single_blade_row (SBR) instance represents one turbogrid application.
+# A single_blade_row (SBR) instance represents one TurboGrid application.
 # The application is implicitly linked to others via the parent,
 # a multi_blade_row (MBR) instance.
 # MBR will spawn SBRs and communicate with them via queues.
