@@ -87,9 +87,13 @@ print(f"End time: {time.asctime(time.localtime())}")
 print(f"Duration: {(end_time-start_time)/60} minutes")
 print(f"Average Base Face Sizes")
 print(f"Blade Rows: {', '.join(brs)}")
-for gsf, fas in all_face_areas.items():
-    print(f"""machine gsf {gsf}: {', '.join([f"{value:.6e}" for value in fas.values()])}  """)
+for size_factor, face_areas in all_face_areas.items():
+    print(
+        f"""machine size_factor {size_factor}: {', '.join([f"{value:.6e}" for value in face_areas.values()])}  """
+    )
 print(f"Element Counts")
 print(f"Blade Rows: {', '.join(brs)}")
-for gsf, ecs in all_element_counts.items():
-    print(f"""machine gsf {gsf}: {', '.join(str(value) for value in ecs.values())}  """)
+for size_factor, element_counts in all_element_counts.items():
+    print(
+        f"""machine size_factor {size_factor}: {', '.join(str(value) for value in element_counts.values())}  """
+    )
