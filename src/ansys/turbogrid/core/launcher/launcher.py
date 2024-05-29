@@ -29,8 +29,6 @@ import os
 from pathlib import Path
 import platform
 import random
-import socket
-import time
 from typing import Optional
 
 from ansys.turbogrid.api import pyturbogrid_core

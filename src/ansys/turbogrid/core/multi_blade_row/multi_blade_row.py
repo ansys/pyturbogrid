@@ -330,7 +330,7 @@ class multi_blade_row:
 
     def set_number_of_blade_sets(self, blade_row_name: str, number_of_blade_sets: int):
         """
-        Set the numner of blade sets for blade_row_name.
+        Set the number of blade sets for blade_row_name.
         """
         if blade_row_name not in self.tg_worker_instances:
             raise Exception(
