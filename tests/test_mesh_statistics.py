@@ -31,9 +31,9 @@ from pathlib import Path
 from ansys.turbogrid.api import pyturbogrid_core
 import pytest
 
-from conftest import TestExecutionMode
 from ansys.turbogrid.core.launcher.container_helpers import container_helpers
 from ansys.turbogrid.core.mesh_statistics import mesh_statistics
+from conftest import TestExecutionMode
 
 dir_path: str = os.path.dirname(os.path.realpath(__file__))
 

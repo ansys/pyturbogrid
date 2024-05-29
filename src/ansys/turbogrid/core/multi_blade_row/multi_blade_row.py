@@ -69,7 +69,7 @@ class multi_blade_row:
         These are machine sizing strategies that can be optionally applied using set_machine_sizing_strategy.
 
         Description
-        ----------
+        -----------
         MIN_FACE_AREA
             This strategy attempts to size each blade row so that the element sizes are all equal,
             by using the blade row with the smallest face area as the target.
