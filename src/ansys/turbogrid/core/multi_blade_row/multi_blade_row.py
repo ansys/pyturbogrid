@@ -40,7 +40,6 @@ import traceback
 from typing import Optional
 
 from ansys.turbogrid.api.pyturbogrid_core import PyTurboGrid
-from fabric import Connection
 
 from ansys.turbogrid.core.launcher.container_helpers import container_helpers
 from ansys.turbogrid.core.launcher.launcher import launch_turbogrid, launch_turbogrid_container
