@@ -35,7 +35,8 @@ from typing import Optional
 
 from ansys.turbogrid.api import pyturbogrid_core
 
-from ansys.turbogrid.core.launcher.DeployTGContainer import deployed_tg_container
+from ansys.turbogrid.core.launcher.container_helpers import get_open_port
+from ansys.turbogrid.core.launcher.deploy_tg_container import deployed_tg_container
 
 
 def _is_windows():
@@ -241,22 +242,6 @@ def launch_turbogrid_ansys_labs(
         pim_app_name="turbogrid",
         pim_app_ver=product_version,
     )
-
-
-def get_open_port():
-    with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
-        s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-        # using '0' will tell the OS to pick a random port that is available.
-        s.bind(("", 0))
-        s.listen(1)
-        port = s.getsockname()[1]
-        # Shutdown is not needed because the socket is not connected.
-        # Also, this will throw and error in windows
-        # s.shutdown(socket.SHUT_RDWR)
-        s.close()
-    # Wait a second to let the OS do things
-    time.sleep(1)
-    return port
 
 
 def launch_turbogrid_container(

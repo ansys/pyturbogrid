@@ -51,7 +51,7 @@ all_element_counts = {}
 #################################################################################
 # Create a multi_blade_row and initialize it
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-# Use the Concepts NREC sample provided
+# Use the Concepts NREC sample provided.
 
 start_time = time.time()
 print(f"Start time: {time.asctime(time.localtime())}")
@@ -65,7 +65,7 @@ print(f"original_face_areas: {original_face_areas}")
 #################################################################################
 # Set the sizing strategy for the machine
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-# If this is omitted, the defaults for TurboGrid will be used
+# If this is omitted, the defaults for TurboGrid will be used.
 
 machine.set_machine_sizing_strategy(MBR.MachineSizingStrategy.MIN_FACE_AREA)
 

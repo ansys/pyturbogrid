@@ -42,59 +42,15 @@ from typing import Optional
 from ansys.turbogrid.api.pyturbogrid_core import PyTurboGrid
 from fabric import Connection
 
+from ansys.turbogrid.core.launcher.container_helpers import container_helpers
 from ansys.turbogrid.core.launcher.launcher import launch_turbogrid, launch_turbogrid_container
 from ansys.turbogrid.core.multi_blade_row.single_blade_row import single_blade_row
 import ansys.turbogrid.core.ndf_parser.ndf_parser as ndf_parser
 
 
-class Helpers:
-
-    @staticmethod
-    def get_container_connection(ftp_port: int, ssh_key_filename: str, host_name="localhost"):
-        container_connection = Connection(
-            host=host_name,
-            user="root",
-            port=ftp_port,
-            connect_kwargs={"key_filename": ssh_key_filename},
-        )
-        return container_connection
-
-    @staticmethod
-    def transfer_file_to_container(container_connection: Connection, local_filepath: str):
-        print(f"To container-> {local_filepath}")
-        container_connection.put(
-            remote="/",
-            local=local_filepath,
-        )
-
-    @staticmethod
-    def transfer_files_to_container(
-        container_connection: Connection, local_folder_path: str, local_filenames: list
-    ):
-        for filename in local_filenames:
-            Helpers.transfer_file_to_container(
-                container_connection, f"{local_folder_path}/{filename}"
-            )
-
-    @staticmethod
-    def transfer_file_from_container(
-        container_connection: Connection, remote_filename: str, local_path_only: str
-    ):
-        print(f"From container-> {local_path_only}/{remote_filename}")
-        container_connection.get(
-            remote=f"/{remote_filename}",
-            local=f"{local_path_only}/{remote_filename}",
-        )
-
-    @staticmethod
-    def transfer_files_from_container(
-        container_connection: Connection, local_folder_path: str, remote_filenames: list
-    ):
-        for filename in remote_filenames:
-            Helpers.transfer_file_from_container(container_connection, filename, local_folder_path)
-
-
 class multi_blade_row:
+    """This class spawns multiple TG instances and can initialize and control an entire blade row at once."""
+
     initialized: bool = False
     init_file_path: Path
     all_blade_rows: dict
@@ -109,13 +65,27 @@ class multi_blade_row:
     tg_kw_args = {}
 
     class MachineSizingStrategy(IntEnum):
+        """
+        These are machine sizing strategies that can be optionally applied using set_machine_sizing_strategy.
+
+        Description
+        ----------
+        MIN_FACE_AREA
+            This strategy attempts to size each blade row so that the element sizes are all equal,
+            by using the blade row with the smallest face area as the target.
+            This is the most robust strategy, although can result in many elements for the larger blade rows,
+            and if the blade row is too large, the sizing may be huge.
+        """
+
         MIN_FACE_AREA = 1
 
     # Consider passing in the filename (whether ndf or tginit) as initializing as raii
     def __init__(self):
+        """Empty initializer."""
         pass
 
     def __del__(self):
+        """This method will quit all TG instances."""
         with concurrent.futures.ThreadPoolExecutor(
             max_workers=len(self.tg_worker_instances)
         ) as executor:
@@ -138,6 +108,27 @@ class multi_blade_row:
         tg_container_launch_settings: dict[str, str] = {},
         tg_kw_args={},
     ):
+        """
+        Initialize the MBR representation with an ndf file.
+        The file must be compatible with TurboGrid import ndf.
+
+        Parameters
+        ----------
+        ndf_path : str
+            The full absolute path and file name for the ndf file.
+        use_existing_tginit_cad : bool, default: ``False``
+            If true, a .tginit and .x_b file with the same name as the ndf_path will be used.
+            If false, TG will (re)generate these files.
+        tg_log_level : PyTurboGrid.TurboGridLogLevel, default: ``INFO``
+            Logging settings for the underlying TG instances.
+            The log_filename_suffix will be the ndf file name, and the flowpath for the worker instances.
+        turbogrid_path : str, default: ``None``
+            Optional specifying for cfxtg path. Otherwise, launcher will attempt to find it automatically.
+        turbogrid_location_type : PyTurboGrid.TurboGridLocationType, default: ``TURBOGRID_INSTALL``
+            For container/cloud operation, this can be changed. Generally only used by devs/github.
+        tg_container_launch_settings : dict[str, str], default: ``{}``
+            For dev usage.
+        """
         self.tg_kw_args = tg_kw_args
         self.turbogrid_path = turbogrid_path
         self.turbogrid_location_type = turbogrid_location_type
@@ -182,12 +173,12 @@ class multi_blade_row:
                 print(
                     f"get_container_connection {tg_execution_control.ftp_port} {self.tg_container_launch_settings['ssh_key_filename']}"
                 )
-                container = Helpers.get_container_connection(
+                container = container_helpers.get_container_connection(
                     tg_execution_control.ftp_port,
                     self.tg_container_launch_settings["ssh_key_filename"],
                 )
                 print(f"transfer files to container {ndf_path}")
-                Helpers.transfer_files_to_container(
+                container_helpers.transfer_files_to_container(
                     container,
                     self.ndf_base_path,
                     [ndf_name],
@@ -207,7 +198,7 @@ class multi_blade_row:
                 == PyTurboGrid.TurboGridLocationType.TURBOGRID_RUNNING_CONTAINER
             ):
                 print(f"Get file from container")
-                Helpers.transfer_files_from_container(
+                container_helpers.transfer_files_from_container(
                     container,
                     self.ndf_base_path,
                     [self.ndf_file_name + ".x_b", self.ndf_file_name + ".tginit"],
@@ -229,6 +220,10 @@ class multi_blade_row:
             concurrent.futures.wait(futures)
 
     def init_from_tgmachine(self, tgmachine_path: str, tg_log_level):
+        """
+        Initialize the MBR representation with a TGMachine file.
+        Still under development
+        """
         print(f"init_from_tgmachine tgmachine_path = {tgmachine_path}")
         tgmachine_file = open(tgmachine_path, "r")
         machine_info = json.load(tgmachine_file)
@@ -270,30 +265,47 @@ class multi_blade_row:
             concurrent.futures.wait(futures)
 
     def get_average_background_face_areas(self) -> dict:
+        """
+        Query the background topology face areas for each blade row.
+        This is TurboGrid specific information.
+        """
         return {
             tg_worker_name: tg_worker_instance.pytg.query_average_background_face_area()
             for tg_worker_name, tg_worker_instance in self.tg_worker_instances.items()
         }
 
     def get_average_base_face_areas(self) -> dict:
+        """
+        Query the base topology face areas for each blade row.
+        This is TurboGrid specific information.
+        """
         return {
             tg_worker_name: tg_worker_instance.pytg.query_average_base_face_area()
             for tg_worker_name, tg_worker_instance in self.tg_worker_instances.items()
         }
 
     def get_element_counts(self) -> dict:
+        """
+        Query the element count for each blade row.
+        """
         return {
             tg_worker_name: self.__get_ec__(tg_worker_instance)
             for tg_worker_name, tg_worker_instance in self.tg_worker_instances.items()
         }
 
     def get_spanwise_element_counts(self) -> dict:
+        """
+        Query the number of spanwise elements for each blade row.
+        """
         return {
             tg_worker_name: int(tg_worker_instance.pytg.query_number_of_spanwise_elements())
             for tg_worker_name, tg_worker_instance in self.tg_worker_instances.items()
         }
 
     def get_local_gsf(self) -> dict:
+        """
+        Query the blade-row-local global size factor for each blade row.
+        """
         return {
             tg_worker_name: float(
                 tg_worker_instance.pytg.get_object_param(
@@ -307,6 +319,9 @@ class multi_blade_row:
         return self.all_blade_row_keys
 
     def set_global_size_factor(self, blade_row_name: str, size_factor: float):
+        """
+        Set the blade-row-local global size factor for blade_row_name.
+        """
         if blade_row_name not in self.tg_worker_instances:
             raise Exception(
                 f"No blade row with name {blade_row_name}. Available names: {self.all_blade_row_keys}"
@@ -314,6 +329,9 @@ class multi_blade_row:
         self.tg_worker_instances[blade_row_name].pytg.set_global_size_factor(size_factor)
 
     def set_number_of_blade_sets(self, blade_row_name: str, number_of_blade_sets: int):
+        """
+        Set the numner of blade sets for blade_row_name.
+        """
         if blade_row_name not in self.tg_worker_instances:
             raise Exception(
                 f"No blade row with name {blade_row_name}. Available names: {self.all_blade_row_keys}"
@@ -324,6 +342,11 @@ class multi_blade_row:
         )
 
     def set_machine_sizing_strategy(self, strategy: MachineSizingStrategy):
+        """
+        Set the automatic machine sizing strategy for this machine.
+        The machine simulation must be initialized already.
+
+        """
         # When 3.9 is dropped, we can use match/case
         if strategy == self.MachineSizingStrategy.MIN_FACE_AREA:
             original_face_areas = self.get_average_base_face_areas()
@@ -337,6 +360,10 @@ class multi_blade_row:
             raise Exception(f"MachineSizingStrategy {strategy.name} not supported")
 
     def set_machine_base_size_factors(self, size_factors: dict[str, float]):
+        """
+        Manual setting for per-blade-row sizings, and set the machine size factor to 1.0.
+
+        """
         # print(f"set_machine_base_size_factors {size_factors}")
         # Check sizes here!
         self.base_gsf = size_factors
@@ -350,6 +377,10 @@ class multi_blade_row:
             concurrent.futures.wait(futures)
 
     def set_machine_size_factor(self, size_factor: float):
+        """
+        Set the entire machine's size factor. Higher means more (and smaller) elements.
+
+        """
         # print(f"set_machine_size_factor base {self.base_gsf} factor {size_factor}")
         with concurrent.futures.ThreadPoolExecutor(
             max_workers=len(self.tg_worker_instances)
@@ -361,6 +392,12 @@ class multi_blade_row:
             concurrent.futures.wait(futures)
 
     def set_machine_target_node_count(self, target_node_count: int):
+        """
+        Instead of size factors, a target node count can be specified.
+        Less robust but more predictable than using a size factor.
+        Count must be over 50,000, and a count too high may be problematic.
+
+        """
         print(f"set_machine_target_node_count target_node_count {target_node_count}")
         with concurrent.futures.ThreadPoolExecutor(
             max_workers=len(self.tg_worker_instances)
@@ -372,6 +409,12 @@ class multi_blade_row:
             concurrent.futures.wait(futures)
 
     def save_meshes(self):
+        """
+        Write out the .def files representing the entire blade row.
+        Blade rows that threw errors will not write meshes (check the logs.)
+        The assembly can be opened directly in CFX-Pre (Meshes contain some topology.)
+
+        """
         print(f"save_meshes")
         with concurrent.futures.ThreadPoolExecutor(
             max_workers=len(self.tg_worker_instances)
@@ -383,6 +426,11 @@ class multi_blade_row:
             concurrent.futures.wait(futures)
 
     def plot_machine(self):
+        """
+        Display the machine's mesh boundaries using pyvista.
+        Experimental.
+
+        """
         import random
 
         import pyvista as pv
@@ -410,6 +458,9 @@ class multi_blade_row:
         p.show(jupyter_backend="client")
 
     def __launch_instances__(self, ndf_file_name, tg_log_level, tg_worker_name, tg_worker_instance):
+        """
+        :meta private:
+        """
         try:
 
             tg_port = None
@@ -444,12 +495,12 @@ class multi_blade_row:
                 print(
                     f"get_container_connection {tg_worker_instance.tg_execution_control.ftp_port} {self.tg_container_launch_settings['ssh_key_filename']}"
                 )
-                container = Helpers.get_container_connection(
+                container = container_helpers.get_container_connection(
                     tg_worker_instance.tg_execution_control.ftp_port,
                     self.tg_container_launch_settings["ssh_key_filename"],
                 )
                 print(f"transfer files to container {ndf_file_name}")
-                Helpers.transfer_files_to_container(
+                container_helpers.transfer_files_to_container(
                     container,
                     self.ndf_base_path,
                     [ndf_file_name + ".tginit", ndf_file_name + ".x_b"],
@@ -483,6 +534,9 @@ class multi_blade_row:
         tg_worker_name,
         tg_worker_instance,
     ):
+        """
+        :meta private:
+        """
         try:
             tg_worker_instance.pytg = launch_turbogrid(
                 log_level=tg_log_level,
@@ -522,9 +576,15 @@ class multi_blade_row:
             print(f"{tg_worker_instance} exception on __launch_instances_inf__: {e}")
 
     def __set_gsf__(self, size_factor, tg_worker_name, tg_worker_instance):
+        """
+        :meta private:
+        """
         tg_worker_instance.pytg.set_global_size_factor(self.base_gsf[tg_worker_name] * size_factor)
 
     def __set_tnc__(self, target_node_count, tg_worker_name, tg_worker_instance):
+        """
+        :meta private:
+        """
         tg_worker_instance.pytg.set_obj_param(
             object="/MESH DATA",
             param_val_pairs=f"Mesh Size Specification Mode = Target Total Node Count, "
@@ -533,6 +593,9 @@ class multi_blade_row:
         )
 
     def __get_ec__(self, tg_worker_instance) -> int:
+        """
+        :meta private:
+        """
         ec = 0
         try:
             ec = int(tg_worker_instance.pytg.query_mesh_statistics()["Elements"]["Count"])
@@ -541,11 +604,20 @@ class multi_blade_row:
         return ec
 
     def __save_mesh__(self, tg_worker_name, tg_worker_instance):
+        """
+        :meta private:
+        """
         tg_worker_instance.pytg.save_mesh(tg_worker_name + ".def")
 
     def __quit__(self, tg_worker_instance):
+        """
+        :meta private:
+        """
         tg_worker_instance.pytg.quit()
 
     def __write_boundary_polys__(self, threadsafe_queue: queue.Queue, tg_worker_instance):
+        """
+        :meta private:
+        """
         for b_m in tg_worker_instance.pytg.getBoundaryGeometry():
             threadsafe_queue.put(b_m)
