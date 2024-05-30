@@ -93,10 +93,6 @@ class multi_blade_row:
             ]
             concurrent.futures.wait(futures)
 
-    # a A TGInit parser would need to be written for this to work
-    # def init_from_tginit(self, tginit_path: str):
-    #     pass
-
     def init_from_ndf(
         self,
         ndf_path: str,
