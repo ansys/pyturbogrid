@@ -21,1083 +21,598 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
+
+# A multi_blade_row (MBR) instance represents a single rotating machine.
+# MBR will spawn a single_blade_row (SBR) for each blade that is being considered.
+# MBR job dispatch has two concepts. Jobs may be dispatched to a single row,
+# or multiple rows in parallel.
 """Module for working on a multi blade row turbomachinery case using PyTurboGrid instances in parallel."""
 
-from collections import OrderedDict
-from datetime import datetime as dt
-from datetime import timedelta as td
+import concurrent.futures
+from enum import IntEnum
+from functools import partial
+import json
 import math
-from multiprocessing import Manager, Pool, Process, cpu_count
 import os
-import threading
-import time
+from pathlib import Path, PurePath
+import queue
+import traceback
+from typing import Optional
 
-from ansys.turbogrid.api import pyturbogrid_core
-from ansys.turbogrid.api.CCL.ccl_object_db import CCLObjectDB
-from fabric import Connection
-from jinja2 import Environment, FileSystemLoader
+from ansys.turbogrid.api.pyturbogrid_core import PyTurboGrid
 
-from ansys.turbogrid.core.launcher.launcher import launch_turbogrid
-from ansys.turbogrid.core.mesh_statistics import mesh_statistics
-import ansys.turbogrid.core.ndf_parser.ndf_parser as ndfp
+from ansys.turbogrid.core.launcher.container_helpers import container_helpers
+from ansys.turbogrid.core.launcher.launcher import launch_turbogrid, launch_turbogrid_container
+from ansys.turbogrid.core.multi_blade_row.single_blade_row import single_blade_row
+import ansys.turbogrid.core.ndf_parser.ndf_parser as ndf_parser
 
 
-class MultiBladeRow:
-    """
-    Facilitates working on a multi blade row turbomachinery case using PyTurboGrid instances in parallel.
-    """
+class multi_blade_row:
+    """This class spawns multiple TG instances and can initialize and control an entire blade row at once."""
 
-    _working_dir: str = None
-    _case_directory: str = None
-    _case_ndf: str = None
-    _ndf_file_full_path: str = None
-    _results_directory: str = None
-    _ndf_parser: ndfp.NDFParser = None
+    initialized: bool = False
+    init_file_path: Path
+    all_blade_rows: dict
+    all_blade_row_keys: list
+    base_gsf: dict[str, float]
+    turbogrid_location_type: PyTurboGrid.TurboGridLocationType
+    tg_container_launch_settings: dict[str, str]
+    turbogrid_path: str
+    ndf_base_path: str
+    ndf_file_name: str
+    ndf_file_extension: str
+    tg_kw_args = {}
 
-    _blade_rows_to_mesh: dict = None
-    _multi_process_count: int = 0
-    _blade_row_gsfs: dict = None
-    _blade_boundary_layer_offsets: dict = None
-    _blade_row_spanwise_counts: dict = None
-    _custom_blade_settings: dict = None
-
-    #: Number of decimal places to be used for values in the meshing reports.
-    report_stats_decimal_places = 3
-
-    #: The unit to be used for the angles in the meshing reports.
-    #: Use "rad" for angles in radian and "deg" for angles in degrees.
-    report_stats_angle_unit = "deg"
-
-    #: List of the quality measures to be reported for each blade row.
-    #: Permitted entries are:
-    #: "Connectivity Number", "Edge Length Ratio", "Element Volume Ratio",
-    #: "Maximum Face Angle", "Minimum Face Angle", "Minimum Volume",
-    #: "Orthogonality Angle", "Skewness"
-    report_mesh_quality_measures = [
-        "Edge Length Ratio",
-        "Minimum Face Angle",
-        "Minimum Volume",
-        "Orthogonality Angle",
-    ]
-
-    #: Set True to write tginit first before processing blade rows in parallel by reading the tginit
-    #: instead of reading ndf in parallel and writing separate tginit for each blade row.
-    write_tginit_first = False
-
-    #: When working in Ansys Labs, the number of attempts to be made for file transfer from
-    #: container to the local working directory results folder.
-    max_file_transfer_attempts = 20
-
-    #: An alias for the TurboGridLocationType in pyturbogrid_core.PyTurboGrid.
-    TurboGridLocationType = pyturbogrid_core.PyTurboGrid.TurboGridLocationType
-
-    #: When working in Ansys Labs, the name with full path of the file containing the container key.
-    tg_container_key_file = ""
-
-    def __init__(self, working_dir: str, case_directory: str, ndf_file_name: str):
+    class MachineSizingStrategy(IntEnum):
         """
-        Initialize the class using name with full path of an NDF file for the multi blade row case.
+        These are machine sizing strategies that can be optionally applied using set_machine_sizing_strategy.
 
-        Parameters
-        ----------
-        working_dir : str
-            Directory to be used as the starting point of operation and to place the results folder.
-        case_directory : str
-            Directory containing the NDF file. If this is not given as an absolute full path, it
-            will be taken as relative to the working directory. Further, the results directory
-            will be named with an "_results" suffix for the case directory name and placed in the
-            working directory.
-        ndf_file_name : str
-            Name of the NDF file containing the blade rows for the multi blade row case. This file
-            is assumed to be present in the case_directory provided above.
+        Description
+        -----------
+        MIN_FACE_AREA
+            This strategy attempts to size each blade row so that the element sizes are all equal,
+            by using the blade row with the smallest face area as the target.
+            This is the most robust strategy, although can result in many elements for the larger blade rows,
+            and if the blade row is too large, the sizing may be huge.
         """
-        self._set_working_directory(working_dir)
-        self._set_case_directory_and_ndf(case_directory, ndf_file_name)
-        self._ndf_parser = ndfp.NDFParser(self._ndf_file_full_path)
-        self._assert_unique_blade_names()
-        self.set_blade_rows_to_mesh([])
 
-    def set_blade_rows_to_mesh(self, blades_to_mesh: list):
-        """
-        Set the blade rows to be meshed.
+        MIN_FACE_AREA = 1
 
-        Parameters
-        ----------
-        blades_to_mesh : list
-            Names of the main blade from each blade row to be meshed in a list. If an empty
-            list is provided, all blade rows will be selected for meshing.
-        """
-        all_blade_rows = self._ndf_parser.get_blade_row_blades()
-        blade_row_names_to_mesh = [
-            x
-            for x in all_blade_rows
-            if (len(blades_to_mesh) == 0 or all_blade_rows[x][0] in blades_to_mesh)
-        ]
-        self._blade_rows_to_mesh = {}
-        for blade_row in blade_row_names_to_mesh:
-            self._blade_rows_to_mesh[blade_row] = all_blade_rows[blade_row]
-        # print(f"Blade rows to mesh: {self._blade_rows_to_mesh.keys()}")
-        # for blade_row in self._blade_rows_to_mesh:
-        #    print(f"Blade row {blade_row} blades: {self._blade_rows_to_mesh[blade_row]}")
+    # Consider passing in the filename (whether ndf or tginit) as initializing as raii
+    def __init__(self):
+        """Empty initializer."""
+        pass
 
-    def set_multi_process_count(self, multi_process_count: int):
-        """
-        Set number of processes to be used in parallel for meshing the selected blade rows.
-
-        Parameters
-        ----------
-        multi_process_count : int
-            The number of processes to be used in parallel. This will be limited to the smaller of
-            the number of blade rows to mesh and the cpu count of the system. A value of zero will
-            use the maximum possible number of processes.
-        """
-        num_rows_to_process = len(self._blade_rows_to_mesh)
-        if num_rows_to_process == 0:
-            self._multi_process_count = 0
-            return
-        max_producers = min(cpu_count(), num_rows_to_process)
-        multi_process_count_clamped = min(max(0, multi_process_count), max_producers)
-        num_producers = min(num_rows_to_process, multi_process_count_clamped)
-        num_producers = num_producers if num_producers > 0 else max_producers
-        # print(f"{cpu_count()=}")
-        # print(f"{max_producers=}")
-        # print(f"{multi_process_count_clamped=}")
-        # print(f"{num_producers=}")
-        self._multi_process_count = num_producers
-
-    def set_global_size_factor(self, assembly_gsf: float):
-        """
-        Set the global size factor to be used for all the blade rows.
-
-        Parameters
-        ----------
-        assembly_gsf : float
-            The Global Size Factor to be used for each blade row.
-            If not called, the default size factor of 1 will be used.
-        """
-        self._blade_row_gsfs = self._get_blade_row_gsfs(assembly_gsf)
-        # print(f"blade_row_gsfs {self._blade_row_gsfs}")
-
-    def set_spanwise_counts(
-        self,
-        stator_spanwise_count: int,
-        rotor_spanwise_count: int,
-        rotor_blade_rows_blades: list = [],
-    ):
-        """
-        Set the spanwise count of mesh elements for the different blade rows.
-
-        Parameters
-        ----------
-        stator_spanwise_count : int
-            The element count in the spanwise direction for stator blade rows.
-        rotor_spanwise_count : int
-            The element count in the spanwise direction for rotor blade rows.
-        rotor_blade_rows : list, default: []
-            List of main blade from each rotor blade row. If not provided,
-            all even numbered rows will be taken as rotor with row numbering starting at 1.
-        """
-        self._blade_row_spanwise_counts = self._get_blade_row_spanwise_counts(
-            stator_spanwise_count, rotor_spanwise_count, rotor_blade_rows_blades
-        )
-
-    def set_blade_boundary_layer_offsets(
-        self, assembly_bl_offset: float, custom_blade_bl_offsets: dict = None
-    ):
-        """
-        Set the boundary layer first element offset for the blades.
-
-        Parameters
-        ----------
-        assembly_bl_offset : float
-            The first element offset to be applied to all blade row blades.
-        custom_blade_bl_offsets : dict, default: None
-            Custom first element offset for particular blades given in the form of a
-            dictionary: {'bladename' : offset,...}
-        """
-        self._blade_boundary_layer_offsets = self._get_blade_bl_offs(
-            assembly_bl_offset, custom_blade_bl_offsets
-        )
-        # print(f"blade_boundary_layer_offsets {self._blade_boundary_layer_offsets}")
-
-    def set_custom_blade_settings(self, custom_blade_settings: dict):
-        """
-        Set custom meshing settings for particular blade rows.
-
-        Parameters
-        ----------
-        custom_blade_settings : dict
-            Special settings for particular blade rows in a dictionary in the form:
-            { blade_name : [("Full CCL Object Path", "Param Name=Value"), ... ], ... }
-
-            Here each blade row has to be identified by the name of the main blade in the row.
-        """
-        self._custom_blade_settings = custom_blade_settings
-
-    def execute(
-        self,
-        mode: TurboGridLocationType = TurboGridLocationType.TURBOGRID_INSTALL,
-    ):
-        """
-        Execute the multi blade row meshing process.
-
-        Parameters
-        ----------
-        mode : TurboGridLocationType, default: TurboGridLocationType.TURBOGRID_INSTALL
-            The mode of operation with respect to the TurboGrid instance being used.
-            Permitted values are:
-            TurboGridLocationType.TURBOGRID_INSTALL if locally installed TurboGrid has to be used and
-            TurboGridLocationType.TURBOGRID_ANSYS_LABS if TurboGrid running in a container on Ansys Labs
-            has to be used.
-        """
-        start_dt = dt.now()
-        if self._blade_rows_to_mesh is None:
-            self.set_blade_rows_to_mesh([])
-        num_rows = len(self._blade_rows_to_mesh)
-        if num_rows == 0:
-            raise Exception("No blade rows found!!!")
-        print(f"{num_rows} blade rows to mesh:")
-        print(*[(x, [b for b in self._blade_rows_to_mesh[x]]) for x in self._blade_rows_to_mesh])
-
-        if self._multi_process_count == 0:
-            self.set_multi_process_count(0)
-        num_producers = self._multi_process_count
-        print(f"{num_producers} producers")
-        if num_producers == 0:
-            raise Exception("No meshing process created.")
-
-        blade_row_settings = self._get_blade_row_settings()
-        # print(f"blade row settings: {blade_row_settings}")
-
-        original_dir = os.getcwd()
-        os.chdir(self._results_directory)
-        progress_updates_mgr = Manager()
-        progress_updates_queue = progress_updates_mgr.Queue()
-        if mode == self.TurboGridLocationType.TURBOGRID_INSTALL:
-            reporter = threading.Thread(
-                target=publish_progress_updates,
-                args=(progress_updates_queue, num_rows, self._ndf_file_full_path),
-            )
-        elif mode == self.TurboGridLocationType.TURBOGRID_ANSYS_LABS:
-            reporter = Process(
-                target=publish_progress_updates,
-                args=(progress_updates_queue, num_rows, self._ndf_file_full_path),
-            )
-        else:
-            raise Exception("Unsupported TurboGrid Location Type")
-
-        reporter.start()
-        if mode == self.TurboGridLocationType.TURBOGRID_INSTALL:
-            self._execute_local(progress_updates_queue, blade_row_settings, num_producers)
-        elif mode == self.TurboGridLocationType.TURBOGRID_ANSYS_LABS:
-            self._execute_ansys_labs(
-                progress_updates_mgr, progress_updates_queue, blade_row_settings, num_producers
-            )
-        else:
-            raise Exception("Unsupported TurboGrid Location Type")
-
-        stop_dt = dt.now()
-        print("Start time: ", start_dt)
-        print("Stop time: ", stop_dt)
-        delta_dt = stop_dt - start_dt
-        delta_dt = td(seconds=int(delta_dt / td(seconds=1)))
-        deldt_parts = str(delta_dt).split(":")
-        print(f"Duration: {deldt_parts[0]} hours {deldt_parts[1]} minutes {deldt_parts[2]} seconds")
-        progress_updates_queue.put(
-            [
-                "User Experience Time",
-                f"Duration: {deldt_parts[0]} hours {deldt_parts[1]} minutes {deldt_parts[2]} seconds",
+    def __del__(self):
+        """This method will quit all TG instances."""
+        with concurrent.futures.ThreadPoolExecutor(
+            max_workers=len(self.tg_worker_instances)
+        ) as executor:
+            futures = [
+                executor.submit(self.__quit__, val) for key, val in self.tg_worker_instances.items()
             ]
-        )
-        progress_updates_queue.put(["Main", "Done"])
-        reporter.join()
-        os.chdir(original_dir)
+            concurrent.futures.wait(futures)
 
-    ######################################
-    # Private methods
-    ######################################
-
-    def _execute_local(self, progress_updates_queue, blade_row_settings, num_producers):
-        if self.write_tginit_first:
-            tginit_name = self._read_ndf(
-                self._ndf_file_full_path,
-                list(self._blade_rows_to_mesh.keys())[0],
-                progress_updates_queue,
-            )
-            work_details = []
-            for blade_row in self._blade_rows_to_mesh:
-                blade = self._blade_rows_to_mesh[blade_row][0]
-                work_details.append(
-                    [
-                        os.path.join(os.getcwd(), tginit_name),
-                        blade_row,
-                        blade,
-                        blade_row_settings[blade_row],
-                        progress_updates_queue,
-                        self.report_stats_angle_unit,
-                        self.report_stats_decimal_places,
-                        self.report_mesh_quality_measures,
-                    ]
-                )
-            with Pool(num_producers) as producers:
-                producers.starmap(execute_tginit_bladerow, work_details)
-            producers.close()
-            producers.join()
-        else:
-            work_details = []
-            for blade_row in self._blade_rows_to_mesh:
-                blade = self._blade_rows_to_mesh[blade_row][0]
-                work_details.append(
-                    [
-                        self._ndf_file_full_path,
-                        blade_row,
-                        blade,
-                        blade_row_settings[blade_row],
-                        progress_updates_queue,
-                        self.report_stats_angle_unit,
-                        self.report_stats_decimal_places,
-                        self.report_mesh_quality_measures,
-                    ]
-                )
-            with Pool(num_producers) as producers:
-                producers.starmap(execute_ndf_bladerow, work_details)
-            producers.close()
-            producers.join()
-
-    def _execute_ansys_labs(
-        self, progress_updates_mgr, progress_updates_queue, blade_row_settings, num_producers
+    def init_from_ndf(
+        self,
+        ndf_path: str,
+        use_existing_tginit_cad: bool = False,
+        tg_log_level: PyTurboGrid.TurboGridLogLevel = PyTurboGrid.TurboGridLogLevel.INFO,
+        turbogrid_path: str = None,
+        turbogrid_location_type=PyTurboGrid.TurboGridLocationType.TURBOGRID_INSTALL,
+        tg_container_launch_settings: dict[str, str] = {},
+        tg_kw_args={},
     ):
-        if self.write_tginit_first:
-            tginit_name_list = progress_updates_mgr.list()
-            ndf_reader_proc = Process(
-                target=read_ndf_ansys_labs,
-                args=(
-                    self._ndf_file_full_path,
-                    list(self._blade_rows_to_mesh.keys())[0],
-                    progress_updates_queue,
-                    self.max_file_transfer_attempts,
-                    self.tg_container_key_file,
-                    tginit_name_list,
-                ),
-            )
-            ndf_reader_proc.start()
-            ndf_reader_proc.join()
-            if len(tginit_name_list) == 0:
-                raise Exception("tginit not written")
-            tginit_name = tginit_name_list[0]
-            print("tginit is ", os.path.join(os.getcwd(), tginit_name))
-            work_details = []
-            for blade_row in self._blade_rows_to_mesh:
-                blade = self._blade_rows_to_mesh[blade_row][0]
-                work_details.append(
-                    [
-                        os.path.join(os.getcwd(), tginit_name),
-                        blade_row,
-                        blade,
-                        blade_row_settings[blade_row],
-                        progress_updates_queue,
-                        self.report_stats_angle_unit,
-                        self.report_stats_decimal_places,
-                        self.report_mesh_quality_measures,
-                        self.max_file_transfer_attempts,
-                        self.tg_container_key_file,
-                    ]
-                )
-            with Pool(num_producers) as producers:
-                producers.starmap(execute_tginit_blade_row_ansys_labs, work_details)
-            producers.close()
-            producers.join()
-        else:
-            work_details = []
-            for blade_row in self._blade_rows_to_mesh:
-                blade = self._blade_rows_to_mesh[blade_row][0]
-                work_details.append(
-                    [
-                        self._ndf_file_full_path,
-                        blade_row,
-                        blade,
-                        blade_row_settings[blade_row],
-                        progress_updates_queue,
-                        self.report_stats_angle_unit,
-                        self.report_stats_decimal_places,
-                        self.report_mesh_quality_measures,
-                        self.max_file_transfer_attempts,
-                        self.tg_container_key_file,
-                    ]
-                )
-            with Pool(num_producers) as producers:
-                producers.starmap(execute_ndf_blade_row_ansys_labs, work_details)
-            producers.close()
-            producers.join()
+        """
+        Initialize the MBR representation with an ndf file.
+        The file must be compatible with TurboGrid import ndf.
 
-    def _set_working_directory(self, working_dir: str):
-        if not os.path.isdir(working_dir):
-            raise Exception(f"Folder {working_dir} does not exists.")
-        self._working_dir = working_dir
-        # print(f"Working directory set to: {self._working_dir}")
+        Parameters
+        ----------
+        ndf_path : str
+            The full absolute path and file name for the ndf file.
+        use_existing_tginit_cad : bool, default: ``False``
+            If true, a .tginit and .x_b file with the same name as the ndf_path will be used.
+            If false, TG will (re)generate these files.
+        tg_log_level : PyTurboGrid.TurboGridLogLevel, default: ``INFO``
+            Logging settings for the underlying TG instances.
+            The log_filename_suffix will be the ndf file name, and the flowpath for the worker instances.
+        turbogrid_path : str, default: ``None``
+            Optional specifying for cfxtg path. Otherwise, launcher will attempt to find it automatically.
+        turbogrid_location_type : PyTurboGrid.TurboGridLocationType, default: ``TURBOGRID_INSTALL``
+            For container/cloud operation, this can be changed. Generally only used by devs/github.
+        tg_container_launch_settings : dict[str, str], default: ``{}``
+            For dev usage.
+        """
+        self.tg_kw_args = tg_kw_args
+        self.turbogrid_path = turbogrid_path
+        self.turbogrid_location_type = turbogrid_location_type
+        self.tg_container_launch_settings = tg_container_launch_settings
+        self.all_blade_rows = ndf_parser.NDFParser(ndf_path).get_blade_row_blades()
+        self.all_blade_row_keys = list(self.all_blade_rows.keys())
+        print(f"Blade Rows to mesh: {self.all_blade_rows}")
+        ndf_name = os.path.basename(ndf_path)
+        self.ndf_base_path = PurePath(ndf_path).parent.as_posix()
+        self.ndf_file_name, self.ndf_file_extension = os.path.splitext(ndf_name)
+        print(f"{ndf_name=}")
 
-    def _set_case_directory_and_ndf(self, case_directory: str, ndf_file: str) -> str:
-        if case_directory == "" or ndf_file == "":
-            raise Exception(f"Case directory or NDF file name is empty.")
-        if os.path.isabs(case_directory):
-            self._case_directory = case_directory
-        else:
-            self._case_directory = os.path.join(self._working_dir, case_directory)
-        if not os.path.isdir(self._case_directory):
-            raise Exception(f"Case folder {self._case_directory} does not exists.")
-
-        self._ndf_file_full_path = os.path.join(self._case_directory, ndf_file)
-        print(f"NDF file full path set to: {self._ndf_file_full_path}")
-
-        case_base_name = os.path.basename(os.path.normpath(self._case_directory))
-        self._results_directory = os.path.join(self._working_dir, case_base_name + "_results")
-        if not os.path.isdir(self._results_directory):
-            print(f"Creating target folder {self._results_directory}.")
-            os.mkdir(self._results_directory)
-        print(f"Target location set to: {self._results_directory}")
-
-    def _assert_unique_blade_names(self):
-        all_blade_rows = self._ndf_parser.get_blade_row_blades()
-        all_blade_names = []
-        for blade_row in all_blade_rows:
-            all_blade_names.extend(all_blade_rows[blade_row])
-        unique_blade_names = sorted(set(all_blade_names))
-        if len(unique_blade_names) != len(all_blade_names):
-            print(*all_blade_names)
-            print(*unique_blade_names)
-            raise (Exception("Blade names in the the NDF are not unique"))
-
-    def _get_blade_row_gsfs(self, assembly_gsf: float):
-        blade_row_gsfs = {}
-        for blade_row in self._blade_rows_to_mesh:
-            blade_row_gsfs[blade_row] = assembly_gsf
-        return blade_row_gsfs
-
-    def _get_blade_bl_offs(self, assembly_bl_offset: float, custom_blade_bl_offsets: dict):
-        blade_bl_offs = {}
-        for blade_row in self._blade_rows_to_mesh:
-            blade = self._blade_rows_to_mesh[blade_row][0]
-            blade_bl_offs[blade] = assembly_bl_offset
-            if custom_blade_bl_offsets is not None and blade in custom_blade_bl_offsets:
-                blade_bl_offs[blade] = custom_blade_bl_offsets[blade]
-        return blade_bl_offs
-
-    def _get_blade_row_spanwise_counts(
-        self, stator_spanwise_count, rotor_spanwise_count, rotor_blades
-    ):
-        blade_row_spanwise_counts = {}
-        if len(rotor_blades) == 0:
-            for i, blade_row in enumerate(self._blade_rows_to_mesh):
-                if i % 2 == 0:
-                    # stator
-                    blade_row_spanwise_counts[blade_row] = stator_spanwise_count
-                else:
-                    # rotor
-                    blade_row_spanwise_counts[blade_row] = rotor_spanwise_count
-        else:
-            for blade_row in self._blade_rows_to_mesh:
-                blade = self._blade_rows_to_mesh[blade_row][0]
-                if blade in rotor_blades:
-                    blade_row_spanwise_counts[blade_row] = rotor_spanwise_count
-                else:
-                    blade_row_spanwise_counts[blade_row] = stator_spanwise_count
-        return blade_row_spanwise_counts
-
-    def _get_blade_row_settings(self):
-        blade_row_settings = {}
-        for blade_row in self._blade_rows_to_mesh:
-            blade = self._blade_rows_to_mesh[blade_row][0]
-            blade_row_settings[blade_row] = []
-            if self._blade_row_gsfs is not None and blade_row in self._blade_row_gsfs:
-                blade_row_settings[blade_row].append(
-                    ("/MESH DATA", f"Global Size Factor={self._blade_row_gsfs[blade_row]}")
-                )
+        if use_existing_tginit_cad == False:
+            tg_port = None
+            tg_execution_control = None
             if (
-                self._blade_row_spanwise_counts is not None
-                and blade_row in self._blade_row_spanwise_counts
+                self.turbogrid_location_type
+                == PyTurboGrid.TurboGridLocationType.TURBOGRID_RUNNING_CONTAINER
             ):
-                blade_row_settings[blade_row].append(
-                    ("/MESH DATA", f"Spanwise Blade Distribution Option=Element Count and Size")
+                tg_execution_control = launch_turbogrid_container(
+                    self.tg_container_launch_settings["cfxtg_command_name"],
+                    self.tg_container_launch_settings["image_name"],
+                    self.tg_container_launch_settings["container_name"],
+                    self.tg_container_launch_settings["cfx_version"],
+                    self.tg_container_launch_settings["license_file"],
+                    self.tg_container_launch_settings["keep_stopped_containers"],
+                    self.tg_container_launch_settings["container_env_dict"],
                 )
-                blade_row_settings[blade_row].append(
-                    (
-                        "/MESH DATA",
-                        f"Number Of Spanwise Blade Elements={self._blade_row_spanwise_counts[blade_row]}",
-                    )
-                )
-            if (
-                self._blade_boundary_layer_offsets is not None
-                and blade in self._blade_boundary_layer_offsets
-            ):
-                this_bl_f_el_off = self._blade_boundary_layer_offsets[blade]
-                blade_row_settings[blade_row].append(
-                    (
-                        "/MESH DATA",
-                        f"Boundary Layer Specification Method=Target First Element Offset",
-                    )
-                )
-                blade_row_settings[blade_row].append(
-                    (
-                        f"/MESH DATA/EDGE SPLIT CONTROL:{blade} Boundary Layer Control",
-                        f"Target First Element Offset={this_bl_f_el_off} [m]",
-                    )
-                )
-            if self._custom_blade_settings is not None and blade in self._custom_blade_settings:
-                blade_row_settings[blade_row].extend(self._custom_blade_settings[blade])
-        return blade_row_settings
-
-    def _read_ndf(self, ndf_file, blade_row, progress_updates_queue):
-        try:
-            start_dt = dt.now()
-            ndf_name = os.path.split(ndf_file)[1]
-            ndf_name = ndf_name.split(".")[0]
-            progress_updates_queue.put([ndf_name, f"Starting {ndf_name} ndf reader"])
-            progress_updates_queue.put([ndf_name, f"Start time: {start_dt}"])
-
+                tg_port = tg_execution_control.socket_port
             pyturbogrid_instance = launch_turbogrid(
-                log_level=pyturbogrid_core.PyTurboGrid.TurboGridLogLevel.CRITICAL,
+                log_level=tg_log_level,
                 log_filename_suffix="_" + ndf_name,
+                turbogrid_path=self.turbogrid_path,
+                turbogrid_location_type=self.turbogrid_location_type,
+                port=tg_port,
             )
-            progress_updates_queue.put([ndf_name, f"pyturbogrid instance created"])
-
-            progress_updates_queue.put([ndf_name, f"read_ndf:: {ndf_file}"])
-            pyturbogrid_instance.read_ndf(
-                ndffilename=ndf_file, cadfilename=ndf_name + ".x_b", bladerow=blade_row
-            )
-            pyturbogrid_instance.quit()
-        except Exception as e:
-            progress_updates_queue.put([ndf_name, f"Reader error {e}"])
-        stop_dt = dt.now()
-        delta_dt = stop_dt - start_dt
-        delta_dt = td(seconds=int(delta_dt / td(seconds=1)))
-        deldt_parts = str(delta_dt).split(":")
-        progress_updates_queue.put([ndf_name, f"Stop time: {stop_dt}"])
-        progress_updates_queue.put(
-            [
-                ndf_name,
-                f"NDF Reader Duration: {deldt_parts[0]} hours {deldt_parts[1]} minutes {deldt_parts[2]} seconds",
-            ]
-        )
-        return ndf_name + ".tginit"
-
-
-#####################################
-# Global methods in the module
-#####################################
-
-
-def execute_ndf_bladerow(
-    ndf_file,
-    blade_row,
-    blade,
-    settings,
-    progress_updates_queue,
-    report_stats_angle_unit,
-    report_stats_decimal_places,
-    report_mesh_quality_measures,
-):
-    def pyturbogrid_instance_creator(log_suffix):
-        return launch_turbogrid(
-            log_level=pyturbogrid_core.PyTurboGrid.TurboGridLogLevel.CRITICAL,
-            log_filename_suffix="_" + log_suffix,
-        )
-
-    def file_reader(pyturbogrid_instance):
-        pyturbogrid_instance.read_ndf(
-            ndffilename=ndf_file, cadfilename=blade + ".x_b", bladename=blade
-        )
-
-    execute_blade_row_common(
-        ndf_file,
-        blade_row,
-        blade,
-        settings,
-        progress_updates_queue,
-        report_stats_angle_unit,
-        report_stats_decimal_places,
-        report_mesh_quality_measures,
-        pyturbogrid_instance_creator,
-        file_reader,
-        None,
-        None,
-        None,
-        0,
-        None,
-        None,
-    )
-
-
-def execute_tginit_bladerow(
-    tginit_file,
-    blade_row,
-    blade,
-    settings,
-    progress_updates_queue,
-    report_stats_angle_unit,
-    report_stats_decimal_places,
-    report_mesh_quality_measures,
-):
-    def pyturbogrid_instance_creator(log_suffix):
-        return launch_turbogrid(
-            log_level=pyturbogrid_core.PyTurboGrid.TurboGridLogLevel.CRITICAL,
-            log_filename_suffix="_" + log_suffix,
-        )
-
-    def file_reader(pyturbogrid_instance):
-        pyturbogrid_instance.read_tginit(path=tginit_file, bladerow=blade_row)
-
-    execute_blade_row_common(
-        tginit_file,
-        blade_row,
-        blade,
-        settings,
-        progress_updates_queue,
-        report_stats_angle_unit,
-        report_stats_decimal_places,
-        report_mesh_quality_measures,
-        pyturbogrid_instance_creator,
-        file_reader,
-        None,
-        None,
-        None,
-        0,
-        None,
-        None,
-    )
-
-
-def pyturbogrid_ansys_labs_creator(log_suffix):
-    return pyturbogrid_core.PyTurboGrid(
-        0,
-        pyturbogrid_core.PyTurboGrid.TurboGridLocationType.TURBOGRID_ANSYS_LABS,
-        "",
-        None,
-        None,
-        pyturbogrid_core.PyTurboGrid.TurboGridLogLevel.CRITICAL,
-        "",
-        "turbogrid",
-        "241-ndf",
-        "_" + log_suffix,
-    )
-
-
-def container_connection_creator(
-    container_key_file,
-    pyturbogrid_instance,
-    files_to_transfer,
-    progress_updates_queue,
-    progress_updates_header,
-):
-    progress_updates_queue.put([progress_updates_header, f"Connection"])
-    container_connection = Connection(
-        host=pyturbogrid_instance.ftp_ip,
-        user="root",
-        port=pyturbogrid_instance.ftp_port,
-        connect_kwargs={"key_filename": container_key_file},
-    )
-    progress_updates_queue.put(
-        [
-            progress_updates_header,
-            f"IP:{pyturbogrid_instance.ftp_ip} port:{pyturbogrid_instance.ftp_port}",
-        ]
-    )
-    for file in files_to_transfer:
-        local_filepath = file
-        progress_updates_queue.put([progress_updates_header, f"To container->{local_filepath}"])
-        container_connection.put(remote="/", local=local_filepath)
-    return container_connection
-
-
-def container_connection_files_getter(
-    container_connection,
-    max_file_transfer_attempts,
-    progress_updates_queue,
-    progress_updates_header,
-    files_to_get,
-):
-    for file in files_to_get:
-        attempts = 0
-        while attempts == 0 or (
-            os.path.isfile(file) is False and attempts <= max_file_transfer_attempts
-        ):
-            progress_updates_queue.put([progress_updates_header, f"Get {file} attempt {attempts}"])
-            time.sleep(0.5)
-            container_connection.get(remote=f"/{file}", local=f"{file}")
-            attempts += 1
-
-
-def execute_ndf_blade_row_ansys_labs(
-    ndf_file,
-    blade_row,
-    blade,
-    settings,
-    progress_updates_queue,
-    report_stats_angle_unit,
-    report_stats_decimal_places,
-    report_mesh_quality_measures,
-    max_file_transfer_attempts,
-    container_key_file,
-):
-    def file_reader(pyturbogrid_instance):
-        pyturbogrid_instance.read_ndf(
-            ndffilename=os.path.split(ndf_file)[1], cadfilename=blade + ".x_b", bladename=blade
-        )
-
-    execute_blade_row_common(
-        ndf_file,
-        blade_row,
-        blade,
-        settings,
-        progress_updates_queue,
-        report_stats_angle_unit,
-        report_stats_decimal_places,
-        report_mesh_quality_measures,
-        pyturbogrid_ansys_labs_creator,
-        file_reader,
-        container_key_file,
-        container_connection_creator,
-        [ndf_file],
-        max_file_transfer_attempts,
-        container_connection_files_getter,
-        [blade + ".tst", blade + ".def"],
-    )
-
-
-def read_ndf_ansys_labs(
-    ndf_file,
-    blade_row,
-    progress_updates_queue,
-    max_file_transfer_attempts,
-    container_key_file,
-    tgint_file_list,
-):
-    try:
-        start_dt = dt.now()
-        ndf_name = os.path.split(ndf_file)[1]
-        ndf_name = ndf_name.split(".")[0]
-        progress_updates_queue.put([ndf_name, f"Starting ndf reader"])
-        progress_updates_queue.put([ndf_name, f"Start time: {start_dt}"])
-
-        pyturbogrid_instance = pyturbogrid_ansys_labs_creator(ndf_name)
-        progress_updates_queue.put([ndf_name, f"pyturbogrid instance created"])
-        pyturbogrid_instance.block_each_message = True
-
-        container_connection = container_connection_creator(
-            container_key_file, pyturbogrid_instance, [ndf_file], progress_updates_queue, ndf_name
-        )
-
-        progress_updates_queue.put([ndf_name, f"read_ndf:: {ndf_file}"])
-        pyturbogrid_instance.read_ndf(
-            ndffilename=os.path.split(ndf_file)[1],
-            cadfilename=ndf_name + ".x_b",
-            bladerow=blade_row,
-        )
-        container_connection_files_getter(
-            container_connection,
-            max_file_transfer_attempts,
-            progress_updates_queue,
-            ndf_name,
-            [ndf_name + ".tginit", ndf_name + ".x_b"],
-        )
-        pyturbogrid_instance.quit()
-
-    except Exception as e:
-        progress_updates_queue.put([ndf_name, f"Reader error {e}"])
-
-    stop_dt = dt.now()
-    delta_dt = stop_dt - start_dt
-    delta_dt = td(seconds=int(delta_dt / td(seconds=1)))
-    deldt_parts = str(delta_dt).split(":")
-    progress_updates_queue.put([ndf_name, f"Stop time: {stop_dt}"])
-    progress_updates_queue.put(
-        [
-            ndf_name,
-            f"NDF Reader Duration: {deldt_parts[0]} hours {deldt_parts[1]} minutes {deldt_parts[2]} seconds",
-        ]
-    )
-    tgint_file_list.append(ndf_name + ".tginit")
-
-
-def execute_tginit_blade_row_ansys_labs(
-    tginit_file,
-    blade_row,
-    blade,
-    settings,
-    progress_updates_queue,
-    report_stats_angle_unit,
-    report_stats_decimal_places,
-    report_mesh_quality_measures,
-    max_file_transfer_attempts,
-    container_key_file,
-):
-    def file_reader(pyturbogrid_instance):
-        pyturbogrid_instance.read_tginit(path=os.path.split(tginit_file)[1], bladerow=blade_row)
-
-    execute_blade_row_common(
-        tginit_file,
-        blade_row,
-        blade,
-        settings,
-        progress_updates_queue,
-        report_stats_angle_unit,
-        report_stats_decimal_places,
-        report_mesh_quality_measures,
-        pyturbogrid_ansys_labs_creator,
-        file_reader,
-        container_key_file,
-        container_connection_creator,
-        [tginit_file, tginit_file[:-7] + ".x_b"],
-        max_file_transfer_attempts,
-        container_connection_files_getter,
-        [blade + ".tst", blade + ".def"],
-    )
-
-
-def execute_blade_row_common(
-    file_path,
-    blade_row,
-    blade,
-    settings,
-    progress_updates_queue,
-    report_stats_angle_unit,
-    report_stats_decimal_places,
-    report_mesh_quality_measures,
-    pyturbogrid_instance_creator,
-    file_reader,
-    container_key_file,
-    container_connection_creator,
-    files_to_transfer,
-    max_file_transfer_attempts,
-    container_connection_files_getter,
-    files_to_get_from_connection,
-):
-    try:
-        start_dt = dt.now()
-        progress_updates_queue.put([blade_row + "/" + blade, f"Starting {blade_row} producer"])
-        progress_updates_queue.put([blade_row + "/" + blade, f"Start time: {start_dt}"])
-
-        pyturbogrid_instance = pyturbogrid_instance_creator(blade)
-        progress_updates_queue.put([blade_row + "/" + blade, f"pyturbogrid instance created"])
-        pyturbogrid_instance.block_each_message = True
-
-        if container_connection_creator is not None:
-            container_connection = container_connection_creator(
-                container_key_file,
-                pyturbogrid_instance,
-                files_to_transfer,
-                progress_updates_queue,
-                blade_row + "/" + blade,
-            )
-        else:
-            container_connection = None
-
-        progress_updates_queue.put([blade_row + "/" + blade, f"read:: {file_path}"])
-        file_reader(pyturbogrid_instance)
-        progress_updates_queue.put([blade_row + "/" + blade, f"unsuspend"])
-        pyturbogrid_instance.unsuspend(object="/TOPOLOGY SET")
-        progress_updates_queue.put([blade_row + "/" + blade, f"Applying meshing settings"])
-        for setting in settings:
-            pyturbogrid_instance.set_obj_param(setting[0], setting[1])
-        write_mesh_report(
-            blade_row,
-            blade,
-            pyturbogrid_instance,
-            progress_updates_queue,
-            report_stats_angle_unit,
-            report_mesh_quality_measures,
-            report_stats_decimal_places,
-        )
-        pyturbogrid_instance.save_state(filename=blade + ".tst")
-        pyturbogrid_instance.save_mesh(filename=blade + ".def")
-        if container_connection is not None:
-            container_connection_files_getter(
-                container_connection,
-                max_file_transfer_attempts,
-                progress_updates_queue,
-                blade_row + "/" + blade,
-                files_to_get_from_connection,
-            )
-        pyturbogrid_instance.quit()
-
-    except Exception as e:
-        progress_updates_queue.put([blade, f"Producer Error {e}"])
-
-    stop_dt = dt.now()
-    delta_dt = stop_dt - start_dt
-    delta_dt = td(seconds=int(delta_dt / td(seconds=1)))
-    deldt_parts = str(delta_dt).split(":")
-    progress_updates_queue.put([blade_row + "/" + blade, f"Stop time: {stop_dt}"])
-    progress_updates_queue.put(
-        [
-            blade_row + "/" + blade,
-            f"Duration: {deldt_parts[0]} hours {deldt_parts[1]} minutes {deldt_parts[2]} seconds",
-        ]
-    )
-    progress_updates_queue.put([blade_row + "/" + blade, "Done"])
-
-
-def write_mesh_report(
-    blade_row,
-    blade,
-    pyturbogrid_instance,
-    progress_updates_queue,
-    report_stats_angle_unit,
-    report_mesh_quality_measures,
-    report_stats_decimal_places,
-):
-    ALL_DOMAINS = "ALL"
-    progress_updates_queue.put([blade_row + "/" + blade, f"Getting CCLObjectDB"])
-    ccl_db = CCLObjectDB(pyturbogrid_instance)
-    domain_list = [obj.get_name() for obj in ccl_db.get_objects_by_type("DOMAIN")]
-    domain_list.append(ALL_DOMAINS)
-    case_info = OrderedDict()
-    case_info["Case Name"] = blade
-    case_info["Number of Bladesets"] = ccl_db.get_object_by_path(
-        "/GEOMETRY/MACHINE DATA"
-    ).get_value("Bladeset Count")
-    case_info["Report Date"] = dt.today()
-    ms = mesh_statistics.MeshStatistics(pyturbogrid_instance)
-    domain_count = dict()
-    progress_updates_queue.put([blade_row + "/" + blade, f"Getting mesh statistics"])
-    for domain in domain_list:
-        ms.update_mesh_statistics(domain)
-        domain_count[ms.get_domain_label(domain)] = ms.get_mesh_statistics().copy()
-    ms.update_mesh_statistics(ALL_DOMAINS)
-    all_dom_stats = ms.get_mesh_statistics()
-    stat_table_rows_raw = ms.get_table_rows()
-    stat_table_rows = []
-    convert_to_degree = report_stats_angle_unit.lower()[0:3] == "deg"
-    for row in stat_table_rows_raw:
-        if len(row) != 5 or row[0] == "Mesh Measure":
-            stat_table_rows.append(row)
-            continue
-        if row[0] not in report_mesh_quality_measures:
-            continue
-        new_row = [row[0]]
-        for i in range(1, 5):
-            value_parts = row[i].split()
-            value = float(value_parts[0])
-            if len(value_parts) == 2:
-                if convert_to_degree and "rad" in value_parts[1]:
-                    value = value * 180.0 / math.pi
-                    value_parts[1] = "[deg]"
-                if new_row[0] != "Minimum Volume":
-                    value = round(value, report_stats_decimal_places)
-                new_row.append(str(value) + " " + value_parts[1])
-            else:
-                value = round(value, report_stats_decimal_places)
-                new_row.append(str(value))
-        stat_table_rows.append(new_row)
-    hist_var_list = [
-        "Connectivity Number",
-        "Edge Length Ratio",
-        "Element Volume Ratio",
-        "Maximum Face Angle",
-        "Minimum Face Angle",
-        "Minimum Volume",
-        "Orthogonality Angle",
-        "Skewness",
-    ]
-    hist_var_list = [x for x in hist_var_list if x in report_mesh_quality_measures]
-    hist_dict = dict()
-    progress_updates_queue.put([blade_row + "/" + blade, f"Creating histograms statistics"])
-    for var in hist_var_list:
-        file_name = blade + "_tg_hist_" + var + ".png"
-        var_units = all_dom_stats[var]["Units"]
-        if var_units == "rad":
-            var_units = "deg"
-        ms.create_histogram(
-            variable=var,
-            use_percentages=True,
-            bin_units=var_units,
-            image_file=file_name,
-            show=False,
-        )
-        hist_dict[var] = file_name
-    environment = Environment(loader=FileSystemLoader(os.path.dirname(__file__)))
-    html_template = environment.get_template("report_template.html")
-    html_context = {
-        "case_info": case_info,
-        "domain_count": domain_count,
-        "stat_table_rows": stat_table_rows,
-        "hist_dict": hist_dict,
-    }
-    progress_updates_queue.put([blade_row + "/" + blade, f"Writing report"])
-    filename = f"{blade}_tg_report.html"
-    content = html_template.render(html_context)
-    with open(filename, mode="w", encoding="utf-8") as message:
-        message.write(content)
-
-    progress_updates_queue.put([blade_row + "/" + blade, f"Completed {blade} producer"])
-    progress_updates_queue.put(
-        [
-            blade_row + "/" + blade,
-            f"Total vertices: {domain_count[ms.get_domain_label(ALL_DOMAINS)]['Vertices']['Count']}",
-        ]
-    )
-    progress_updates_queue.put(
-        [
-            blade_row + "/" + blade,
-            f"Total elements: {domain_count[ms.get_domain_label(ALL_DOMAINS)]['Elements']['Count']}",
-        ]
-    )
-    if domain_count[ms.get_domain_label(ALL_DOMAINS)]["Minimum Volume"]["Minimum"] < 0:
-        progress_updates_queue.put([blade_row + "/" + blade, f"ERROR: Negative volume elements"])
-
-
-def publish_progress_updates(progress_updates_queue, num_prods, ndf_file_name):
-    print(f"Reporter: Running for {num_prods} rows", flush=True)
-    # consume work
-    num_prods_done = 0
-    blade_time_infos = {}
-    blade_count_infos = {}
-    blade_errors = []
-    total_verts = 0
-    total_elems = 0
-    while True:
-        # get a unit of work
-        item = progress_updates_queue.get()
-        # check for stop
-        if item[1] == "Done":
-            num_prods_done += 1
-        print(": ".join(item), flush=True)
-        if ":" in item[1] and len(item_parts := item[1].split(":")) == 2:
             if (
-                item[0] != "User Experience Time"
-                and item_parts[0] != "NDF Reader Duration"
-                and item[0] not in blade_count_infos
+                self.turbogrid_location_type
+                == PyTurboGrid.TurboGridLocationType.TURBOGRID_RUNNING_CONTAINER
             ):
-                blade_count_infos[item[0]] = {}
-            if item_parts[0] == "Total vertices":
-                blade_count_infos[item[0]]["verts"] = item_parts[1]
-                total_verts += int(item_parts[1].strip())
-            if item_parts[0] == "Total elements":
-                blade_count_infos[item[0]]["elems"] = item_parts[1]
-                total_elems += int(item_parts[1].strip())
-            if item_parts[0] == "Duration":
-                blade_time_infos[item[0]] = item_parts[1]
-            if item_parts[0].lower() == "error":
-                blade_errors.append(f"{item[0]}: {item_parts[1]}")
-        if num_prods_done == num_prods + 1:
-            break
-    # all done
-    blade_names = list(blade_count_infos.keys())
-    if "Total" not in blade_count_infos:
-        blade_count_infos["Total"] = {"verts": str(total_verts), "elems": str(total_elems)}
-    if len(blade_errors) == 0:
-        blade_errors.append(f"No errors reported.")
-    environment = Environment(loader=FileSystemLoader(os.path.dirname(__file__)))
-    html_template = environment.get_template("summary_template.html")
-    html_context = {
-        "case_name": ndf_file_name,
-        "case_time_infos": blade_time_infos,
-        "blades": blade_names,
-        "blade_count_infos": blade_count_infos,
-        "blade_errors": blade_errors,
-    }
-    filename = f"{os.path.split(ndf_file_name)[1].split('.')[0]}_tg_mbr_summary.html"
-    content = html_template.render(html_context)
-    with open(filename, mode="w", encoding="utf-8") as message:
-        print(f"Writing summary {filename}")
-        message.write(content)
-    print("Reporter: Done", flush=True)
+                pyturbogrid_instance.block_each_message = True
+                print(
+                    f"get_container_connection {tg_execution_control.ftp_port} {self.tg_container_launch_settings['ssh_key_filename']}"
+                )
+                container = container_helpers.get_container_connection(
+                    tg_execution_control.ftp_port,
+                    self.tg_container_launch_settings["ssh_key_filename"],
+                )
+                print(f"transfer files to container {ndf_path}")
+                container_helpers.transfer_files_to_container(
+                    container,
+                    self.ndf_base_path,
+                    [ndf_name],
+                )
+                print(f"files transferred")
+                # full path and file name in the container
+                ndf_path = "/" + ndf_name
+
+            pyturbogrid_instance.read_ndf(
+                ndffilename=ndf_path,
+                cadfilename=self.ndf_file_name + ".x_b",
+                bladerow=self.all_blade_row_keys[0],
+            )
+
+            if (
+                turbogrid_location_type
+                == PyTurboGrid.TurboGridLocationType.TURBOGRID_RUNNING_CONTAINER
+            ):
+                print(f"Get file from container")
+                container_helpers.transfer_files_from_container(
+                    container,
+                    self.ndf_base_path,
+                    [self.ndf_file_name + ".x_b", self.ndf_file_name + ".tginit"],
+                )
+                print(f"file transferred")
+            pyturbogrid_instance.quit()
+            if tg_execution_control:
+                del tg_execution_control
+
+        self.tg_worker_instances = {key: single_blade_row() for key in self.all_blade_row_keys}
+        self.base_gsf = {key: 1.0 for key in self.all_blade_row_keys}
+        with concurrent.futures.ThreadPoolExecutor(
+            max_workers=len(self.tg_worker_instances)
+        ) as executor:
+            job = partial(self.__launch_instances__, self.ndf_file_name, tg_log_level)
+            futures = [
+                executor.submit(job, key, val) for key, val in self.tg_worker_instances.items()
+            ]
+            concurrent.futures.wait(futures)
+
+    def init_from_tgmachine(self, tgmachine_path: str, tg_log_level):
+        """
+        Initialize the MBR representation with a TGMachine file.
+        Still under development
+        """
+        print(f"init_from_tgmachine tgmachine_path = {tgmachine_path}")
+        tgmachine_file = open(tgmachine_path, "r")
+        machine_info = json.load(tgmachine_file)
+        n_rows: int = machine_info["Number of Blade Rows"]
+        interface_method: str = machine_info["Interface Method"]
+        print(f"   n_rows = {n_rows}")
+        self.all_blade_row_keys = machine_info["Blade Rows"]
+        self.neighbor_dict = {}
+        for i in range(len(self.all_blade_row_keys)):
+            if interface_method == "Fully Extend":
+                left_neighbor = None
+                right_neighbor = None
+            elif interface_method == "Neighbors":
+                left_neighbor = self.all_blade_row_keys[i - 1] if i > 0 else None
+                right_neighbor = (
+                    self.all_blade_row_keys[i + 1] if i < len(self.all_blade_row_keys) - 1 else None
+                )
+                # since the neighbors are inf, extract the file name only, and append .crv
+                if left_neighbor:
+                    left_neighbor = os.path.splitext(left_neighbor)[0] + ".crv"
+                if right_neighbor:
+                    right_neighbor = os.path.splitext(right_neighbor)[0] + ".crv"
+            self.neighbor_dict[self.all_blade_row_keys[i]] = [left_neighbor, right_neighbor]
+        print(f"   {self.neighbor_dict=}")
+        self.tg_worker_instances = {key: single_blade_row() for key in self.all_blade_row_keys}
+        self.base_gsf = {key: 1.0 for key in self.all_blade_row_keys}
+        with concurrent.futures.ThreadPoolExecutor(
+            max_workers=len(self.tg_worker_instances)
+        ) as executor:
+            job = partial(
+                self.__launch_instances_inf__,
+                tg_log_level,
+                os.path.split(tgmachine_path)[0],
+                self.neighbor_dict,
+            )
+            futures = [
+                executor.submit(job, key, val) for key, val in self.tg_worker_instances.items()
+            ]
+            concurrent.futures.wait(futures)
+
+    def get_average_background_face_areas(self) -> dict:
+        """
+        Query the background topology face areas for each blade row.
+        This is TurboGrid specific information.
+        """
+        return {
+            tg_worker_name: tg_worker_instance.pytg.query_average_background_face_area()
+            for tg_worker_name, tg_worker_instance in self.tg_worker_instances.items()
+        }
+
+    def get_average_base_face_areas(self) -> dict:
+        """
+        Query the base topology face areas for each blade row.
+        This is TurboGrid specific information.
+        """
+        return {
+            tg_worker_name: tg_worker_instance.pytg.query_average_base_face_area()
+            for tg_worker_name, tg_worker_instance in self.tg_worker_instances.items()
+        }
+
+    def get_element_counts(self) -> dict:
+        """
+        Query the element count for each blade row.
+        """
+        return {
+            tg_worker_name: self.__get_ec__(tg_worker_instance)
+            for tg_worker_name, tg_worker_instance in self.tg_worker_instances.items()
+        }
+
+    def get_spanwise_element_counts(self) -> dict:
+        """
+        Query the number of spanwise elements for each blade row.
+        """
+        return {
+            tg_worker_name: int(tg_worker_instance.pytg.query_number_of_spanwise_elements())
+            for tg_worker_name, tg_worker_instance in self.tg_worker_instances.items()
+        }
+
+    def get_local_gsf(self) -> dict:
+        """
+        Query the blade-row-local global size factor for each blade row.
+        """
+        return {
+            tg_worker_name: float(
+                tg_worker_instance.pytg.get_object_param(
+                    object="/MESH DATA", param="Global Size Factor"
+                )
+            )
+            for tg_worker_name, tg_worker_instance in self.tg_worker_instances.items()
+        }
+
+    def get_blade_row_names(self) -> list:
+        return self.all_blade_row_keys
+
+    def set_global_size_factor(self, blade_row_name: str, size_factor: float):
+        """
+        Set the blade-row-local global size factor for blade_row_name.
+        """
+        if blade_row_name not in self.tg_worker_instances:
+            raise Exception(
+                f"No blade row with name {blade_row_name}. Available names: {self.all_blade_row_keys}"
+            )
+        self.tg_worker_instances[blade_row_name].pytg.set_global_size_factor(size_factor)
+
+    def set_number_of_blade_sets(self, blade_row_name: str, number_of_blade_sets: int):
+        """
+        Set the number of blade sets for blade_row_name.
+        """
+        if blade_row_name not in self.tg_worker_instances:
+            raise Exception(
+                f"No blade row with name {blade_row_name}. Available names: {self.all_blade_row_keys}"
+            )
+        self.tg_worker_instances[blade_row_name].pytg.set_obj_param(
+            object="/GEOMETRY/MACHINE DATA",
+            param_val_pairs=f"Bladeset Count = {number_of_blade_sets}",
+        )
+
+    def set_machine_sizing_strategy(self, strategy: MachineSizingStrategy):
+        """
+        Set the automatic machine sizing strategy for this machine.
+        The machine simulation must be initialized already.
+
+        """
+        # When 3.9 is dropped, we can use match/case
+        if strategy == self.MachineSizingStrategy.MIN_FACE_AREA:
+            original_face_areas = self.get_average_base_face_areas()
+            target_face_area = min(original_face_areas.values())
+            base_gsf = {
+                key: math.sqrt(original_face_area / target_face_area)
+                for key, original_face_area in original_face_areas.items()
+            }
+            self.set_machine_base_size_factors(base_gsf)
+        else:
+            raise Exception(f"MachineSizingStrategy {strategy.name} not supported")
+
+    def set_machine_base_size_factors(self, size_factors: dict[str, float]):
+        """
+        Manual setting for per-blade-row sizings, and set the machine size factor to 1.0.
+
+        """
+        # print(f"set_machine_base_size_factors {size_factors}")
+        # Check sizes here!
+        self.base_gsf = size_factors
+        with concurrent.futures.ThreadPoolExecutor(
+            max_workers=len(self.tg_worker_instances)
+        ) as executor:
+            job = partial(self.__set_gsf__, 1.0)
+            futures = [
+                executor.submit(job, key, val) for key, val in self.tg_worker_instances.items()
+            ]
+            concurrent.futures.wait(futures)
+
+    def set_machine_size_factor(self, size_factor: float):
+        """
+        Set the entire machine's size factor. Higher means more (and smaller) elements.
+
+        """
+        # print(f"set_machine_size_factor base {self.base_gsf} factor {size_factor}")
+        with concurrent.futures.ThreadPoolExecutor(
+            max_workers=len(self.tg_worker_instances)
+        ) as executor:
+            job = partial(self.__set_gsf__, size_factor)
+            futures = [
+                executor.submit(job, key, val) for key, val in self.tg_worker_instances.items()
+            ]
+            concurrent.futures.wait(futures)
+
+    def set_machine_target_node_count(self, target_node_count: int):
+        """
+        Instead of size factors, a target node count can be specified.
+        Less robust but more predictable than using a size factor.
+        Count must be over 50,000, and a count too high may be problematic.
+
+        """
+        print(f"set_machine_target_node_count target_node_count {target_node_count}")
+        with concurrent.futures.ThreadPoolExecutor(
+            max_workers=len(self.tg_worker_instances)
+        ) as executor:
+            job = partial(self.__set_tnc__, target_node_count)
+            futures = [
+                executor.submit(job, key, val) for key, val in self.tg_worker_instances.items()
+            ]
+            concurrent.futures.wait(futures)
+
+    def save_meshes(self):
+        """
+        Write out the .def files representing the entire blade row.
+        Blade rows that threw errors will not write meshes (check the logs.)
+        The assembly can be opened directly in CFX-Pre (Meshes contain some topology.)
+
+        """
+        print(f"save_meshes")
+        with concurrent.futures.ThreadPoolExecutor(
+            max_workers=len(self.tg_worker_instances)
+        ) as executor:
+            futures = [
+                executor.submit(self.__save_mesh__, key, val)
+                for key, val in self.tg_worker_instances.items()
+            ]
+            concurrent.futures.wait(futures)
+
+    def plot_machine(self):
+        """
+        Display the machine's mesh boundaries using pyvista.
+        Experimental.
+
+        """
+        import random
+
+        import pyvista as pv
+
+        p = pv.Plotter()
+        print("plot_machine")
+        threadsafe_queue: queue.Queue = queue.Queue()
+        with concurrent.futures.ThreadPoolExecutor(
+            max_workers=len(self.tg_worker_instances)
+        ) as executor:
+            job = partial(self.__write_boundary_polys__, threadsafe_queue)
+            futures = [executor.submit(job, val) for key, val in self.tg_worker_instances.items()]
+            concurrent.futures.wait(futures)
+
+        # for tg_worker_name, tg_worker_instance in self.tg_worker_instances.items():
+        #     print(f"  {tg_worker_name}")
+        #     for b_m in tg_worker_instance.pytg.getBoundaryGeometry():
+        #         p.add_mesh(b_m, color=[random.random(), random.random(), random.random()])
+        print("add meshes")
+        while threadsafe_queue.empty() == False:
+            p.add_mesh(
+                threadsafe_queue.get(), color=[random.random(), random.random(), random.random()]
+            )
+        print("show")
+        p.show(jupyter_backend="client")
+
+    def __launch_instances__(self, ndf_file_name, tg_log_level, tg_worker_name, tg_worker_instance):
+        """
+        :meta private:
+        """
+        try:
+
+            tg_port = None
+            if (
+                self.turbogrid_location_type
+                == PyTurboGrid.TurboGridLocationType.TURBOGRID_RUNNING_CONTAINER
+            ):
+                tg_worker_instance.tg_execution_control = launch_turbogrid_container(
+                    self.tg_container_launch_settings["cfxtg_command_name"],
+                    self.tg_container_launch_settings["image_name"],
+                    self.tg_container_launch_settings["container_name"],
+                    self.tg_container_launch_settings["cfx_version"],
+                    self.tg_container_launch_settings["license_file"],
+                    self.tg_container_launch_settings["keep_stopped_containers"],
+                    self.tg_container_launch_settings["container_env_dict"],
+                )
+                tg_port = tg_worker_instance.tg_execution_control.socket_port
+            tg_worker_instance.pytg = launch_turbogrid(
+                log_level=tg_log_level,
+                log_filename_suffix=f"_{ndf_file_name}_{tg_worker_name}",
+                additional_kw_args=self.tg_kw_args,
+                turbogrid_path=self.turbogrid_path,
+                turbogrid_location_type=self.turbogrid_location_type,
+                port=tg_port,
+            )
+            tg_worker_instance.pytg.block_each_message = True
+
+            if (
+                self.turbogrid_location_type
+                == PyTurboGrid.TurboGridLocationType.TURBOGRID_RUNNING_CONTAINER
+            ):
+                print(
+                    f"get_container_connection {tg_worker_instance.tg_execution_control.ftp_port} {self.tg_container_launch_settings['ssh_key_filename']}"
+                )
+                container = container_helpers.get_container_connection(
+                    tg_worker_instance.tg_execution_control.ftp_port,
+                    self.tg_container_launch_settings["ssh_key_filename"],
+                )
+                print(f"transfer files to container {ndf_file_name}")
+                container_helpers.transfer_files_to_container(
+                    container,
+                    self.ndf_base_path,
+                    [ndf_file_name + ".tginit", ndf_file_name + ".x_b"],
+                )
+                print(f"files transferred")
+
+            tg_worker_instance.pytg.read_tginit(
+                path=ndf_file_name + ".tginit", bladerow=tg_worker_name
+            )
+            tg_worker_instance.pytg.set_obj_param(
+                object="/GEOMETRY/INLET", param_val_pairs="Opening Mode = Fully extend"
+            )
+            tg_worker_instance.pytg.set_obj_param(
+                object="/GEOMETRY/OUTLET", param_val_pairs="Opening Mode = Fully extend"
+            )
+            # tg_worker_instance.pytg.set_obj_param(
+            #     object="/TOPOLOGY SET", param_val_pairs="ATM Stop After Main Layers=True"
+            # )
+            tg_worker_instance.pytg.unsuspend(object="/TOPOLOGY SET")
+            # av_bg_face_area = tg_worker_instance.pytg.query_average_background_face_area()
+            # print(f"{tg_worker_name=} {av_bg_face_area=}")
+        except Exception as e:
+            print(f"{tg_worker_instance} exception on __launch_instances__: {e}")
+            print(f"{tg_worker_instance} traceback: {traceback.extract_tb(e.__traceback__)}")
+
+    def __launch_instances_inf__(
+        self,
+        tg_log_level,
+        base_dir,
+        neighbor_dict: dict[str, Optional[str]],
+        tg_worker_name,
+        tg_worker_instance,
+    ):
+        """
+        :meta private:
+        """
+        try:
+            tg_worker_instance.pytg = launch_turbogrid(
+                log_level=tg_log_level,
+                log_filename_suffix=f"_{tg_worker_name}",
+                additional_kw_args=self.tg_kw_args,
+            )
+            tg_worker_instance.pytg.block_each_message = True
+            tg_worker_instance.pytg.read_inf(filename=os.path.join(base_dir, tg_worker_name))
+            if neighbor_dict[tg_worker_name][0]:
+                tg_worker_instance.pytg.set_obj_param(
+                    object="/GEOMETRY/INLET",
+                    param_val_pairs=f"Opening Mode = Adjacent blade, Input Filename = {os.path.join(base_dir, neighbor_dict[tg_worker_name][0])}",
+                )
+                tg_worker_instance.pytg.set_obj_param(
+                    object="/MESH DATA",
+                    param_val_pairs=f"Inlet Domain = Off",
+                )
+            else:
+                tg_worker_instance.pytg.set_obj_param(
+                    object="/GEOMETRY/INLET", param_val_pairs=f"Opening Mode = Fully extend"
+                )
+            if neighbor_dict[tg_worker_name][1]:
+                tg_worker_instance.pytg.set_obj_param(
+                    object="/GEOMETRY/OUTLET",
+                    param_val_pairs=f"Opening Mode = Adjacent blade, Input Filename = {os.path.join(base_dir, neighbor_dict[tg_worker_name][1])}",
+                )
+                tg_worker_instance.pytg.set_obj_param(
+                    object="/MESH DATA",
+                    param_val_pairs=f"Outlet Domain = Off",
+                )
+            else:
+                tg_worker_instance.pytg.set_obj_param(
+                    object="/GEOMETRY/OUTLET", param_val_pairs=f"Opening Mode = Fully extend"
+                )
+            tg_worker_instance.pytg.unsuspend(object="/TOPOLOGY SET")
+        except Exception as e:
+            print(f"{tg_worker_instance} exception on __launch_instances_inf__: {e}")
+
+    def __set_gsf__(self, size_factor, tg_worker_name, tg_worker_instance):
+        """
+        :meta private:
+        """
+        tg_worker_instance.pytg.set_global_size_factor(self.base_gsf[tg_worker_name] * size_factor)
+
+    def __set_tnc__(self, target_node_count, tg_worker_name, tg_worker_instance):
+        """
+        :meta private:
+        """
+        tg_worker_instance.pytg.set_obj_param(
+            object="/MESH DATA",
+            param_val_pairs=f"Mesh Size Specification Mode = Target Total Node Count, "
+            f"Target Mesh Granularity = Specify, "
+            f"Target Mesh Node Count = {int(target_node_count)}",
+        )
+
+    def __get_ec__(self, tg_worker_instance) -> int:
+        """
+        :meta private:
+        """
+        ec = 0
+        try:
+            ec = int(tg_worker_instance.pytg.query_mesh_statistics()["Elements"]["Count"])
+        except:
+            pass
+        return ec
+
+    def __save_mesh__(self, tg_worker_name, tg_worker_instance):
+        """
+        :meta private:
+        """
+        tg_worker_instance.pytg.save_mesh(tg_worker_name + ".def")
+
+    def __quit__(self, tg_worker_instance):
+        """
+        :meta private:
+        """
+        tg_worker_instance.pytg.quit()
+
+    def __write_boundary_polys__(self, threadsafe_queue: queue.Queue, tg_worker_instance):
+        """
+        :meta private:
+        """
+        for b_m in tg_worker_instance.pytg.getBoundaryGeometry():
+            threadsafe_queue.put(b_m)

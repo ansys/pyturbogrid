@@ -23,13 +23,18 @@
 
 """Module for launching a local instance of Ansys TurboGrid."""
 
+import ast
 from enum import Enum
 import os
 from pathlib import Path
 import platform
+import random
 from typing import Optional
 
 from ansys.turbogrid.api import pyturbogrid_core
+
+from ansys.turbogrid.core.launcher.container_helpers import get_open_port
+from ansys.turbogrid.core.launcher.deploy_tg_container import deployed_tg_container
 
 
 def _is_windows():
@@ -41,6 +46,7 @@ class TurboGridVersion(Enum):
     """Provide an enumeration over supported TurboGrid versions."""
 
     # Versions must be listed here with the most recent first
+    version_25R1 = "25.1.0"
     version_24R2 = "24.2.0"
     version_24R1 = "24.1.0"
     version_23R2 = "23.2.0"
@@ -141,6 +147,7 @@ def launch_turbogrid(
     product_version: str = None,
     turbogrid_path: str = None,
     log_level: pyturbogrid_core.PyTurboGrid.TurboGridLogLevel = pyturbogrid_core.PyTurboGrid.TurboGridLogLevel.INFO,
+    turbogrid_location_type=pyturbogrid_core.PyTurboGrid.TurboGridLocationType.TURBOGRID_INSTALL,
     additional_args_str: str = None,
     additional_kw_args: dict = None,
     port: Optional[int] = None,
@@ -186,11 +193,13 @@ def launch_turbogrid(
         )
 
     argVals = locals()
-    pathToCFXTG = get_turbogrid_exe_path(**argVals)
+    pathToCFXTG: str = turbogrid_path
+    if turbogrid_path == None:
+        pathToCFXTG = get_turbogrid_exe_path(**argVals)
 
     return pyturbogrid_core.PyTurboGrid(
         socket_port=port,
-        turbogrid_location_type=pyturbogrid_core.PyTurboGrid.TurboGridLocationType.TURBOGRID_INSTALL,
+        turbogrid_location_type=turbogrid_location_type,
         cfxtg_location=pathToCFXTG,
         additional_args_str=additional_args_str,
         additional_kw_args=additional_kw_args,
@@ -231,3 +240,38 @@ def launch_turbogrid_ansys_labs(
         pim_app_name="turbogrid",
         pim_app_ver=product_version,
     )
+
+
+def launch_turbogrid_container(
+    cfxtg_command_name,
+    image_name,
+    container_name,
+    cfx_version,
+    license_file,
+    keep_stopped_containers,
+    container_env_dict,
+) -> deployed_tg_container:
+    # Generate a random integer with 10 digits
+    random_number = random.randint(10**9, 10**10 - 1)
+    container_name = container_name + str(random_number)
+
+    # The path to cfxtg_command is standardized by the container, so just replace the command name.
+    # This allows image developers to write custom cfxtg commands.
+    ftp_port = get_open_port()
+    socket_port = get_open_port()
+    cfxtg_command: str = cfxtg_command_name
+    cfxtg_command = (
+        f"./v{cfx_version}/TurboGrid/bin/{cfxtg_command} " f"-py -control-port {socket_port}"
+    )
+
+    tg_instance = deployed_tg_container(
+        image_name,
+        socket_port,
+        ftp_port,
+        cfxtg_command,
+        license_file,
+        container_name,
+        keep_stopped_containers,
+        ast.literal_eval(container_env_dict),
+    )
+    return tg_instance

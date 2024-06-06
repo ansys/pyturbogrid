@@ -24,7 +24,7 @@
 # SOFTWARE.
 
 """
-.. _multi_blade_row_example:
+.. _multi_blade_row_batch_example:
 
 Multi blade row meshing example
 -------------------------------
@@ -41,7 +41,7 @@ This basic example shows how to set up a multi blade row meshing instance and ex
 import os
 import pathlib
 
-from ansys.turbogrid.core.multi_blade_row.multi_blade_row import MultiBladeRow
+from ansys.turbogrid.core.multi_blade_row.multi_blade_row_batch import MultiBladeRow
 
 #################################################################################
 # Create and use a MultiBladeRow instance

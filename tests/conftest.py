@@ -21,37 +21,19 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-import ast
 from enum import IntEnum
 import os
-import random
-import socket
-import sys
-import time
 from typing import Optional
 
-from fabric import Connection
+from ansys.turbogrid.api import pyturbogrid_core
 import pytest
 
-from DeployTGContainer import deployed_tg_container, remote_tg_instance
-
-pyturbogrid_root = os.getenv("PYTURBOGRID_ROOT")
-if pyturbogrid_root:
-    sys.path.append(f"{pyturbogrid_root}/src")
-else:
-    sys.path.append("./src")
-
-# For now, this relies on the installed package because of github reasons.
-# If you want to use a 'local' api module, you can use the following:
-# pyturbogrid_api_root = os.getenv("PYTURBOGRID_API_ROOT")
-# if pyturbogrid_api_root:
-#     sys.path.append(f"{pyturbogrid_api_root}/src")
-# else:
-#     raise RuntimeError("PYTURBOGRID_API_ROOT must be defined")
-
-from ansys.turbogrid.api import pyturbogrid_core
-
-# from ansys.turbogrid.core.launcher.launcher import launch_turbogrid
+from ansys.turbogrid.core.launcher.container_helpers import get_open_port
+from ansys.turbogrid.core.launcher.deploy_tg_container import (
+    deployed_tg_container,
+    remote_tg_instance,
+)
+from ansys.turbogrid.core.launcher.launcher import launch_turbogrid, launch_turbogrid_container
 
 
 class TestExecutionMode(IntEnum):
@@ -134,11 +116,20 @@ def pytest_addoption(parser):
         help="The full path+filename to launch TurboGrid when --execution-mode==DIRECT",
     )
     parser.addoption(
-        "--log_level",
+        "--client_log_level",
         action="store",
         default="INFO",
         help="Sets the log level for the python client",
         choices=("CRITICAL", "ERROR", "WARNING", "INFO", "NETWORK_DEBUG", "DEBUG"),
+    )
+    parser.addoption(
+        "--tg_kw_args",
+        action="store",
+        default="{}",
+        help=(
+            "A dictionary for kw args to launch tg with. "
+            "Used by developers in specific situations"
+        ),
     )
 
 
@@ -207,117 +198,14 @@ def get_enum_value_from_env(
     return enum_value
 
 
-def get_tg_container(pytestconfig, socket_port: int) -> deployed_tg_container:
-    container_name: str = pytestconfig.getoption("container_name")
-    # Generate a random integer with 10 digits
-    random_number = random.randint(10**9, 10**10 - 1)
-    container_name = container_name + str(random_number)
-    image_name: str = pytestconfig.getoption("image_name")
-    # The path to cfxtg_command is standardized by the container, so just replace the command name.
-    # This allows image developers to write custom cfxtg commands.
-    cfxtg_command: str = pytestconfig.getoption("cfxtg_command_name")
-    cfxtg_command = (
-        f"./v{pytestconfig.getoption('cfx_version')}/TurboGrid/bin/{cfxtg_command} "
-        f"-py -control-port {socket_port}"
-    )
-
-    license_server: str = pytestconfig.getoption("license_file")
-    pytest.ftp_port = get_open_port()
-
-    tg_instance = deployed_tg_container(
-        image_name,
-        socket_port,
-        pytest.ftp_port,
-        cfxtg_command,
-        license_server,
-        container_name,
-        pytestconfig.getoption("keep_stopped_containers"),
-        ast.literal_eval(pytestconfig.getoption("container_env_dict")),
-    )
-    return tg_instance
-
-
-def get_open_port():
-    with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
-        s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-        # using '0' will tell the OS to pick a random port that is available.
-        s.bind(("", 0))
-        s.listen(1)
-        port = s.getsockname()[1]
-        # Shutdown is not needed because the socket is not connected.
-        # Also, this will throw and error in windows
-        # s.shutdown(socket.SHUT_RDWR)
-        s.close()
-    # Wait a second to let the OS do things
-    time.sleep(1)
-    return port
-
-
-class Helpers:
-    pytestconfig: None
-
-    def __init__(self, pytcfg):
-        self.pytestconfig = pytcfg
-
-    def get_container_connection(self, ftp_port: int, host_name="localhost"):
-        container_connection = Connection(
-            host=host_name,
-            user="root",
-            port=ftp_port,
-            connect_kwargs={"key_filename": self.pytestconfig.getoption("ssh_key_filename")},
-        )
-        return container_connection
-
-    @staticmethod
-    def transfer_file_to_container(container_connection: Connection, local_filepath: str):
-        print(f"To container-> {local_filepath}")
-        container_connection.put(
-            remote="/",
-            local=local_filepath,
-        )
-
-    @staticmethod
-    def transfer_files_to_container(
-        container_connection: Connection, local_folder_path: str, local_filenames: list
-    ):
-        for filename in local_filenames:
-            Helpers.transfer_file_to_container(
-                container_connection, f"{local_folder_path}/{filename}"
-            )
-
-    @staticmethod
-    def transfer_file_from_container(
-        container_connection: Connection, remote_filename: str, local_path_only: str
-    ):
-        print(f"From container-> {local_path_only}/{remote_filename}")
-        container_connection.get(
-            remote=f"/{remote_filename}",
-            local=f"{local_path_only}/{remote_filename}",
-        )
-
-    @staticmethod
-    def transfer_files_from_container(
-        container_connection: Connection, local_folder_path: str, remote_filenames: list
-    ):
-        for filename in remote_filenames:
-            Helpers.transfer_file_from_container(container_connection, filename, local_folder_path)
-
-
-@pytest.fixture
-def helpers(pytestconfig):
-    return Helpers(pytestconfig)
-
-
 # Fixtures are set-up methods. The method is passed as an argument to the test method and will be
 # run before the method definition.
 @pytest.fixture
 def pyturbogrid(pytestconfig, request) -> pyturbogrid_core.PyTurboGrid:
     pytest.socket_port = get_open_port()
 
-    turbogrid_versions = ["241", "232"]
-
     pytest.turbogrid_log_level = pyturbogrid_core.PyTurboGrid.TurboGridLogLevel[
-        pytestconfig.getoption("log_level")
+        pytestconfig.getoption("client_log_level")
     ]
     pytest.execution_mode = TestExecutionMode[pytestconfig.getoption("execution_mode")]
     # Regardless of this parameter, if we specified CONTAINERIZED above,
@@ -339,7 +227,25 @@ def pyturbogrid(pytestconfig, request) -> pyturbogrid_core.PyTurboGrid:
 
     tg_execution_control: deployed_tg_container | remote_tg_instance | None = None
     if pytest.execution_mode == TestExecutionMode.CONTAINERIZED:
-        tg_execution_control = get_tg_container(pytestconfig, pytest.socket_port)
+        pytest.cfxtg_command_name = pytestconfig.getoption("cfxtg_command_name")
+        pytest.image_name = pytestconfig.getoption("image_name")
+        pytest.container_name = pytestconfig.getoption("container_name")
+        pytest.cfx_version = pytestconfig.getoption("cfx_version")
+        pytest.license_file = pytestconfig.getoption("license_file")
+        pytest.keep_stopped_containers = pytestconfig.getoption("keep_stopped_containers")
+        pytest.container_env_dict = pytestconfig.getoption("container_env_dict")
+        pytest.ssh_key_filename = pytestconfig.getoption("ssh_key_filename")
+        tg_execution_control = launch_turbogrid_container(
+            pytest.cfxtg_command_name,
+            pytest.image_name,
+            pytest.container_name,
+            pytest.cfx_version,
+            pytest.license_file,
+            pytest.keep_stopped_containers,
+            pytest.container_env_dict,
+        )
+        pytest.socket_port = tg_execution_control.socket_port
+        pytest.ftp_port = tg_execution_control.ftp_port
     if pytest.execution_mode == TestExecutionMode.REMOTE:
         tg_execution_control = remote_tg_instance(
             pytest.socket_port,
@@ -363,21 +269,34 @@ def pyturbogrid(pytestconfig, request) -> pyturbogrid_core.PyTurboGrid:
         local_root_env="PYTURBOGRID_TURBOGRID_LOCAL_ROOT"
     )
 
-    pyturbogrid = pyturbogrid_core.PyTurboGrid(
-        socket_port=pytest.socket_port,
-        turbogrid_location_type=pytest.turbogrid_install_type,
-        cfxtg_location=pytest.path_to_cfxtg,
-        log_level=pytest.turbogrid_log_level,
+    print(f"{pytest.socket_port=}")
+    print(f"{pytest.turbogrid_install_type=}")
+    print(f"{pytest.path_to_cfxtg=}")
+    print(f"{pytest.turbogrid_log_level=}")
+    print(f"{pytest.additional_args=}")
+    print(f"{pytest.additional_kw_args=}")
+    print(f"{request.node.name=}")
+
+    # If issues come up with launch_turbogrid, fall back to this style for testing:
+    # pyturbogrid = pyturbogrid_core.PyTurboGrid(
+    #     socket_port=pytest.socket_port,
+    #     turbogrid_location_type=pytest.turbogrid_install_type,
+    #     cfxtg_location=pytest.path_to_cfxtg,
+    #     log_level=pytest.turbogrid_log_level,
+    #     additional_args_str=pytest.additional_args,
+    #     additional_kw_args=pytest.additional_kw_args,
+    #     log_filename_suffix=request.node.name,
+    # )
+
+    pyturbogrid = launch_turbogrid(
+        turbogrid_path=pytest.path_to_cfxtg,
         additional_args_str=pytest.additional_args,
         additional_kw_args=pytest.additional_kw_args,
+        log_level=pytest.turbogrid_log_level,
+        port=pytest.socket_port,
+        turbogrid_location_type=pytest.turbogrid_install_type,
         log_filename_suffix=request.node.name,
     )
-
-    # pyturbogrid = launch_turbogrid(
-    #     additional_args_str=additional_args,
-    #     additional_kw_args=additional_kw_args,
-    #     port=pytest.socket_port,
-    # )
 
     yield pyturbogrid
     # Because of conf-testy things, we can't rely on the proper lifetime management here
