@@ -1,4 +1,26 @@
-# Copyright (c) 2023 ANSYS, Inc. All rights reserved
+# Copyright (C) 2023 - 2024 ANSYS, Inc. and/or its affiliates.
+# SPDX-FileCopyrightText: 2023 ANSYS, Inc. All rights reserved
+# SPDX-License-Identifier: MIT
+#
+#
+# Permission is hereby granted, free of charge, to any person obtaining a copy
+# of this software and associated documentation files (the "Software"), to deal
+# in the Software without restriction, including without limitation the rights
+# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+# copies of the Software, and to permit persons to whom the Software is
+# furnished to do so, subject to the following conditions:
+#
+# The above copyright notice and this permission notice shall be included in all
+# copies or substantial portions of the Software.
+#
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+# SOFTWARE.
+
 # To run these tests, navigate your terminal to the root of this project (pyturbogrid)
 # and use the command pytest -v. -s can be added as well to see all of the console output.
 
@@ -33,6 +55,8 @@ def test_turbogrid_exe_paths():
     try:
         os.environ["AWP_ROOT232"] = "/myansys/v232"
         os.environ["AWP_ROOT241"] = "/myansys2/v241"
+        os.environ["AWP_ROOT242"] = "/myansys2/v242"
+        os.environ["AWP_ROOT251"] = "/myansys2/v251"
 
         latest_path = launcher.get_turbogrid_exe_path()
         version_path = launcher.get_turbogrid_exe_path(product_version="23.2")
@@ -46,13 +70,15 @@ def test_turbogrid_exe_paths():
         else:
             exe_suffix = ""
 
-        assert str(latest_path) == str(Path(r"/myansys2/v241/TurboGrid/bin/cfxtg")) + exe_suffix
+        assert str(latest_path) == str(Path(r"/myansys2/v251/TurboGrid/bin/cfxtg")) + exe_suffix
         assert str(version_path) == str(Path(r"/myansys/v232/TurboGrid/bin/cfxtg")) + exe_suffix
         assert str(pyturbogrid_env_path) == str(Path(r"/TGRoot/bin/cfxtg")) + exe_suffix
         assert str(specified_path) == str(Path(r"/MyPath/MyExe.exe"))
 
         del os.environ["AWP_ROOT232"]
         del os.environ["AWP_ROOT241"]
+        del os.environ["AWP_ROOT242"]
+        del os.environ["AWP_ROOT251"]
 
         with pytest.raises(RuntimeError, match="No Ansys version can be found."):
             print(launcher.get_latest_ansys_version())

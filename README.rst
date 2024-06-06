@@ -23,7 +23,7 @@ PyTurboGrid
    :alt: GH-CI
 
 .. |MIT| image:: https://img.shields.io/badge/License-MIT-yellow.svg
-   :target: https://opensource.org/licenses/MIT
+   :target: https://opensource.org/blog/license/mit
    :alt: MIT
 
 .. |black| image:: https://img.shields.io/badge/code%20style-black-000000.svg?style=flat
@@ -45,7 +45,7 @@ of TurboGrid. PyTurboGrid supports Ansys TurboGrid 2023 R2 and later.
 
 Installation
 ------------
-The ``ansys-turbogrid-core`` package supports Python 3.8, 3.9, 3.10 and 3.11 on Windows and Linux. Two modes
+The ``ansys-turbogrid-core`` package supports Python 3.9, 3.10, 3.11 and 3.12 on Windows and Linux. Two modes
 of installation are available:
 
 - User installation
@@ -100,11 +100,15 @@ contribute to PyTurboGrid.
 
 #. Assuming that your current working directory is the top-level directory
    of your locally cloned ``pyturbogrid`` repository, install PyTurboGrid
-   from this local repository in editable mode by running this command:
+   from this local repository in editable mode by running these commands 
+   in the root directory:
       
    .. code:: bash
    
-       python -m pip install -e . 
+       python -m pip install poetry
+       python -m pip poetry lock
+       python -m pip poetry install --with doc,test
+       python -m pip poetry shell
 
 Requirements
 ------------

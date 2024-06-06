@@ -61,7 +61,6 @@ html_theme_options = {
         "json_url": f"https://{cname}/versions.json",
         "version_match": get_version_match(__version__),
     },
-    "check_switcher": False,
     "github_url": "https://github.com/ansys/pyturbogrid",
     "show_prev_next": True,
     "show_breadcrumbs": True,
@@ -95,4 +94,7 @@ autodoc_default_options = {
     "special-members": "__init__",
 }
 
-linkcheck_ignore = ["https://github.com/ansys/pyturbogrid/issues"]
+# Ignore ansys.com links because they come back stale
+linkcheck_ignore = ["https://github.com/ansys/pyturbogrid/issues", r"https://www.ansys.com/.*"]
+
+linkcheck_report_timeouts_as_broken = True
