@@ -427,11 +427,20 @@ class multi_blade_row:
 
         """
         import random
-
         import pyvista as pv
 
+        print("get_machine_boundary_surfaces")
+        threadsafe_queue = self.get_machine_boundary_surfaces()
         p = pv.Plotter()
-        print("plot_machine")
+        print(f"add meshes {threadsafe_queue.qsize()}")
+        while threadsafe_queue.empty() == False:
+            p.add_mesh(
+                threadsafe_queue.get(), color=[random.random(), random.random(), random.random()]
+            )
+        print("show")
+        p.show(None)
+
+    def get_machine_boundary_surfaces(self) -> queue.Queue:
         threadsafe_queue: queue.Queue = queue.Queue()
         with concurrent.futures.ThreadPoolExecutor(
             max_workers=len(self.tg_worker_instances)
@@ -439,18 +448,11 @@ class multi_blade_row:
             job = partial(self.__write_boundary_polys__, threadsafe_queue)
             futures = [executor.submit(job, val) for key, val in self.tg_worker_instances.items()]
             concurrent.futures.wait(futures)
-
         # for tg_worker_name, tg_worker_instance in self.tg_worker_instances.items():
         #     print(f"  {tg_worker_name}")
         #     for b_m in tg_worker_instance.pytg.getBoundaryGeometry():
         #         p.add_mesh(b_m, color=[random.random(), random.random(), random.random()])
-        print("add meshes")
-        while threadsafe_queue.empty() == False:
-            p.add_mesh(
-                threadsafe_queue.get(), color=[random.random(), random.random(), random.random()]
-            )
-        print("show")
-        p.show(jupyter_backend="client")
+        return threadsafe_queue
 
     def __launch_instances__(self, ndf_file_name, tg_log_level, tg_worker_name, tg_worker_instance):
         """
