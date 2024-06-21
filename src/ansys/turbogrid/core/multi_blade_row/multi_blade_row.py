@@ -453,6 +453,7 @@ class multi_blade_row:
 
         """
         import random
+
         import pyvista as pv
 
         print("get_machine_boundary_surfaces")
