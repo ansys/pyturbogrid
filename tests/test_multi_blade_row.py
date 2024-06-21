@@ -28,8 +28,8 @@ import pathlib
 from ansys.turbogrid.api.pyturbogrid_core import PyTurboGrid
 import pytest
 
-from ansys.turbogrid.core.multi_blade_row.multi_blade_row import multi_blade_row as MBR
 from ansys.turbogrid.core.multi_blade_row.multi_blade_row import MachineSizingStrategy
+from ansys.turbogrid.core.multi_blade_row.multi_blade_row import multi_blade_row as MBR
 
 # To run these tests, navigate your terminal to the root of this project (pyturbogrid)
 # and use the command pytest -v. -s can be added as well to see all of the console output.
