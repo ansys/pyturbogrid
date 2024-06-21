@@ -47,6 +47,29 @@ from ansys.turbogrid.core.multi_blade_row.single_blade_row import single_blade_r
 import ansys.turbogrid.core.ndf_parser.ndf_parser as ndf_parser
 
 
+class MachineSizingStrategy(IntEnum):
+    """
+    These are machine sizing strategies that can be optionally applied using set_machine_sizing_strategy.
+
+    Description
+    -----------
+    NONE
+        No strategy applied. Blade Row sizings must be manually controlled via either of:
+            set_global_size_factor
+            set_machine_base_size_factors
+            set_machine_size_factor
+            set_machine_target_node_count
+    MIN_FACE_AREA
+        This strategy attempts to size each blade row so that the element sizes are all equal,
+        by using the blade row with the smallest face area as the target.
+        This is the most robust strategy, although can result in many elements for the larger blade rows,
+        and if the blade row is too large, the sizing may be huge.
+    """
+
+    NONE = 0
+    MIN_FACE_AREA = 1
+
+
 class multi_blade_row:
     """This class spawns multiple TG instances and can initialize and control an entire blade row at once."""
 
@@ -62,21 +85,8 @@ class multi_blade_row:
     ndf_file_name: str
     ndf_file_extension: str
     tg_kw_args = {}
-
-    class MachineSizingStrategy(IntEnum):
-        """
-        These are machine sizing strategies that can be optionally applied using set_machine_sizing_strategy.
-
-        Description
-        -----------
-        MIN_FACE_AREA
-            This strategy attempts to size each blade row so that the element sizes are all equal,
-            by using the blade row with the smallest face area as the target.
-            This is the most robust strategy, although can result in many elements for the larger blade rows,
-            and if the blade row is too large, the sizing may be huge.
-        """
-
-        MIN_FACE_AREA = 1
+    current_machine_sizing_strategy: MachineSizingStrategy = MachineSizingStrategy.NONE
+    current_size_factor: float = 1.0
 
     # Consider passing in the filename (whether ndf or tginit) as initializing as raii
     def __init__(self):
@@ -342,8 +352,14 @@ class multi_blade_row:
         The machine simulation must be initialized already.
 
         """
+
+        if self.current_machine_sizing_strategy == strategy:
+            return False
+
         # When 3.9 is dropped, we can use match/case
-        if strategy == self.MachineSizingStrategy.MIN_FACE_AREA:
+        if strategy == MachineSizingStrategy.NONE:
+            self.set_machine_base_size_factors({key: 1.0 for key in self.all_blade_row_keys})
+        elif strategy == MachineSizingStrategy.MIN_FACE_AREA:
             original_face_areas = self.get_average_base_face_areas()
             target_face_area = min(original_face_areas.values())
             base_gsf = {
@@ -353,6 +369,7 @@ class multi_blade_row:
             self.set_machine_base_size_factors(base_gsf)
         else:
             raise Exception(f"MachineSizingStrategy {strategy.name} not supported")
+        return True
 
     def set_machine_base_size_factors(self, size_factors: dict[str, float]):
         """
@@ -361,6 +378,9 @@ class multi_blade_row:
         """
         # print(f"set_machine_base_size_factors {size_factors}")
         # Check sizes here!
+        if self.base_gsf == size_factors:
+            return False
+
         self.base_gsf = size_factors
         with concurrent.futures.ThreadPoolExecutor(
             max_workers=len(self.tg_worker_instances)
@@ -370,6 +390,7 @@ class multi_blade_row:
                 executor.submit(job, key, val) for key, val in self.tg_worker_instances.items()
             ]
             concurrent.futures.wait(futures)
+        return True
 
     def set_machine_size_factor(self, size_factor: float):
         """
@@ -377,6 +398,10 @@ class multi_blade_row:
 
         """
         # print(f"set_machine_size_factor base {self.base_gsf} factor {size_factor}")
+
+        if size_factor == self.current_size_factor:
+            return False
+
         with concurrent.futures.ThreadPoolExecutor(
             max_workers=len(self.tg_worker_instances)
         ) as executor:
@@ -385,6 +410,7 @@ class multi_blade_row:
                 executor.submit(job, key, val) for key, val in self.tg_worker_instances.items()
             ]
             concurrent.futures.wait(futures)
+        return True
 
     def set_machine_target_node_count(self, target_node_count: int):
         """
@@ -403,7 +429,7 @@ class multi_blade_row:
             ]
             concurrent.futures.wait(futures)
 
-    def save_meshes(self):
+    def save_meshes(self, optional_prefix: str = None):
         """
         Write out the .def files representing the entire blade row.
         Blade rows that threw errors will not write meshes (check the logs.)
@@ -415,7 +441,7 @@ class multi_blade_row:
             max_workers=len(self.tg_worker_instances)
         ) as executor:
             futures = [
-                executor.submit(self.__save_mesh__, key, val)
+                executor.submit(self.__save_mesh__, key, val, optional_prefix)
                 for key, val in self.tg_worker_instances.items()
             ]
             concurrent.futures.wait(futures)
@@ -600,11 +626,14 @@ class multi_blade_row:
             pass
         return ec
 
-    def __save_mesh__(self, tg_worker_name, tg_worker_instance):
+    def __save_mesh__(self, tg_worker_name, tg_worker_instance, optional_prefix: str = None):
         """
         :meta private:
         """
-        tg_worker_instance.pytg.save_mesh(tg_worker_name + ".def")
+        file_name: str = tg_worker_name + ".def"
+        if optional_prefix:
+            file_name = optional_prefix + file_name
+        tg_worker_instance.pytg.save_mesh(file_name)
 
     def __quit__(self, tg_worker_instance):
         """
