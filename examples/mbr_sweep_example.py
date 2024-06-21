@@ -42,7 +42,7 @@ import time
 
 install_path = pathlib.PurePath(__file__).parent.parent.as_posix()
 
-from ansys.turbogrid.core.multi_blade_row.multi_blade_row import MachineSizingStrategy
+# from ansys.turbogrid.core.multi_blade_row.multi_blade_row import MachineSizingStrategy
 from ansys.turbogrid.core.multi_blade_row.multi_blade_row import multi_blade_row as MBR
 
 all_face_areas = {}
