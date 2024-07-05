@@ -73,6 +73,7 @@ jobs:
           library-name: ${{ env.LIBRARY_NAME }}
           operating-system: ${{ matrix.os }}
           python-version: ${{ matrix.python-version }}
+          check-licenses: false # issues iwth pyvista "cmocean 4.0.3 has UNKNOWN license" and "colorcet 3.1.0 has CC-BY license"
 
 
   smoke-tests:
@@ -89,7 +90,9 @@ jobs:
         with:
           library-name: ${{ env.LIBRARY_NAME }}
           operating-system: ${{ matrix.os }}
-          python-version: ${{ matrix.python-version }}        
+          python-version: ${{ matrix.python-version }}
+          check-licenses: false # issues iwth pyvista "cmocean 4.0.3 has UNKNOWN license" and "colorcet 3.1.0 has CC-BY license"
+
       - name: Login to GitHub Container Registry
         uses: docker/login-action@v3
         with:
