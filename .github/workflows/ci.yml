@@ -71,7 +71,7 @@ jobs:
     needs: [prereqs]
     env:
       ANSYSLMD_LICENSE_FILE: 1055@${{ secrets.LICENSE_SERVER }}
-      PYTURBOGRID_DOC_VERSION: 241
+      PYTURBOGRID_DOC_VERSION: 242
       PYTURBOGRID_DOC_ENGINE_CONNECTION: 6000    
     steps:
       - uses: ansys/actions/doc-build@v5
