@@ -59,8 +59,7 @@ print(f"Start time: {time.asctime(time.localtime())}")
 machine = MBR()
 machine.init_from_ndf(
     f"{install_path}/tests/ndf/AxialFanMultiRow.ndf",
-    use_existing_tginit_cad=True,
-    tg_kw_args={"local-root": "C:/ANSYSDev/gitSRC/CFX/CFXUE/src"},
+    # use_existing_tginit_cad=True, # Use this if you've already generated the CAD
 )
 # machine.plot_machine()
 brs = machine.get_blade_row_names()
