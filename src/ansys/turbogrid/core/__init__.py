@@ -31,6 +31,7 @@ socket_port = os.getenv("PYTURBOGRID_DOC_ENGINE_CONNECTION")
 tg_container = None
 if socket_port is not None:
     import atexit
+
     from ansys.turbogrid.core.launcher.deploy_tg_container import deployed_tg_container
 
     print("Running init for ansys turbogrid core")
