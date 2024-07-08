@@ -68,11 +68,12 @@ jobs:
       - name: Save Docker image to a file
         run: docker save -o image.tar ghcr.io/ansys/ansys-api-turbogrid/tglin_reduced_ndf:242  
   
-      - name: Upload artifact
-        uses: actions/upload-artifact@v2
+      - name: Cache Docker image file
+        uses: actions/cache@v2
         with:
-          name: image
           path: image.tar
+          key: myimage-${{ github.sha }}
+          restore-keys: myimage-
 
   docs-build:
     name: "Build documentation"
@@ -83,11 +84,12 @@ jobs:
       PYTURBOGRID_DOC_VERSION: 242
       PYTURBOGRID_DOC_ENGINE_CONNECTION: 6000    
     steps:
-      - name: Download artifact
-        uses: actions/download-artifact@v2
+      - name: Restore Cached Docker image file
+        uses: actions/cache@v2
         with:
-          name: image
           path: image.tar
+          key: myimage-${{ github.sha }}
+          restore-keys: myimage-
 
       - name: Load Docker image from file
         run: docker load -i image.tar
@@ -129,11 +131,12 @@ jobs:
           operating-system: ${{ matrix.os }}
           python-version: ${{ matrix.python-version }}        
 
-      - name: Download artifact
-        uses: actions/download-artifact@v2
+      - name: Restore Cached Docker image file
+        uses: actions/cache@v2
         with:
-          name: image
           path: image.tar
+          key: myimage-${{ github.sha }}
+          restore-keys: myimage-
 
       - name: Load Docker image from file
         run: docker load -i image.tar
