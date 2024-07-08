@@ -23,6 +23,28 @@
 
 """PyTurboGrid is a Python wrapper for Ansys TurboGrid."""
 
+import os
+
+# When this is defined, hardcode a tg container spinup for the purpose of auto documentation.
+# Intended only for github CI runs.
+socket_port = os.getenv("PYTURBOGRID_DOC_ENGINE_CONNECTION")
+tg_container = None
+if socket_port is not None:
+    import atexit
+    from ansys.turbogrid.core.launcher.deploy_tg_container import deployed_tg_container
+
+    print("Running init for ansys turbogrid core")
+    socket_port = int(socket_port)
+    tg_version = os.environ.get("PYTURBOGRID_DOC_VERSION")
+    cfxtg_command = f"./v{tg_version}/TurboGrid/bin/cfxtgpynoviewer -py -control-port {socket_port}"
+    image_name = f"ghcr.io/ansys/ansys-api-turbogrid/tglin_reduced_ndf:{tg_version}"
+    container_name = "TG_DOCBUILD_CONTAINER"
+    license_server = os.environ.get("ANSYSLMD_LICENSE_FILE")
+    tg_container = deployed_tg_container(
+        image_name, socket_port, socket_port + 1, cfxtg_command, license_server, container_name
+    )
+    atexit.register(tg_container.__del__)
+
 from ansys.turbogrid.core.launcher.launcher import launch_turbogrid
 
 try:
