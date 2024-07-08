@@ -65,6 +65,15 @@ jobs:
           docker network ls
           docker pull ghcr.io/ansys/ansys-api-turbogrid/tglin_reduced_ndf:242    
 
+      - name: Save Docker image to a file
+        run: docker save -o image.tar ghcr.io/ansys/ansys-api-turbogrid/tglin_reduced_ndf:242  
+  
+      - name: Upload artifact
+        uses: actions/upload-artifact@v2
+        with:
+          name: image
+          path: image.tar
+
   docs-build:
     name: "Build documentation"
     runs-on: ubuntu-latest
@@ -74,6 +83,15 @@ jobs:
       PYTURBOGRID_DOC_VERSION: 242
       PYTURBOGRID_DOC_ENGINE_CONNECTION: 6000    
     steps:
+      - name: Download artifact
+        uses: actions/download-artifact@v2
+        with:
+          name: image
+          path: image.tar
+
+      - name: Load Docker image from file
+        run: docker load -i image.tar
+
       - uses: ansys/actions/doc-build@v5
         with:
           python-version: ${{ env.MAIN_PYTHON_VERSION }}
@@ -110,6 +128,15 @@ jobs:
           library-name: ${{ env.LIBRARY_NAME }}
           operating-system: ${{ matrix.os }}
           python-version: ${{ matrix.python-version }}        
+
+      - name: Download artifact
+        uses: actions/download-artifact@v2
+        with:
+          name: image
+          path: image.tar
+
+      - name: Load Docker image from file
+        run: docker load -i image.tar
 
       - name: Create Key
         uses: mobiledevops/secret-to-file-action@v1
