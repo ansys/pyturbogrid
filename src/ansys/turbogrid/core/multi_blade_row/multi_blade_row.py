@@ -54,7 +54,7 @@ class MachineSizingStrategy(IntEnum):
     Description
     -----------
     NONE
-        No strategy applied. Blade Row sizings must be manually controlled via either of:
+        No strategy applied. Blade Row sizings must be manually controlled via any one of:
             set_global_size_factor
             set_machine_base_size_factors
             set_machine_size_factor
