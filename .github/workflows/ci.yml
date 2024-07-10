@@ -113,7 +113,6 @@ jobs:
           library-name: ${{ env.LIBRARY_NAME }}
           operating-system: ${{ matrix.os }}
           python-version: ${{ matrix.python-version }}
-          check-licenses: false # issues with pyvista "cmocean 4.0.3 has UNKNOWN license" and "colorcet 3.1.0 has CC-BY license"
 
 
   smoke-tests:
