@@ -65,13 +65,13 @@ tests = ["ansys-api-platform-instancemanagement (==1.0.0)", "grpcio-health-check
 
 [[package]]
 name = "ansys-sphinx-theme"
-version = "0.16.2"
+version = "0.16.6"
 description = "A theme devised by ANSYS, Inc. for Sphinx documentation."
 optional = false
 python-versions = "<4,>=3.9"
 files = [
-    {file = "ansys_sphinx_theme-0.16.2-py3-none-any.whl", hash = "sha256:ae381c759ede33e4fbe22fdb8d6fc13d97c3597e5c8bea34b7bc58a80de3199b"},
-    {file = "ansys_sphinx_theme-0.16.2.tar.gz", hash = "sha256:a1f75be9f2805f1de6700406e4273ef1a4c3c537ae54eea38fdfd6a600db293e"},
+    {file = "ansys_sphinx_theme-0.16.6-py3-none-any.whl", hash = "sha256:9f19caeb4bbe3b6426f8d49d5c6fc2a85bbf2b5a6529229c3845df6d7b272bc0"},
+    {file = "ansys_sphinx_theme-0.16.6.tar.gz", hash = "sha256:c045cfb4f0baf2e5feb7688247ea37ad0286a7494ef1f751bfce753cae8c558c"},
 ]
 
 [package.dependencies]
@@ -81,8 +81,8 @@ pydata-sphinx-theme = ">=0.14,<0.15"
 Sphinx = ">=4.2.0"
 
 [package.extras]
-autoapi = ["sphinx-autoapi (==3.1.0)", "sphinx-design (==0.5.0)", "sphinx-jinja (==2.0.2)"]
-doc = ["PyGitHub (==2.3.0)", "Sphinx (==7.3.7)", "numpydoc (==1.7.0)", "requests (==2.32.2)", "sphinx-copybutton (==0.5.2)", "sphinx-design (==0.5.0)", "sphinx-jinja (==2.0.2)", "sphinx-notfound-page (==1.0.1)"]
+autoapi = ["sphinx-autoapi (==3.1.1)", "sphinx-design (==0.6.0)", "sphinx-jinja (==2.0.2)"]
+doc = ["PyGitHub (==2.3.0)", "Sphinx (==7.3.7)", "numpydoc (==1.7.0)", "requests (==2.32.2)", "sphinx-copybutton (==0.5.2)", "sphinx-design (==0.6.0)", "sphinx-jinja (==2.0.2)", "sphinx-notfound-page (==1.0.2)"]
 
 [[package]]
 name = "ansys-turbogrid-api"
