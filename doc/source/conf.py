@@ -96,3 +96,5 @@ autodoc_default_options = {
 
 # Ignore ansys.com links because they come back stale
 linkcheck_ignore = ["https://github.com/ansys/pyturbogrid/issues", r"https://www.ansys.com/.*"]
+
+linkcheck_report_timeouts_as_broken = True
