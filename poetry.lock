@@ -65,13 +65,13 @@ tests = ["ansys-api-platform-instancemanagement (==1.0.0)", "grpcio-health-check
 
 [[package]]
 name = "ansys-sphinx-theme"
-version = "0.16.2"
+version = "0.16.6"
 description = "A theme devised by ANSYS, Inc. for Sphinx documentation."
 optional = false
 python-versions = "<4,>=3.9"
 files = [
-    {file = "ansys_sphinx_theme-0.16.2-py3-none-any.whl", hash = "sha256:ae381c759ede33e4fbe22fdb8d6fc13d97c3597e5c8bea34b7bc58a80de3199b"},
-    {file = "ansys_sphinx_theme-0.16.2.tar.gz", hash = "sha256:a1f75be9f2805f1de6700406e4273ef1a4c3c537ae54eea38fdfd6a600db293e"},
+    {file = "ansys_sphinx_theme-0.16.6-py3-none-any.whl", hash = "sha256:9f19caeb4bbe3b6426f8d49d5c6fc2a85bbf2b5a6529229c3845df6d7b272bc0"},
+    {file = "ansys_sphinx_theme-0.16.6.tar.gz", hash = "sha256:c045cfb4f0baf2e5feb7688247ea37ad0286a7494ef1f751bfce753cae8c558c"},
 ]
 
 [package.dependencies]
@@ -81,8 +81,8 @@ pydata-sphinx-theme = ">=0.14,<0.15"
 Sphinx = ">=4.2.0"
 
 [package.extras]
-autoapi = ["sphinx-autoapi (==3.1.0)", "sphinx-design (==0.5.0)", "sphinx-jinja (==2.0.2)"]
-doc = ["PyGitHub (==2.3.0)", "Sphinx (==7.3.7)", "numpydoc (==1.7.0)", "requests (==2.32.2)", "sphinx-copybutton (==0.5.2)", "sphinx-design (==0.5.0)", "sphinx-jinja (==2.0.2)", "sphinx-notfound-page (==1.0.1)"]
+autoapi = ["sphinx-autoapi (==3.1.1)", "sphinx-design (==0.6.0)", "sphinx-jinja (==2.0.2)"]
+doc = ["PyGitHub (==2.3.0)", "Sphinx (==7.3.7)", "numpydoc (==1.7.0)", "requests (==2.32.2)", "sphinx-copybutton (==0.5.2)", "sphinx-design (==0.6.0)", "sphinx-jinja (==2.0.2)", "sphinx-notfound-page (==1.0.2)"]
 
 [[package]]
 name = "ansys-turbogrid-api"
@@ -405,13 +405,13 @@ xyzservices = ">=2021.09.1"
 
 [[package]]
 name = "certifi"
-version = "2024.2.2"
+version = "2024.7.4"
 description = "Python package for providing Mozilla's CA Bundle."
 optional = false
 python-versions = ">=3.6"
 files = [
-    {file = "certifi-2024.2.2-py3-none-any.whl", hash = "sha256:dc383c07b76109f368f6106eee2b593b04a011ea4d55f652c6ca24a754d1cdd1"},
-    {file = "certifi-2024.2.2.tar.gz", hash = "sha256:0569859f95fc761b18b45ef421b1290a0f65f147e92a1e5eb3e635f9a5e4e66f"},
+    {file = "certifi-2024.7.4-py3-none-any.whl", hash = "sha256:c198e21b1289c2ab85ee4e67bb4b4ef3ead0892059901a8d5b622f24a1101e90"},
+    {file = "certifi-2024.7.4.tar.gz", hash = "sha256:5a1e7645bc0ec61a09e26c36f6106dd4cf40c6db3a1fb6352b0244e7fb057c7b"},
 ]
 
 [[package]]
@@ -3829,13 +3829,13 @@ dev = ["flake8", "flake8-annotations", "flake8-bandit", "flake8-bugbear", "flake
 
 [[package]]
 name = "urllib3"
-version = "2.2.1"
+version = "2.2.2"
 description = "HTTP library with thread-safe connection pooling, file post, and more."
 optional = false
 python-versions = ">=3.8"
 files = [
-    {file = "urllib3-2.2.1-py3-none-any.whl", hash = "sha256:450b20ec296a467077128bff42b73080516e71b56ff59a60a02bef2232c4fa9d"},
-    {file = "urllib3-2.2.1.tar.gz", hash = "sha256:d0570876c61ab9e520d776c38acbbb5b05a776d3f9ff98a5c8fd5162a444cf19"},
+    {file = "urllib3-2.2.2-py3-none-any.whl", hash = "sha256:a448b2f64d686155468037e1ace9f2d2199776e17f0a46610480d311f73e3472"},
+    {file = "urllib3-2.2.2.tar.gz", hash = "sha256:dd505485549a7a552833da5e6063639d0d177c04f23bc3864e41e5dc5f612168"},
 ]
 
 [package.extras]
@@ -4003,18 +4003,18 @@ files = [
 
 [[package]]
 name = "zipp"
-version = "3.18.2"
+version = "3.19.1"
 description = "Backport of pathlib-compatible object wrapper for zip files"
 optional = false
 python-versions = ">=3.8"
 files = [
-    {file = "zipp-3.18.2-py3-none-any.whl", hash = "sha256:dce197b859eb796242b0622af1b8beb0a722d52aa2f57133ead08edd5bf5374e"},
-    {file = "zipp-3.18.2.tar.gz", hash = "sha256:6278d9ddbcfb1f1089a88fde84481528b07b0e10474e09dcfe53dad4069fa059"},
+    {file = "zipp-3.19.1-py3-none-any.whl", hash = "sha256:2828e64edb5386ea6a52e7ba7cdb17bb30a73a858f5eb6eb93d8d36f5ea26091"},
+    {file = "zipp-3.19.1.tar.gz", hash = "sha256:35427f6d5594f4acf82d25541438348c26736fa9b3afa2754bcd63cdb99d8e8f"},
 ]
 
 [package.extras]
-docs = ["furo", "jaraco.packaging (>=9.3)", "jaraco.tidelift (>=1.4)", "rst.linker (>=1.9)", "sphinx (>=3.5)", "sphinx-lint"]
-testing = ["big-O", "jaraco.functools", "jaraco.itertools", "jaraco.test", "more-itertools", "pytest (>=6,!=8.1.*)", "pytest-checkdocs (>=2.4)", "pytest-cov", "pytest-enabler (>=2.2)", "pytest-ignore-flaky", "pytest-mypy", "pytest-ruff (>=0.2.1)"]
+doc = ["furo", "jaraco.packaging (>=9.3)", "jaraco.tidelift (>=1.4)", "rst.linker (>=1.9)", "sphinx (>=3.5)", "sphinx-lint"]
+test = ["big-O", "jaraco.functools", "jaraco.itertools", "jaraco.test", "more-itertools", "pytest (>=6,!=8.1.*)", "pytest-checkdocs (>=2.4)", "pytest-cov", "pytest-enabler (>=2.2)", "pytest-ignore-flaky", "pytest-mypy", "pytest-ruff (>=0.2.1)"]
 
 [metadata]
 lock-version = "2.0"
