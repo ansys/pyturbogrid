@@ -69,7 +69,7 @@ jobs:
         run: docker save -o image.tar ghcr.io/ansys/ansys-api-turbogrid/tglin_reduced_ndf:242  
   
       - name: Cache Docker image file
-        uses: actions/cache@v2
+        uses: actions/cache@v4
         with:
           path: image.tar
           key: myimage-${{ github.sha }}
@@ -85,7 +85,7 @@ jobs:
       PYTURBOGRID_DOC_ENGINE_CONNECTION: 6000    
     steps:
       - name: Restore Cached Docker image file
-        uses: actions/cache@v2
+        uses: actions/cache@v4
         with:
           path: image.tar
           key: myimage-${{ github.sha }}
@@ -132,7 +132,7 @@ jobs:
           python-version: ${{ matrix.python-version }}        
 
       - name: Restore Cached Docker image file
-        uses: actions/cache@v2
+        uses: actions/cache@v4
         with:
           path: image.tar
           key: myimage-${{ github.sha }}
