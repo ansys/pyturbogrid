@@ -42,10 +42,12 @@ sphinx_gallery_conf = {
     "within_subsection_order": FileNameSortKey,
     "remove_config_comments": True,
 }
-# sphinx_gallery_conf having FileNameSortKey as part of it makes a warning that
+# config.cache: sphinx_gallery_conf having FileNameSortKey as part of it makes a warning that
 # a cache can't happen. This doesn't bother us because we don't rely on it.
 # for huge projects, this can be the equivalent of clean building every time.
-suppress_warnings = ["config.cache"]
+# ref.ref: WARNING: Inline interpreted text or phrase reference start-string without end-string.
+# This is caused by the autodoc translation. Likely will dissapear in future versions.
+suppress_warnings = ["config.cache", "ref.ref"]
 
 # -- Options for HTML output -------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#options-for-html-output
