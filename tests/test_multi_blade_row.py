@@ -28,6 +28,7 @@ import pathlib
 from ansys.turbogrid.api.pyturbogrid_core import PyTurboGrid
 import pytest
 
+from ansys.turbogrid.core.multi_blade_row.multi_blade_row import MachineSizingStrategy
 from ansys.turbogrid.core.multi_blade_row.multi_blade_row import multi_blade_row as MBR
 
 # To run these tests, navigate your terminal to the root of this project (pyturbogrid)
@@ -73,7 +74,7 @@ def test_multi_blade_row_basic(pytestconfig):
     print(f"Average Face Area Before: {machine.get_average_base_face_areas()}")
     before_canonical = {"bladerow1": 0.007804461, "bladerow2": 0.004956871}
     assert machine.get_average_base_face_areas() == before_canonical
-    machine.set_machine_sizing_strategy(MBR.MachineSizingStrategy.MIN_FACE_AREA)
+    machine.set_machine_sizing_strategy(MachineSizingStrategy.MIN_FACE_AREA)
     print(f"Average Face Area After: {machine.get_average_base_face_areas()}")
     after_canonical = {"bladerow1": 0.005001607, "bladerow2": 0.004956871}
     assert machine.get_average_base_face_areas() == after_canonical
