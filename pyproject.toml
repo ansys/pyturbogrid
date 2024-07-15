@@ -36,6 +36,7 @@ Jinja2 = ">=3.1.2"
 ansys-turbogrid-api = ">=0.4.3"
 # ansys-turbogrid-api = { path = "../ansys-api-turbogrid/", develop = true } # Uncomment this if you have access to a local repo
 toml = "0.10.2" # This should be picked up from ansys-turbogrid-api once its lock file is updated
+pyvista = "^0.43.8"
 
 [tool.poetry.group.doc]
 optional = true
