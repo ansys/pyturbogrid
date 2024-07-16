@@ -5,9 +5,24 @@ import os
 # -- Project information -----------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#project-information
 from ansys_sphinx_theme import ansys_favicon, get_version_match, pyansys_logo_black
+import sphinx.util.logging
+from sphinx.util.logging import SphinxWarningLogRecord
 from sphinx_gallery.sorting import FileNameSortKey
 
 from ansys.turbogrid.core import __version__
+
+
+class MyFilter(sphinx.util.logging.WarningFilter):
+    def filter(self, record: SphinxWarningLogRecord) -> bool:
+        if (
+            "Inline interpreted text or phrase reference start-string without end-string."
+            in record.msg
+        ):
+            return False
+        return True
+
+
+sphinx.util.logging.getLogger("sphinx").addFilter(MyFilter())
 
 # Configuration file for the Sphinx documentation builder.
 #
