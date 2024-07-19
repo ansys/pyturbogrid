@@ -1,6 +1,5 @@
-ANSYS
-Ansys
-ansys
+(!i)Ansys
+(!i)cmake
 additional_args_str
 additional_kw_args
 ansys-api-turbogrid
