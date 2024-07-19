@@ -84,6 +84,16 @@ jobs:
       PYTURBOGRID_DOC_VERSION: 242
       PYTURBOGRID_DOC_ENGINE_CONNECTION: 6000    
     steps:
+      - name: Restore Cached Docker image file
+        uses: actions/cache@v4
+        with:
+          path: image.tar
+          key: myimage-${{ github.sha }}
+          restore-keys: myimage-
+
+      - name: Load Docker image from file
+        run: docker load -i image.tar
+              
       - uses: ansys/actions/doc-build@v6
         with:
           python-version: ${{ env.MAIN_PYTHON_VERSION }}
