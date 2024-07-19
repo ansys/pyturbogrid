@@ -1,5 +1,6 @@
 # Copyright (c) 2023 ANSYS, Inc. All rights reserved
 from datetime import datetime
+import logging
 import os
 
 # -- Project information -----------------------------------------------------
@@ -8,6 +9,19 @@ from ansys_sphinx_theme import ansys_favicon, get_version_match, pyansys_logo_bl
 from sphinx_gallery.sorting import FileNameSortKey
 
 from ansys.turbogrid.core import __version__
+
+
+class InlineTextWarningFilter(logging.Filter):
+    def filter(self, record):
+        if (
+            "Inline interpreted text or phrase reference start-string without end-string."
+            in record.msg
+        ):
+            return False
+        return True
+
+
+logging.getLogger("sphinx").addFilter(InlineTextWarningFilter())
 
 # Configuration file for the Sphinx documentation builder.
 #
@@ -42,6 +56,12 @@ sphinx_gallery_conf = {
     "within_subsection_order": FileNameSortKey,
     "remove_config_comments": True,
 }
+# config.cache: sphinx_gallery_conf having FileNameSortKey as part of it makes a warning that
+# a cache can't happen. This doesn't bother us because we don't rely on it.
+# for huge projects, this can be the equivalent of clean building every time.
+# misc.highlighting_failure: WARNING: Inline interpreted text or phrase reference start-string without end-string.
+# This is caused by the autodoc translation. Likely will disappear in future versions.
+suppress_warnings = ["config.cache", "misc.highlighting_failure"]
 
 # -- Options for HTML output -------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#options-for-html-output
