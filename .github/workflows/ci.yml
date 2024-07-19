@@ -94,7 +94,7 @@ jobs:
       - name: Load Docker image from file
         run: docker load -i image.tar
 
-      - uses: ansys/actions/doc-build@v5
+      - uses: ansys/actions/doc-build@v6
         with:
           python-version: ${{ env.MAIN_PYTHON_VERSION }}
   
