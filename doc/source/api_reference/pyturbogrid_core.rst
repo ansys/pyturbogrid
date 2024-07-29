@@ -12,4 +12,5 @@ package for interactions with a running Ansys TurboGrid application.
    :members:
    :undoc-members:
    :autosummary:
-   :inherited-members:
+   :inherited-members: int, complex
+   
