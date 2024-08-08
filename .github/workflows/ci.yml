@@ -93,7 +93,7 @@ jobs:
 
       - name: Load Docker image from file
         run: docker load -i image.tar
-              
+
       - uses: ansys/actions/doc-build@v6
         with:
           python-version: ${{ env.MAIN_PYTHON_VERSION }}
@@ -142,11 +142,12 @@ jobs:
         run: docker load -i image.tar
 
       - name: Create Key
-        uses: mobiledevops/secret-to-file-action@v1
-        with:
-          base64-encoded-secret: ${{ secrets.CONTAINER_ACCESS_KEY }}
-          filename: "tg_container_key"
-          working-directory: "." 
+        run: base64 -d <<< ${{ secrets.CONTAINER_ACCESS_KEY }} > tg_container_key
+        # uses: mobiledevops/secret-to-file-action@v1
+        # with:
+        #   base64-encoded-secret: ${{ secrets.CONTAINER_ACCESS_KEY }}
+        #   filename: "tg_container_key"
+        #   working-directory: "." 
 
       - name: Check if file exists
         id: check_file
