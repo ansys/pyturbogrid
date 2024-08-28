@@ -65,13 +65,13 @@ tests = ["ansys-api-platform-instancemanagement (==1.0.0)", "grpcio-health-check
 
 [[package]]
 name = "ansys-sphinx-theme"
-version = "1.0.3"
+version = "1.0.7"
 description = "A theme devised by ANSYS, Inc. for Sphinx documentation."
 optional = false
 python-versions = "<4,>=3.9"
 files = [
-    {file = "ansys_sphinx_theme-1.0.3-py3-none-any.whl", hash = "sha256:6055a1175170698d6592f78fe79b8cc913973dd57183cad272ae9889704c7a9e"},
-    {file = "ansys_sphinx_theme-1.0.3.tar.gz", hash = "sha256:3c34b310e8ef7081ee8c650d2fd4d1a64dfbd133adcfced3d5b92237bbefc210"},
+    {file = "ansys_sphinx_theme-1.0.7-py3-none-any.whl", hash = "sha256:8d26b975bf4e332cbc32753983824c0233d4d62920991a6914c4e24b126390d4"},
+    {file = "ansys_sphinx_theme-1.0.7.tar.gz", hash = "sha256:c4b9b012f5455c3e94b123f553ead59bb97bf235ab565032e895c0088d08fb51"},
 ]
 
 [package.dependencies]
@@ -82,8 +82,8 @@ pydata-sphinx-theme = ">=0.15.4,<0.16"
 Sphinx = ">=4.2.0"
 
 [package.extras]
-autoapi = ["sphinx-autoapi (==3.1.1)", "sphinx-design (==0.6.1)", "sphinx-jinja (==2.0.2)"]
-doc = ["Pillow (>=9.0)", "PyGitHub (==2.3.0)", "Sphinx (==8.0.2)", "jupytext (==1.16.4)", "nbsphinx (==0.9.4)", "notebook (==7.2.1)", "numpydoc (==1.7.0)", "pandas (==2.2.2)", "pyvista[jupyter] (==0.44.1)", "requests (==2.32.3)", "sphinx-autoapi (==3.2.1)", "sphinx-copybutton (==0.5.2)", "sphinx-design (==0.6.1)", "sphinx-gallery (==0.17.1)", "sphinx-jinja (==2.0.2)", "sphinx-notfound-page (==1.0.4)"]
+autoapi = ["sphinx-autoapi (==3.2.1)", "sphinx-design (==0.6.1)", "sphinx-jinja (==2.0.2)"]
+doc = ["Pillow (>=9.0)", "PyGitHub (==2.3.0)", "Sphinx (==8.0.2)", "jupytext (==1.16.4)", "nbsphinx (==0.9.5)", "notebook (==7.2.1)", "numpydoc (==1.8.0)", "pandas (==2.2.2)", "pyvista[jupyter] (==0.44.1)", "requests (==2.32.3)", "sphinx-autoapi (==3.2.1)", "sphinx-copybutton (==0.5.2)", "sphinx-design (==0.6.1)", "sphinx-gallery (==0.17.1)", "sphinx-jinja (==2.0.2)", "sphinx-notfound-page (==1.0.4)"]
 
 [[package]]
 name = "ansys-turbogrid-api"
