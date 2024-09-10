@@ -87,19 +87,81 @@ class multi_blade_row:
     tg_kw_args = {}
     current_machine_sizing_strategy: MachineSizingStrategy = MachineSizingStrategy.NONE
     current_size_factor: float = 1.0
+    tg_worker_instances = None
+
+    # An instance of TG is kept around to do certain tasks.
+    # This is simpler than launching a new TG every time one of these tasks are to be done.
+    pyturbogrid_saas: PyTurboGrid = None
 
     # Consider passing in the filename (whether ndf or tginit) as initializing as raii
     def __init__(self):
-        """Empty initializer."""
-        pass
+        # TODO: container support for the saas process
+        # Maybe we would rather launch a new one each time (very reasonable as well)
+        path_to_localroot = "C:/ANSYSDev/gitSRC/CFX/CFXUE/src"
+        self.pyturbogrid_saas = launch_turbogrid(
+            log_level=PyTurboGrid.TurboGridLogLevel.INFO,
+            log_filename_suffix="_saas",
+            turbogrid_path=None,
+            turbogrid_location_type=PyTurboGrid.TurboGridLocationType.TURBOGRID_INSTALL,
+            port=None,
+            additional_kw_args={"local-root": path_to_localroot},
+        )
 
     def __del__(self):
         """This method will quit all TG instances."""
+        if self.tg_worker_instances:
+            with concurrent.futures.ThreadPoolExecutor(
+                max_workers=len(self.tg_worker_instances)
+            ) as executor:
+                futures = [
+                    executor.submit(self.__quit__, val)
+                    for key, val in self.tg_worker_instances.items()
+                ]
+                concurrent.futures.wait(futures)
+        if self.pyturbogrid_saas:
+            self.pyturbogrid_saas.quit()
+
+    def get_blade_rows_from_ndf(self, ndf_path: str) -> dict:
+        return ndf_parser.NDFParser(ndf_path).get_blade_row_blades()
+
+    # Returns the TGInit full path
+    # TODO: Path should be returned from engine, or passed to engine.
+    def convert_ndf_to_tginit(self, ndf_path: str) -> str:
+        self.pyturbogrid_saas.perform_action("convertndf", f" path={ndf_path}")
+        ndf_name = os.path.basename(ndf_path)
+        ndf_file_name, ndf_file_extension = os.path.splitext(ndf_name)
+        return str(PurePath(ndf_path).parent) + "/" + ndf_file_name + ".tginit"
+
+    def init_from_tginit(
+        self,
+        tginit_path: str,
+        turbogrid_path: str = None,
+        turbogrid_location_type=PyTurboGrid.TurboGridLocationType.TURBOGRID_INSTALL,
+        tg_kw_args={},
+        tg_log_level: PyTurboGrid.TurboGridLogLevel = PyTurboGrid.TurboGridLogLevel.INFO,
+        blade_rows_to_mesh: list[str] = None,
+    ):
+
+        self.tg_kw_args = tg_kw_args
+        self.turbogrid_path = turbogrid_path
+        self.turbogrid_location_type = turbogrid_location_type
+
+        # self.all_blade_row_keys is not yet implemented at this point
+        # TG should have a query to get this list instead of relying on the NDF file
+        # it will throw
+        selected_brs = blade_rows_to_mesh if blade_rows_to_mesh else self.all_blade_row_keys
+        # self.all_blade_rows = ndf_parser.NDFParser(ndf_path).get_blade_row_blades()
+        self.all_blade_row_keys = selected_brs
+
+        self.tg_worker_instances = {key: single_blade_row() for key in selected_brs}
+        self.base_gsf = {key: 1.0 for key in selected_brs}
         with concurrent.futures.ThreadPoolExecutor(
             max_workers=len(self.tg_worker_instances)
         ) as executor:
+            # Need a __launch_instances_tginit__
+            job = partial(self.__launch_instances_tginit__, tginit_path, tg_log_level)
             futures = [
-                executor.submit(self.__quit__, val) for key, val in self.tg_worker_instances.items()
+                executor.submit(job, key, val) for key, val in self.tg_worker_instances.items()
             ]
             concurrent.futures.wait(futures)
 
@@ -481,6 +543,15 @@ class multi_blade_row:
         #         p.add_mesh(b_m, color=[random.random(), random.random(), random.random()])
         return threadsafe_queue
 
+    def get_tginit_faces(self, tginit_path: str):
+        threadsafe_queue: queue.Queue = queue.Queue()
+        print(f"getTGInitTopology self.pyturbogrid_saas {self.pyturbogrid_saas}")
+        for br_m in self.pyturbogrid_saas.getTGInitTopology(tginit_path=tginit_path):
+            print("put")
+            threadsafe_queue.put(br_m)
+
+        return threadsafe_queue
+
     def __launch_instances__(self, ndf_file_name, tg_log_level, tg_worker_name, tg_worker_instance):
         """
         :meta private:
@@ -534,6 +605,83 @@ class multi_blade_row:
             tg_worker_instance.pytg.read_tginit(
                 path=ndf_file_name + ".tginit", bladerow=tg_worker_name
             )
+            tg_worker_instance.pytg.set_obj_param(
+                object="/GEOMETRY/INLET", param_val_pairs="Opening Mode = Fully extend"
+            )
+            tg_worker_instance.pytg.set_obj_param(
+                object="/GEOMETRY/OUTLET", param_val_pairs="Opening Mode = Fully extend"
+            )
+            # tg_worker_instance.pytg.set_obj_param(
+            #     object="/TOPOLOGY SET", param_val_pairs="ATM Stop After Main Layers=True"
+            # )
+            tg_worker_instance.pytg.unsuspend(object="/TOPOLOGY SET")
+            # av_bg_face_area = tg_worker_instance.pytg.query_average_background_face_area()
+            # print(f"{tg_worker_name=} {av_bg_face_area=}")
+        except Exception as e:
+            print(f"{tg_worker_instance} exception on __launch_instances__: {e}")
+            print(f"{tg_worker_instance} traceback: {traceback.extract_tb(e.__traceback__)}")
+
+    def __launch_instances_tginit__(
+        self, tginit_file_path, tg_log_level, tg_worker_name, tg_worker_instance
+    ):
+        """
+        :meta private:
+        """
+        try:
+
+            tg_port = None
+            if (
+                self.turbogrid_location_type
+                == PyTurboGrid.TurboGridLocationType.TURBOGRID_RUNNING_CONTAINER
+            ):
+                tg_worker_instance.tg_execution_control = launch_turbogrid_container(
+                    self.tg_container_launch_settings["cfxtg_command_name"],
+                    self.tg_container_launch_settings["image_name"],
+                    self.tg_container_launch_settings["container_name"],
+                    self.tg_container_launch_settings["cfx_version"],
+                    self.tg_container_launch_settings["license_file"],
+                    self.tg_container_launch_settings["keep_stopped_containers"],
+                    self.tg_container_launch_settings["container_env_dict"],
+                )
+                tg_port = tg_worker_instance.tg_execution_control.socket_port
+
+            tginit_name = os.path.basename(tginit_file_path)
+            tginit_path = os.path.dirname(tginit_file_path)
+            tginit_file_name, tginit_file_extension = os.path.splitext(tginit_name)
+
+            tg_worker_instance.pytg = launch_turbogrid(
+                log_level=tg_log_level,
+                log_filename_suffix=f"_{tginit_file_name}_{tg_worker_name}",
+                additional_kw_args=self.tg_kw_args,
+                turbogrid_path=self.turbogrid_path,
+                turbogrid_location_type=self.turbogrid_location_type,
+                port=tg_port,
+            )
+            tg_worker_instance.pytg.block_each_message = True
+
+            if (
+                self.turbogrid_location_type
+                == PyTurboGrid.TurboGridLocationType.TURBOGRID_RUNNING_CONTAINER
+            ):
+                print(
+                    f"get_container_connection {tg_worker_instance.tg_execution_control.ftp_port} {self.tg_container_launch_settings['ssh_key_filename']}"
+                )
+                container = container_helpers.get_container_connection(
+                    tg_worker_instance.tg_execution_control.ftp_port,
+                    self.tg_container_launch_settings["ssh_key_filename"],
+                )
+                print(f"transfer files to container {tginit_file_name}")
+                container_helpers.transfer_files_to_container(
+                    container,
+                    self.ndf_base_path,
+                    [
+                        self.tginit_file_name + ".tginit",
+                        tginit_path + "/" + tginit_file_name + ".x_b",
+                    ],
+                )
+                print(f"files transferred")
+
+            tg_worker_instance.pytg.read_tginit(path=tginit_file_path, bladerow=tg_worker_name)
             tg_worker_instance.pytg.set_obj_param(
                 object="/GEOMETRY/INLET", param_val_pairs="Opening Mode = Fully extend"
             )

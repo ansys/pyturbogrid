@@ -17,7 +17,6 @@ classifiers = [
     "Topic :: Scientific/Engineering :: Information Analysis",
     "Operating System :: OS Independent",
     "Programming Language :: Python :: 3",
-    "Programming Language :: Python :: 3.9",
     "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
@@ -27,8 +26,17 @@ packages = [
     { include = "ansys", from = "src" }
 ]
 
+[[tool.poetry.source]]
+name = "PyPI"
+priority = "primary"
+
+[[tool.poetry.source]]
+name = "pyansys-private-pypi"
+url = "https://pkgs.dev.azure.com/pyansys/_packaging/pyansys/pypi/simple/"
+priority = "supplemental"
+
 [tool.poetry.dependencies]
-python = ">=3.9,<4.0"
+python = ">=3.10,<4.0"
 matplotlib = ">=3.5.1"
 importlib-metadata = ">=4.0"
 fabric = ">=3.2.2"
@@ -37,6 +45,7 @@ ansys-turbogrid-api = ">=0.4.3"
 # ansys-turbogrid-api = { path = "../ansys-api-turbogrid/", develop = true } # Uncomment this if you have access to a local repo
 toml = "0.10.2" # This should be picked up from ansys-turbogrid-api once its lock file is updated
 pyvista = ">=0.43.8,<0.45.0"
+ansys-simba-settings = "0.14.12"
 
 [tool.poetry.group.doc]
 optional = true
