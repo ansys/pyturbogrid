@@ -44,6 +44,7 @@ from ansys.turbogrid.api.pyturbogrid_core import PyTurboGrid
 from ansys.turbogrid.core.launcher.container_helpers import container_helpers
 from ansys.turbogrid.core.launcher.launcher import launch_turbogrid, launch_turbogrid_container
 from ansys.turbogrid.core.multi_blade_row.single_blade_row import single_blade_row
+from ansys.turbogrid.core.mesh_statistics import mesh_statistics
 import ansys.turbogrid.core.ndf_parser.ndf_parser as ndf_parser
 
 
@@ -123,6 +124,9 @@ class multi_blade_row:
 
     def get_blade_rows_from_ndf(self, ndf_path: str) -> dict:
         return ndf_parser.NDFParser(ndf_path).get_blade_row_blades()
+
+    def get_blade_row_names_from_tginit(self, tginit_path: str) -> list[str]:
+        return self.pyturbogrid_saas.perform_query(f"Get TGInit Blade Rows, path={tginit_path}")
 
     # Returns the TGInit full path
     # TODO: Path should be returned from engine, or passed to engine.
@@ -508,6 +512,42 @@ class multi_blade_row:
             ]
             concurrent.futures.wait(futures)
 
+    def get_mesh_statistics(self) -> dict[str, any]:
+        """
+        Text to be added
+
+        """
+        print(f"get_mesh_statistics")
+        all_mesh_stats: dict[str, any] = {}
+        with concurrent.futures.ThreadPoolExecutor(
+            max_workers=len(self.tg_worker_instances)
+        ) as executor:
+            job = partial(self.__compile_mesh_statistics__, all_mesh_stats)
+            futures = [
+                executor.submit(job, key, val) for key, val in self.tg_worker_instances.items()
+            ]
+            concurrent.futures.wait(futures)
+        return all_mesh_stats
+
+    def get_mesh_statistics_histogram_data(self, target_statistic: str) -> dict[str, any]:
+        """
+        Text to be added
+
+        """
+        print(f"get_mesh_statistics_histogram_data")
+        all_mesh_stats: dict[str, any] = {}
+        with concurrent.futures.ThreadPoolExecutor(
+            max_workers=len(self.tg_worker_instances)
+        ) as executor:
+            job = partial(
+                self.__compile_mesh_statistic_histogram_data__, all_mesh_stats, target_statistic
+            )
+            futures = [
+                executor.submit(job, key, val) for key, val in self.tg_worker_instances.items()
+            ]
+            concurrent.futures.wait(futures)
+        return all_mesh_stats
+
     def plot_machine(self):
         """
         Display the machine's mesh boundaries using pyvista.
@@ -796,3 +836,22 @@ class multi_blade_row:
         """
         for b_m in tg_worker_instance.pytg.getBoundaryGeometry():
             threadsafe_queue.put(b_m)
+
+    def __compile_mesh_statistics__(
+        self, threadsafe_dict: dict[str, any], tg_worker_name, tg_worker_instance
+    ):
+        ms = mesh_statistics.MeshStatistics(tg_worker_instance.pytg)
+        all_vars = ms.get_mesh_statistics()
+        threadsafe_dict[tg_worker_name] = all_vars
+
+    def __compile_mesh_statistic_histogram_data__(
+        self,
+        threadsafe_dict: dict[str, any],
+        target_statistic: str,
+        tg_worker_name,
+        tg_worker_instance,
+    ):
+        ms_hd = tg_worker_instance.pytg.query_mesh_statistics_histogram_data(
+            variable=target_statistic
+        )
+        threadsafe_dict[tg_worker_name] = ms_hd
