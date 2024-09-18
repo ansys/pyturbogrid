@@ -65,13 +65,13 @@ tests = ["ansys-api-platform-instancemanagement (==1.0.0)", "grpcio-health-check
 
 [[package]]
 name = "ansys-sphinx-theme"
-version = "1.0.8"
+version = "1.0.10"
 description = "A theme devised by ANSYS, Inc. for Sphinx documentation."
 optional = false
 python-versions = "<4,>=3.9"
 files = [
-    {file = "ansys_sphinx_theme-1.0.8-py3-none-any.whl", hash = "sha256:c212239c44691f8d5a5b09b3b5dd4322edbd5935793420b6eadbde0d18af2286"},
-    {file = "ansys_sphinx_theme-1.0.8.tar.gz", hash = "sha256:e7a6adf9072541b6e7492ea8ae399fb3228c6022612d9fc9df97c7c73ef78cc3"},
+    {file = "ansys_sphinx_theme-1.0.10-py3-none-any.whl", hash = "sha256:97c82ec0f31c2aec61269cb5475104a76e1f906c81ae3ee4fd9fd3e2232bb8b3"},
+    {file = "ansys_sphinx_theme-1.0.10.tar.gz", hash = "sha256:2ada889feca3d0bc8247e5f29d68c0e8eb9e7911d162889623be776cd78b4e26"},
 ]
 
 [package.dependencies]
