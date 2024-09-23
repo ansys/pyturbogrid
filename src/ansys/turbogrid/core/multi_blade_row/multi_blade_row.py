@@ -38,7 +38,10 @@ from pathlib import Path, PurePath
 import queue
 import traceback
 from typing import Optional
-
+from typing import Tuple
+import threading
+import time
+import ast
 from ansys.turbogrid.api.pyturbogrid_core import PyTurboGrid
 
 from ansys.turbogrid.core.launcher.container_helpers import container_helpers
@@ -93,6 +96,11 @@ class multi_blade_row:
     # An instance of TG is kept around to do certain tasks.
     # This is simpler than launching a new TG every time one of these tasks are to be done.
     pyturbogrid_saas: PyTurboGrid = None
+    cached_tginit_filename: str = None
+    cached_tginit_geometry: Tuple[list[any], list[str], list[any], dict] = None
+    # cached_tginit_show_3d_faces: bool = None
+    cached_blade_mesh_surfaces_stats: dict = None
+    cached_blade_mesh_surfaces: list[any] = None
 
     # Consider passing in the filename (whether ndf or tginit) as initializing as raii
     def __init__(self):
@@ -126,7 +134,9 @@ class multi_blade_row:
         return ndf_parser.NDFParser(ndf_path).get_blade_row_blades()
 
     def get_blade_row_names_from_tginit(self, tginit_path: str) -> list[str]:
-        return self.pyturbogrid_saas.perform_query(f"Get TGInit Blade Rows, path={tginit_path}")
+        return ast.literal_eval(
+            self.pyturbogrid_saas.perform_query(f"Get TGInit Blade Rows, path={tginit_path}")
+        )
 
     # Returns the TGInit full path
     # TODO: Path should be returned from engine, or passed to engine.
@@ -145,6 +155,7 @@ class multi_blade_row:
         tg_log_level: PyTurboGrid.TurboGridLogLevel = PyTurboGrid.TurboGridLogLevel.INFO,
         blade_rows_to_mesh: list[str] = None,
     ):
+        import pprint
 
         self.tg_kw_args = tg_kw_args
         self.turbogrid_path = turbogrid_path
@@ -157,17 +168,20 @@ class multi_blade_row:
         # self.all_blade_rows = ndf_parser.NDFParser(ndf_path).get_blade_row_blades()
         self.all_blade_row_keys = selected_brs
 
+        timings = {}
+
         self.tg_worker_instances = {key: single_blade_row() for key in selected_brs}
         self.base_gsf = {key: 1.0 for key in selected_brs}
         with concurrent.futures.ThreadPoolExecutor(
             max_workers=len(self.tg_worker_instances)
         ) as executor:
-            # Need a __launch_instances_tginit__
-            job = partial(self.__launch_instances_tginit__, tginit_path, tg_log_level)
+            job = partial(self.__launch_instances_tginit__, tginit_path, tg_log_level, timings)
             futures = [
                 executor.submit(job, key, val) for key, val in self.tg_worker_instances.items()
             ]
             concurrent.futures.wait(futures)
+
+        pprint.pprint(timings)
 
     def init_from_ndf(
         self,
@@ -397,7 +411,10 @@ class multi_blade_row:
             raise Exception(
                 f"No blade row with name {blade_row_name}. Available names: {self.all_blade_row_keys}"
             )
+        print("set_global_size_factor ", size_factor)
+        print("  before vcount ", self.get_mesh_statistics()[blade_row_name]["Vertices"]["Count"])
         self.tg_worker_instances[blade_row_name].pytg.set_global_size_factor(size_factor)
+        print("  after vcount ", self.get_mesh_statistics()[blade_row_name]["Vertices"]["Count"])
 
     def set_number_of_blade_sets(self, blade_row_name: str, number_of_blade_sets: int):
         """
@@ -529,7 +546,9 @@ class multi_blade_row:
             concurrent.futures.wait(futures)
         return all_mesh_stats
 
-    def get_mesh_statistics_histogram_data(self, target_statistic: str) -> dict[str, any]:
+    def get_mesh_statistics_histogram_data(
+        self, target_statistic: str, custom_bin_limits: list = None, custom_bin_units: str = None
+    ) -> dict[str, any]:
         """
         Text to be added
 
@@ -540,7 +559,11 @@ class multi_blade_row:
             max_workers=len(self.tg_worker_instances)
         ) as executor:
             job = partial(
-                self.__compile_mesh_statistic_histogram_data__, all_mesh_stats, target_statistic
+                self.__compile_mesh_statistic_histogram_data__,
+                all_mesh_stats,
+                target_statistic,
+                custom_bin_units,
+                custom_bin_limits,
             )
             futures = [
                 executor.submit(job, key, val) for key, val in self.tg_worker_instances.items()
@@ -570,27 +593,91 @@ class multi_blade_row:
         p.show(None)
 
     def get_machine_boundary_surfaces(self) -> queue.Queue:
-        threadsafe_queue: queue.Queue = queue.Queue()
+
+        # cache the surfaces based on an identical mesh stats readout
+        mesh_stats = self.get_mesh_statistics()
+        # print(mesh_stats)
+        if self.cached_blade_mesh_surfaces_stats == mesh_stats:
+            threadsafe_queue: queue.Queue = queue.Queue()
+            for item in self.cached_blade_mesh_surfaces:
+                threadsafe_queue.put(item)
+            return threadsafe_queue
+
+        print("Mesh statistics have changed, regenerating...")
+
+        result_list = []
+        list_lock = threading.Lock()
         with concurrent.futures.ThreadPoolExecutor(
             max_workers=len(self.tg_worker_instances)
         ) as executor:
-            job = partial(self.__write_boundary_polys__, threadsafe_queue)
+            job = partial(self.__write_boundary_polys__, result_list, list_lock)
             futures = [executor.submit(job, val) for key, val in self.tg_worker_instances.items()]
             concurrent.futures.wait(futures)
-        # for tg_worker_name, tg_worker_instance in self.tg_worker_instances.items():
-        #     print(f"  {tg_worker_name}")
-        #     for b_m in tg_worker_instance.pytg.getBoundaryGeometry():
-        #         p.add_mesh(b_m, color=[random.random(), random.random(), random.random()])
-        return threadsafe_queue
 
-    def get_tginit_faces(self, tginit_path: str):
         threadsafe_queue: queue.Queue = queue.Queue()
-        print(f"getTGInitTopology self.pyturbogrid_saas {self.pyturbogrid_saas}")
-        for br_m in self.pyturbogrid_saas.getTGInitTopology(tginit_path=tginit_path):
-            print("put")
-            threadsafe_queue.put(br_m)
+        self.cached_blade_mesh_surfaces = result_list
+        self.cached_blade_mesh_surfaces_stats = mesh_stats
+        for item in result_list:
+            threadsafe_queue.put(item)
 
         return threadsafe_queue
+
+    def get_tginit_faces(
+        self,
+        tginit_path: str,
+        transformIOToLines: bool = False,
+        # replace_faces_with_display_surfaces: bool = False,
+    ) -> Tuple[queue.Queue, list[str], queue.Queue]:
+        # print(
+        #     f"getTGInitTopology self.cached_tginit_filename {self.cached_tginit_filename=} self.cached_tginit_geometry {self.cached_tginit_geometry=}"
+        # )
+
+        if (
+            self.cached_tginit_filename
+            == tginit_path
+            # and self.cached_tginit_show_3d_faces == replace_faces_with_display_surfaces
+        ):
+            br_meshes, br_names, two_vertex_faces, display_surfaces = self.cached_tginit_geometry
+            threadsafe_queue: queue.Queue = queue.Queue()
+            for br_mesh in br_meshes:
+                threadsafe_queue.put(br_mesh)
+            threadsafe_queue_2vf: queue.Queue = queue.Queue()
+            for two_vertex_face in two_vertex_faces:
+                threadsafe_queue_2vf.put(two_vertex_face)
+            return threadsafe_queue, br_names, threadsafe_queue_2vf, display_surfaces
+
+        # print(f"getTGInitTopology self.pyturbogrid_saas {self.pyturbogrid_saas}")
+        t0 = time.time()
+        self.cached_tginit_geometry = self.pyturbogrid_saas.getTGInitTopology(
+            tginit_path=tginit_path,
+            transformIOToLines=transformIOToLines,
+            # replace_faces_with_display_surfaces=replace_faces_with_display_surfaces,
+        )
+        t1 = time.time()
+        br_meshes, br_names, two_vertex_faces, display_surfaces = self.cached_tginit_geometry
+        # self.cached_tginit_show_3d_faces = replace_faces_with_display_surfaces
+        # print(f"{br_meshes=}")
+        # print(f"{br_names=}")
+        # print(f"{two_vertex_faces=}")
+
+        t2 = time.time()
+        threadsafe_queue: queue.Queue = queue.Queue()
+        for br_mesh in br_meshes:
+            threadsafe_queue.put(br_mesh)
+
+        t3 = time.time()
+        threadsafe_queue_2vf: queue.Queue = queue.Queue()
+        for two_vertex_face in two_vertex_faces:
+            threadsafe_queue_2vf.put(two_vertex_face)
+
+        t4 = time.time()
+        self.cached_tginit_filename = tginit_path
+        self.cached_tginit_geometry = (br_meshes, br_names, two_vertex_faces, display_surfaces)
+        t5 = time.time()
+        print(
+            f"get_tginit_faces profiling: {t1-t0:.2f} {t2-t1:.2f} {t3-t2:.2f} {t4-t3:.2f} {t5-t4:.2f} seconds"
+        )
+        return (threadsafe_queue, br_names, threadsafe_queue_2vf, display_surfaces)
 
     def __launch_instances__(self, ndf_file_name, tg_log_level, tg_worker_name, tg_worker_instance):
         """
@@ -662,12 +749,13 @@ class multi_blade_row:
             print(f"{tg_worker_instance} traceback: {traceback.extract_tb(e.__traceback__)}")
 
     def __launch_instances_tginit__(
-        self, tginit_file_path, tg_log_level, tg_worker_name, tg_worker_instance
+        self, tginit_file_path, tg_log_level, timings, tg_worker_name, tg_worker_instance
     ):
         """
         :meta private:
         """
         try:
+            t0 = time.time()
 
             tg_port = None
             if (
@@ -689,6 +777,7 @@ class multi_blade_row:
             tginit_path = os.path.dirname(tginit_file_path)
             tginit_file_name, tginit_file_extension = os.path.splitext(tginit_name)
 
+            t1 = time.time()
             tg_worker_instance.pytg = launch_turbogrid(
                 log_level=tg_log_level,
                 log_filename_suffix=f"_{tginit_file_name}_{tg_worker_name}",
@@ -697,6 +786,7 @@ class multi_blade_row:
                 turbogrid_location_type=self.turbogrid_location_type,
                 port=tg_port,
             )
+            t2 = time.time()
             tg_worker_instance.pytg.block_each_message = True
 
             if (
@@ -721,19 +811,31 @@ class multi_blade_row:
                 )
                 print(f"files transferred")
 
-            tg_worker_instance.pytg.read_tginit(path=tginit_file_path, bladerow=tg_worker_name)
+            t3 = time.time()
             tg_worker_instance.pytg.set_obj_param(
                 object="/GEOMETRY/INLET", param_val_pairs="Opening Mode = Fully extend"
             )
             tg_worker_instance.pytg.set_obj_param(
                 object="/GEOMETRY/OUTLET", param_val_pairs="Opening Mode = Fully extend"
             )
+            t4 = time.time()
+            tg_worker_instance.pytg.read_tginit(path=tginit_file_path, bladerow=tg_worker_name)
+            t5 = time.time()
             # tg_worker_instance.pytg.set_obj_param(
             #     object="/TOPOLOGY SET", param_val_pairs="ATM Stop After Main Layers=True"
             # )
             tg_worker_instance.pytg.unsuspend(object="/TOPOLOGY SET")
+            t6 = time.time()
             # av_bg_face_area = tg_worker_instance.pytg.query_average_background_face_area()
             # print(f"{tg_worker_name=} {av_bg_face_area=}")
+            end_time = time.time()
+            timings[tg_worker_name + "t0t1"] = round(t1 - t0)
+            timings[tg_worker_name + "t1t2"] = round(t2 - t1)
+            timings[tg_worker_name + "t2t3"] = round(t3 - t2)
+            timings[tg_worker_name + "t3t4"] = round(t4 - t3)
+            timings[tg_worker_name + "t4t5"] = round(t5 - t4)
+            timings[tg_worker_name + "t5t6"] = round(t6 - t5)
+            timings[tg_worker_name + "total"] = round(t6 - t0)
         except Exception as e:
             print(f"{tg_worker_instance} exception on __launch_instances__: {e}")
             print(f"{tg_worker_instance} traceback: {traceback.extract_tb(e.__traceback__)}")
@@ -830,12 +932,15 @@ class multi_blade_row:
         """
         tg_worker_instance.pytg.quit()
 
-    def __write_boundary_polys__(self, threadsafe_queue: queue.Queue, tg_worker_instance):
+    def __write_boundary_polys__(
+        self, result_list: list, list_lock: threading.Lock, tg_worker_instance
+    ):
         """
         :meta private:
         """
         for b_m in tg_worker_instance.pytg.getBoundaryGeometry():
-            threadsafe_queue.put(b_m)
+            with list_lock:
+                result_list.append(b_m)
 
     def __compile_mesh_statistics__(
         self, threadsafe_dict: dict[str, any], tg_worker_name, tg_worker_instance
@@ -848,10 +953,12 @@ class multi_blade_row:
         self,
         threadsafe_dict: dict[str, any],
         target_statistic: str,
+        bin_units: str,
+        custom_bin_limits: list,
         tg_worker_name,
         tg_worker_instance,
     ):
         ms_hd = tg_worker_instance.pytg.query_mesh_statistics_histogram_data(
-            variable=target_statistic
+            variable=target_statistic, bin_divisions=custom_bin_limits, bin_units=bin_units
         )
         threadsafe_dict[tg_worker_name] = ms_hd
