@@ -622,62 +622,23 @@ class multi_blade_row:
 
         return threadsafe_queue
 
+    # caches based off of tginit_path, but really,
+    # should be based off of it's hash (and the TGInit file should have the hash of the CAD file so it can be based off of both)
     def get_tginit_faces(
         self,
         tginit_path: str,
         transformIOToLines: bool = False,
-        # replace_faces_with_display_surfaces: bool = False,
-    ) -> Tuple[queue.Queue, list[str], queue.Queue]:
-        # print(
-        #     f"getTGInitTopology self.cached_tginit_filename {self.cached_tginit_filename=} self.cached_tginit_geometry {self.cached_tginit_geometry=}"
-        # )
+    ) -> dict[str, any]:
+        from copy import deepcopy
 
-        if (
-            self.cached_tginit_filename
-            == tginit_path
-            # and self.cached_tginit_show_3d_faces == replace_faces_with_display_surfaces
-        ):
-            br_meshes, br_names, two_vertex_faces, display_surfaces = self.cached_tginit_geometry
-            threadsafe_queue: queue.Queue = queue.Queue()
-            for br_mesh in br_meshes:
-                threadsafe_queue.put(br_mesh)
-            threadsafe_queue_2vf: queue.Queue = queue.Queue()
-            for two_vertex_face in two_vertex_faces:
-                threadsafe_queue_2vf.put(two_vertex_face)
-            return threadsafe_queue, br_names, threadsafe_queue_2vf, display_surfaces
+        if self.cached_tginit_filename != tginit_path:
+            self.cached_tginit_geometry = self.pyturbogrid_saas.getTGInitTopology(
+                tginit_path=tginit_path,
+                transformIOToLines=transformIOToLines,
+            )
+            self.cached_tginit_filename = tginit_path
 
-        # print(f"getTGInitTopology self.pyturbogrid_saas {self.pyturbogrid_saas}")
-        t0 = time.time()
-        self.cached_tginit_geometry = self.pyturbogrid_saas.getTGInitTopology(
-            tginit_path=tginit_path,
-            transformIOToLines=transformIOToLines,
-            # replace_faces_with_display_surfaces=replace_faces_with_display_surfaces,
-        )
-        t1 = time.time()
-        br_meshes, br_names, two_vertex_faces, display_surfaces = self.cached_tginit_geometry
-        # self.cached_tginit_show_3d_faces = replace_faces_with_display_surfaces
-        # print(f"{br_meshes=}")
-        # print(f"{br_names=}")
-        # print(f"{two_vertex_faces=}")
-
-        t2 = time.time()
-        threadsafe_queue: queue.Queue = queue.Queue()
-        for br_mesh in br_meshes:
-            threadsafe_queue.put(br_mesh)
-
-        t3 = time.time()
-        threadsafe_queue_2vf: queue.Queue = queue.Queue()
-        for two_vertex_face in two_vertex_faces:
-            threadsafe_queue_2vf.put(two_vertex_face)
-
-        t4 = time.time()
-        self.cached_tginit_filename = tginit_path
-        self.cached_tginit_geometry = (br_meshes, br_names, two_vertex_faces, display_surfaces)
-        t5 = time.time()
-        print(
-            f"get_tginit_faces profiling: {t1-t0:.2f} {t2-t1:.2f} {t3-t2:.2f} {t4-t3:.2f} {t5-t4:.2f} seconds"
-        )
-        return (threadsafe_queue, br_names, threadsafe_queue_2vf, display_surfaces)
+        return deepcopy(self.cached_tginit_geometry)
 
     def __launch_instances__(self, ndf_file_name, tg_log_level, tg_worker_name, tg_worker_instance):
         """
