@@ -111,6 +111,7 @@ class multi_blade_row:
         turbogrid_location_type=PyTurboGrid.TurboGridLocationType.TURBOGRID_INSTALL,
         tg_container_launch_settings: dict[str, str] = {},
         turbogrid_path: str = None,
+        tg_kw_args={},
     ):
         """
         Initialize the MBR object
@@ -128,6 +129,7 @@ class multi_blade_row:
         self.turbogrid_location_type = turbogrid_location_type
         self.tg_container_launch_settings = tg_container_launch_settings
         self.turbogrid_path = turbogrid_path
+        self.tg_kw_args = tg_kw_args
         # path_to_localroot = "C:/ANSYSDev/gitSRC/CFX/CFXUE/src"
 
         if (
@@ -189,13 +191,10 @@ class multi_blade_row:
     def init_from_tginit(
         self,
         tginit_path: str,
-        tg_kw_args={},
         tg_log_level: PyTurboGrid.TurboGridLogLevel = PyTurboGrid.TurboGridLogLevel.INFO,
         blade_rows_to_mesh: list[str] = None,
     ):
         # import pprint
-
-        self.tg_kw_args = tg_kw_args
 
         # self.all_blade_row_keys is not yet implemented at this point
         # TG should have a query to get this list instead of relying on the NDF file
@@ -224,7 +223,6 @@ class multi_blade_row:
         ndf_path: str,
         use_existing_tginit_cad: bool = False,
         tg_log_level: PyTurboGrid.TurboGridLogLevel = PyTurboGrid.TurboGridLogLevel.INFO,
-        tg_kw_args={},
     ):
         """
         Initialize the MBR representation with an ndf file.
