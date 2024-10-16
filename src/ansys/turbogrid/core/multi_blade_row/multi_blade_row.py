@@ -239,7 +239,6 @@ class multi_blade_row:
             Logging settings for the underlying TG instances.
             The log_filename_suffix will be the ndf file name, and the flowpath for the worker instances.
         """
-        self.tg_kw_args = tg_kw_args
         self.all_blade_rows = ndf_parser.NDFParser(ndf_path).get_blade_row_blades()
         self.all_blade_row_keys = list(self.all_blade_rows.keys())
         # print(f"Blade Rows to mesh: {self.all_blade_rows}")
