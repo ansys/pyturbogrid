@@ -119,7 +119,7 @@ class multi_blade_row:
         turbogrid_location_type : PyTurboGrid.TurboGridLocationType, default: ``TURBOGRID_INSTALL``
             For container/cloud operation, this can be changed. Generally only used by devs/github.
         tg_container_launch_settings : dict[str, str], default: ``{}``
-            For dev usage.            
+            For dev usage.
         """
 
         self.turbogrid_location_type = turbogrid_location_type
