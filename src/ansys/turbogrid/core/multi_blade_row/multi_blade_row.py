@@ -145,7 +145,7 @@ class multi_blade_row:
             log_level=PyTurboGrid.TurboGridLogLevel.INFO,
             log_filename_suffix="_saas",
             turbogrid_path=None,
-            turbogrid_location_type=PyTurboGrid.TurboGridLocationType.TURBOGRID_INSTALL,
+            turbogrid_location_type=self.turbogrid_location_type,
             port=self.pyturbogrid_saas_port,
             # additional_kw_args={"local-root": path_to_localroot},
         )
