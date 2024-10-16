@@ -96,6 +96,9 @@ class multi_blade_row:
     # An instance of TG is kept around to do certain tasks.
     # This is simpler than launching a new TG every time one of these tasks are to be done.
     pyturbogrid_saas: PyTurboGrid = None
+    pyturbogrid_saas_execution_control = None
+    pyturbogrid_saas_port: int = None
+
     cached_tginit_filename: str = None
     cached_tginit_geometry: Tuple[list[any], list[str], list[any], dict] = None
     # cached_tginit_show_3d_faces: bool = None
@@ -103,17 +106,41 @@ class multi_blade_row:
     cached_blade_mesh_surfaces: list[any] = None
 
     # Consider passing in the filename (whether ndf or tginit) as initializing as raii
-    def __init__(self):
-        # TODO: container support for the saas process
-        # Maybe we would rather launch a new one each time (very reasonable as well)
-        path_to_localroot = "C:/ANSYSDev/gitSRC/CFX/CFXUE/src"
+    def __init__(self, turbogrid_location_type=PyTurboGrid.TurboGridLocationType.TURBOGRID_INSTALL):
+        """
+        Initialize the MBR object
+
+        Parameters
+        ----------
+        turbogrid_location_type : PyTurboGrid.TurboGridLocationType, default: ``TURBOGRID_INSTALL``
+            For container/cloud operation, this can be changed. Generally only used by devs/github.
+        """
+
+        self.turbogrid_location_type = turbogrid_location_type
+        # path_to_localroot = "C:/ANSYSDev/gitSRC/CFX/CFXUE/src"
+
+        if (
+            self.turbogrid_location_type
+            == PyTurboGrid.TurboGridLocationType.TURBOGRID_RUNNING_CONTAINER
+        ):
+            self.pyturbogrid_saas_execution_control = launch_turbogrid_container(
+                self.tg_container_launch_settings["cfxtg_command_name"],
+                self.tg_container_launch_settings["image_name"],
+                self.tg_container_launch_settings["container_name"],
+                self.tg_container_launch_settings["cfx_version"],
+                self.tg_container_launch_settings["license_file"],
+                self.tg_container_launch_settings["keep_stopped_containers"],
+                self.tg_container_launch_settings["container_env_dict"],
+            )
+            self.pyturbogrid_saas_port = self.pyturbogrid_saas_execution_control.socket_port
+
         self.pyturbogrid_saas = launch_turbogrid(
             log_level=PyTurboGrid.TurboGridLogLevel.INFO,
             log_filename_suffix="_saas",
             turbogrid_path=None,
             turbogrid_location_type=PyTurboGrid.TurboGridLocationType.TURBOGRID_INSTALL,
-            port=None,
-            additional_kw_args={"local-root": path_to_localroot},
+            port=self.pyturbogrid_saas_port,
+            # additional_kw_args={"local-root": path_to_localroot},
         )
 
     def __del__(self):
@@ -129,6 +156,8 @@ class multi_blade_row:
                 concurrent.futures.wait(futures)
         if self.pyturbogrid_saas:
             self.pyturbogrid_saas.quit()
+            if self.pyturbogrid_saas_execution_control:
+                del self.pyturbogrid_saas_execution_control
 
     def get_blade_rows_from_ndf(self, ndf_path: str) -> dict:
         return ndf_parser.NDFParser(ndf_path).get_blade_row_blades()
@@ -150,7 +179,6 @@ class multi_blade_row:
         self,
         tginit_path: str,
         turbogrid_path: str = None,
-        turbogrid_location_type=PyTurboGrid.TurboGridLocationType.TURBOGRID_INSTALL,
         tg_kw_args={},
         tg_log_level: PyTurboGrid.TurboGridLogLevel = PyTurboGrid.TurboGridLogLevel.INFO,
         blade_rows_to_mesh: list[str] = None,
@@ -159,7 +187,6 @@ class multi_blade_row:
 
         self.tg_kw_args = tg_kw_args
         self.turbogrid_path = turbogrid_path
-        self.turbogrid_location_type = turbogrid_location_type
 
         # self.all_blade_row_keys is not yet implemented at this point
         # TG should have a query to get this list instead of relying on the NDF file
@@ -189,7 +216,6 @@ class multi_blade_row:
         use_existing_tginit_cad: bool = False,
         tg_log_level: PyTurboGrid.TurboGridLogLevel = PyTurboGrid.TurboGridLogLevel.INFO,
         turbogrid_path: str = None,
-        turbogrid_location_type=PyTurboGrid.TurboGridLocationType.TURBOGRID_INSTALL,
         tg_container_launch_settings: dict[str, str] = {},
         tg_kw_args={},
     ):
@@ -209,14 +235,11 @@ class multi_blade_row:
             The log_filename_suffix will be the ndf file name, and the flowpath for the worker instances.
         turbogrid_path : str, default: ``None``
             Optional specifying for cfxtg path. Otherwise, launcher will attempt to find it automatically.
-        turbogrid_location_type : PyTurboGrid.TurboGridLocationType, default: ``TURBOGRID_INSTALL``
-            For container/cloud operation, this can be changed. Generally only used by devs/github.
         tg_container_launch_settings : dict[str, str], default: ``{}``
             For dev usage.
         """
         self.tg_kw_args = tg_kw_args
         self.turbogrid_path = turbogrid_path
-        self.turbogrid_location_type = turbogrid_location_type
         self.tg_container_launch_settings = tg_container_launch_settings
         self.all_blade_rows = ndf_parser.NDFParser(ndf_path).get_blade_row_blades()
         self.all_blade_row_keys = list(self.all_blade_rows.keys())
