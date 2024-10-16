@@ -28,6 +28,7 @@
 # or multiple rows in parallel.
 """Module for working on a multi blade row turbomachinery case using PyTurboGrid instances in parallel."""
 
+import ast
 import concurrent.futures
 from enum import IntEnum
 from functools import partial
@@ -36,18 +37,17 @@ import math
 import os
 from pathlib import Path, PurePath
 import queue
-import traceback
-from typing import Optional
-from typing import Tuple
 import threading
 import time
-import ast
+import traceback
+from typing import Optional, Tuple
+
 from ansys.turbogrid.api.pyturbogrid_core import PyTurboGrid
 
 from ansys.turbogrid.core.launcher.container_helpers import container_helpers
 from ansys.turbogrid.core.launcher.launcher import launch_turbogrid, launch_turbogrid_container
-from ansys.turbogrid.core.multi_blade_row.single_blade_row import single_blade_row
 from ansys.turbogrid.core.mesh_statistics import mesh_statistics
+from ansys.turbogrid.core.multi_blade_row.single_blade_row import single_blade_row
 import ansys.turbogrid.core.ndf_parser.ndf_parser as ndf_parser
 
 
