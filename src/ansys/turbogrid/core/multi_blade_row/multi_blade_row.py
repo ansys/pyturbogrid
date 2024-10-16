@@ -106,7 +106,11 @@ class multi_blade_row:
     cached_blade_mesh_surfaces: list[any] = None
 
     # Consider passing in the filename (whether ndf or tginit) as initializing as raii
-    def __init__(self, turbogrid_location_type=PyTurboGrid.TurboGridLocationType.TURBOGRID_INSTALL):
+    def __init__(
+        self,
+        turbogrid_location_type=PyTurboGrid.TurboGridLocationType.TURBOGRID_INSTALL,
+        tg_container_launch_settings: dict[str, str] = {},
+    ):
         """
         Initialize the MBR object
 
@@ -114,9 +118,12 @@ class multi_blade_row:
         ----------
         turbogrid_location_type : PyTurboGrid.TurboGridLocationType, default: ``TURBOGRID_INSTALL``
             For container/cloud operation, this can be changed. Generally only used by devs/github.
+        tg_container_launch_settings : dict[str, str], default: ``{}``
+            For dev usage.            
         """
 
         self.turbogrid_location_type = turbogrid_location_type
+        self.tg_container_launch_settings = tg_container_launch_settings
         # path_to_localroot = "C:/ANSYSDev/gitSRC/CFX/CFXUE/src"
 
         if (
@@ -216,7 +223,6 @@ class multi_blade_row:
         use_existing_tginit_cad: bool = False,
         tg_log_level: PyTurboGrid.TurboGridLogLevel = PyTurboGrid.TurboGridLogLevel.INFO,
         turbogrid_path: str = None,
-        tg_container_launch_settings: dict[str, str] = {},
         tg_kw_args={},
     ):
         """
@@ -235,12 +241,9 @@ class multi_blade_row:
             The log_filename_suffix will be the ndf file name, and the flowpath for the worker instances.
         turbogrid_path : str, default: ``None``
             Optional specifying for cfxtg path. Otherwise, launcher will attempt to find it automatically.
-        tg_container_launch_settings : dict[str, str], default: ``{}``
-            For dev usage.
         """
         self.tg_kw_args = tg_kw_args
         self.turbogrid_path = turbogrid_path
-        self.tg_container_launch_settings = tg_container_launch_settings
         self.all_blade_rows = ndf_parser.NDFParser(ndf_path).get_blade_row_blades()
         self.all_blade_row_keys = list(self.all_blade_rows.keys())
         # print(f"Blade Rows to mesh: {self.all_blade_rows}")
