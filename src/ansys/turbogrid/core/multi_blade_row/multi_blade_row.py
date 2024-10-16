@@ -300,7 +300,7 @@ class multi_blade_row:
             )
 
             if (
-                turbogrid_location_type
+                self.turbogrid_location_type
                 == PyTurboGrid.TurboGridLocationType.TURBOGRID_RUNNING_CONTAINER
             ):
                 # print(f"Get file from container")
