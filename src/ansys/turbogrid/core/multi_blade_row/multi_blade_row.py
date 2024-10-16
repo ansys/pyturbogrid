@@ -155,7 +155,7 @@ class multi_blade_row:
         tg_log_level: PyTurboGrid.TurboGridLogLevel = PyTurboGrid.TurboGridLogLevel.INFO,
         blade_rows_to_mesh: list[str] = None,
     ):
-        import pprint
+        # import pprint
 
         self.tg_kw_args = tg_kw_args
         self.turbogrid_path = turbogrid_path
@@ -181,7 +181,7 @@ class multi_blade_row:
             ]
             concurrent.futures.wait(futures)
 
-        pprint.pprint(timings)
+        # pprint.pprint(timings)
 
     def init_from_ndf(
         self,
@@ -220,11 +220,11 @@ class multi_blade_row:
         self.tg_container_launch_settings = tg_container_launch_settings
         self.all_blade_rows = ndf_parser.NDFParser(ndf_path).get_blade_row_blades()
         self.all_blade_row_keys = list(self.all_blade_rows.keys())
-        print(f"Blade Rows to mesh: {self.all_blade_rows}")
+        # print(f"Blade Rows to mesh: {self.all_blade_rows}")
         ndf_name = os.path.basename(ndf_path)
         self.ndf_base_path = PurePath(ndf_path).parent.as_posix()
         self.ndf_file_name, self.ndf_file_extension = os.path.splitext(ndf_name)
-        print(f"{ndf_name=}")
+        # print(f"{ndf_name=}")
 
         if use_existing_tginit_cad == False:
             tg_port = None
@@ -255,20 +255,20 @@ class multi_blade_row:
                 == PyTurboGrid.TurboGridLocationType.TURBOGRID_RUNNING_CONTAINER
             ):
                 pyturbogrid_instance.block_each_message = True
-                print(
-                    f"get_container_connection {tg_execution_control.ftp_port} {self.tg_container_launch_settings['ssh_key_filename']}"
-                )
+                # print(
+                #     f"get_container_connection {tg_execution_control.ftp_port} {self.tg_container_launch_settings['ssh_key_filename']}"
+                # )
                 container = container_helpers.get_container_connection(
                     tg_execution_control.ftp_port,
                     self.tg_container_launch_settings["ssh_key_filename"],
                 )
-                print(f"transfer files to container {ndf_path}")
+                # print(f"transfer files to container {ndf_path}")
                 container_helpers.transfer_files_to_container(
                     container,
                     self.ndf_base_path,
                     [ndf_name],
                 )
-                print(f"files transferred")
+                # print(f"files transferred")
                 # full path and file name in the container
                 ndf_path = "/" + ndf_name
 
@@ -282,13 +282,13 @@ class multi_blade_row:
                 turbogrid_location_type
                 == PyTurboGrid.TurboGridLocationType.TURBOGRID_RUNNING_CONTAINER
             ):
-                print(f"Get file from container")
+                # print(f"Get file from container")
                 container_helpers.transfer_files_from_container(
                     container,
                     self.ndf_base_path,
                     [self.ndf_file_name + ".x_b", self.ndf_file_name + ".tginit"],
                 )
-                print(f"file transferred")
+                # print(f"file transferred")
             pyturbogrid_instance.quit()
             if tg_execution_control:
                 del tg_execution_control
@@ -309,12 +309,12 @@ class multi_blade_row:
         Initialize the MBR representation with a TGMachine file.
         Still under development
         """
-        print(f"init_from_tgmachine tgmachine_path = {tgmachine_path}")
+        # print(f"init_from_tgmachine tgmachine_path = {tgmachine_path}")
         tgmachine_file = open(tgmachine_path, "r")
         machine_info = json.load(tgmachine_file)
         n_rows: int = machine_info["Number of Blade Rows"]
         interface_method: str = machine_info["Interface Method"]
-        print(f"   n_rows = {n_rows}")
+        # print(f"   n_rows = {n_rows}")
         self.all_blade_row_keys = machine_info["Blade Rows"]
         self.neighbor_dict = {}
         for i in range(len(self.all_blade_row_keys)):
@@ -332,7 +332,7 @@ class multi_blade_row:
                 if right_neighbor:
                     right_neighbor = os.path.splitext(right_neighbor)[0] + ".crv"
             self.neighbor_dict[self.all_blade_row_keys[i]] = [left_neighbor, right_neighbor]
-        print(f"   {self.neighbor_dict=}")
+        # print(f"   {self.neighbor_dict=}")
         self.tg_worker_instances = {key: single_blade_row() for key in self.all_blade_row_keys}
         self.base_gsf = {key: 1.0 for key in self.all_blade_row_keys}
         with concurrent.futures.ThreadPoolExecutor(
@@ -411,10 +411,10 @@ class multi_blade_row:
             raise Exception(
                 f"No blade row with name {blade_row_name}. Available names: {self.all_blade_row_keys}"
             )
-        print("set_global_size_factor ", size_factor)
-        print("  before vcount ", self.get_mesh_statistics()[blade_row_name]["Vertices"]["Count"])
+        # print("set_global_size_factor ", size_factor)
+        # print("  before vcount ", self.get_mesh_statistics()[blade_row_name]["Vertices"]["Count"])
         self.tg_worker_instances[blade_row_name].pytg.set_global_size_factor(size_factor)
-        print("  after vcount ", self.get_mesh_statistics()[blade_row_name]["Vertices"]["Count"])
+        # print("  after vcount ", self.get_mesh_statistics()[blade_row_name]["Vertices"]["Count"])
 
     def set_number_of_blade_sets(self, blade_row_name: str, number_of_blade_sets: int):
         """
@@ -502,7 +502,7 @@ class multi_blade_row:
         Count must be over 50,000, and a count too high may be problematic.
 
         """
-        print(f"set_machine_target_node_count target_node_count {target_node_count}")
+        # print(f"set_machine_target_node_count target_node_count {target_node_count}")
         with concurrent.futures.ThreadPoolExecutor(
             max_workers=len(self.tg_worker_instances)
         ) as executor:
@@ -519,7 +519,7 @@ class multi_blade_row:
         The assembly can be opened directly in CFX-Pre (Meshes contain some topology.)
 
         """
-        print(f"save_meshes")
+        # print(f"save_meshes")
         with concurrent.futures.ThreadPoolExecutor(
             max_workers=len(self.tg_worker_instances)
         ) as executor:
@@ -534,7 +534,7 @@ class multi_blade_row:
         Text to be added
 
         """
-        print(f"get_mesh_statistics")
+        # print(f"get_mesh_statistics")
         all_mesh_stats: dict[str, any] = {}
         with concurrent.futures.ThreadPoolExecutor(
             max_workers=len(self.tg_worker_instances)
@@ -553,7 +553,7 @@ class multi_blade_row:
         Text to be added
 
         """
-        print(f"get_mesh_statistics_histogram_data")
+        # print(f"get_mesh_statistics_histogram_data")
         all_mesh_stats: dict[str, any] = {}
         with concurrent.futures.ThreadPoolExecutor(
             max_workers=len(self.tg_worker_instances)
@@ -581,15 +581,15 @@ class multi_blade_row:
 
         import pyvista as pv
 
-        print("get_machine_boundary_surfaces")
+        # print("get_machine_boundary_surfaces")
         threadsafe_queue = self.get_machine_boundary_surfaces()
         p = pv.Plotter()
-        print(f"add meshes {threadsafe_queue.qsize()}")
+        # print(f"add meshes {threadsafe_queue.qsize()}")
         while threadsafe_queue.empty() == False:
             p.add_mesh(
                 threadsafe_queue.get(), color=[random.random(), random.random(), random.random()]
             )
-        print("show")
+        # print("show")
         p.show(None)
 
     def get_machine_boundary_surfaces(self) -> queue.Queue:
@@ -603,7 +603,7 @@ class multi_blade_row:
                 threadsafe_queue.put(item)
             return threadsafe_queue
 
-        print("Mesh statistics have changed, regenerating...")
+        # print("Mesh statistics have changed, regenerating...")
 
         result_list = []
         list_lock = threading.Lock()
@@ -675,20 +675,20 @@ class multi_blade_row:
                 self.turbogrid_location_type
                 == PyTurboGrid.TurboGridLocationType.TURBOGRID_RUNNING_CONTAINER
             ):
-                print(
-                    f"get_container_connection {tg_worker_instance.tg_execution_control.ftp_port} {self.tg_container_launch_settings['ssh_key_filename']}"
-                )
+                # print(
+                #     f"get_container_connection {tg_worker_instance.tg_execution_control.ftp_port} {self.tg_container_launch_settings['ssh_key_filename']}"
+                # )
                 container = container_helpers.get_container_connection(
                     tg_worker_instance.tg_execution_control.ftp_port,
                     self.tg_container_launch_settings["ssh_key_filename"],
                 )
-                print(f"transfer files to container {ndf_file_name}")
+                # print(f"transfer files to container {ndf_file_name}")
                 container_helpers.transfer_files_to_container(
                     container,
                     self.ndf_base_path,
                     [ndf_file_name + ".tginit", ndf_file_name + ".x_b"],
                 )
-                print(f"files transferred")
+                # print(f"files transferred")
 
             tg_worker_instance.pytg.read_tginit(
                 path=ndf_file_name + ".tginit", bladerow=tg_worker_name
@@ -754,14 +754,14 @@ class multi_blade_row:
                 self.turbogrid_location_type
                 == PyTurboGrid.TurboGridLocationType.TURBOGRID_RUNNING_CONTAINER
             ):
-                print(
-                    f"get_container_connection {tg_worker_instance.tg_execution_control.ftp_port} {self.tg_container_launch_settings['ssh_key_filename']}"
-                )
+                # print(
+                #     f"get_container_connection {tg_worker_instance.tg_execution_control.ftp_port} {self.tg_container_launch_settings['ssh_key_filename']}"
+                # )
                 container = container_helpers.get_container_connection(
                     tg_worker_instance.tg_execution_control.ftp_port,
                     self.tg_container_launch_settings["ssh_key_filename"],
                 )
-                print(f"transfer files to container {tginit_file_name}")
+                # print(f"transfer files to container {tginit_file_name}")
                 container_helpers.transfer_files_to_container(
                     container,
                     self.ndf_base_path,
@@ -770,7 +770,7 @@ class multi_blade_row:
                         tginit_path + "/" + tginit_file_name + ".x_b",
                     ],
                 )
-                print(f"files transferred")
+                # print(f"files transferred")
 
             t3 = time.time()
             tg_worker_instance.pytg.set_obj_param(
