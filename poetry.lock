@@ -64,22 +64,6 @@ doc = ["Sphinx (==7.1.2)", "ansys-api-platform-instancemanagement (==1.0.0)", "a
 tests = ["ansys-api-platform-instancemanagement (==1.0.0)", "grpcio-health-checking (==1.56.2)", "grpcio-testing", "pytest (==7.4.0)", "pytest-cov (==4.1.0)", "six (>=1.16,<2.0)"]
 
 [[package]]
-name = "ansys-simba-settings"
-version = "0.14.12"
-description = "Python framework for managing application logic and features of any application"
-optional = false
-python-versions = ">=3.10,<4.0"
-files = [
-    {file = "ansys_simba_settings-0.14.12-py3-none-any.whl", hash = "sha256:ed4c6944bdd4ecac580367f4c078fdf7e5543dea5a65f9bb0c23798ee0546161"},
-    {file = "ansys_simba_settings-0.14.12.tar.gz", hash = "sha256:80d4591377d83d5d72467db1e87ca8b26fe09bc21ec134de27f1c186f460fc30"},
-]
-
-[package.source]
-type = "legacy"
-url = "https://pkgs.dev.azure.com/pyansys/_packaging/pyansys/pypi/simple"
-reference = "pyansys-private-pypi"
-
-[[package]]
 name = "ansys-sphinx-theme"
 version = "1.0.7"
 description = "A theme devised by ANSYS, Inc. for Sphinx documentation."
@@ -4243,4 +4227,4 @@ test = ["big-O", "importlib-resources", "jaraco.functools", "jaraco.itertools", 
 [metadata]
 lock-version = "2.0"
 python-versions = ">=3.10,<4.0"
-content-hash = "4d63075c76b64eb2cf94ebb36a2e5e5231e29ea35a64c090ee9f7e0955838e5a"
+content-hash = "7cc56487d2e4aa1bbf23137d334a55ee64a85878aae0afb9bb4a434e0d9be1bc"
