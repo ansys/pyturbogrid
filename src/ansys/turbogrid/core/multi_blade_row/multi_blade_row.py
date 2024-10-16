@@ -110,6 +110,7 @@ class multi_blade_row:
         self,
         turbogrid_location_type=PyTurboGrid.TurboGridLocationType.TURBOGRID_INSTALL,
         tg_container_launch_settings: dict[str, str] = {},
+        turbogrid_path: str = None,
     ):
         """
         Initialize the MBR object
@@ -120,10 +121,13 @@ class multi_blade_row:
             For container/cloud operation, this can be changed. Generally only used by devs/github.
         tg_container_launch_settings : dict[str, str], default: ``{}``
             For dev usage.
+        turbogrid_path : str, default: ``None``
+            Optional specifying for cfxtg path. Otherwise, launcher will attempt to find it automatically.
         """
 
         self.turbogrid_location_type = turbogrid_location_type
         self.tg_container_launch_settings = tg_container_launch_settings
+        self.turbogrid_path = turbogrid_path
         # path_to_localroot = "C:/ANSYSDev/gitSRC/CFX/CFXUE/src"
 
         if (
@@ -144,7 +148,7 @@ class multi_blade_row:
         self.pyturbogrid_saas = launch_turbogrid(
             log_level=PyTurboGrid.TurboGridLogLevel.INFO,
             log_filename_suffix="_saas",
-            turbogrid_path=None,
+            turbogrid_path=self.turbogrid_path,
             turbogrid_location_type=self.turbogrid_location_type,
             port=self.pyturbogrid_saas_port,
             # additional_kw_args={"local-root": path_to_localroot},
@@ -185,7 +189,6 @@ class multi_blade_row:
     def init_from_tginit(
         self,
         tginit_path: str,
-        turbogrid_path: str = None,
         tg_kw_args={},
         tg_log_level: PyTurboGrid.TurboGridLogLevel = PyTurboGrid.TurboGridLogLevel.INFO,
         blade_rows_to_mesh: list[str] = None,
@@ -193,7 +196,6 @@ class multi_blade_row:
         # import pprint
 
         self.tg_kw_args = tg_kw_args
-        self.turbogrid_path = turbogrid_path
 
         # self.all_blade_row_keys is not yet implemented at this point
         # TG should have a query to get this list instead of relying on the NDF file
@@ -222,7 +224,6 @@ class multi_blade_row:
         ndf_path: str,
         use_existing_tginit_cad: bool = False,
         tg_log_level: PyTurboGrid.TurboGridLogLevel = PyTurboGrid.TurboGridLogLevel.INFO,
-        turbogrid_path: str = None,
         tg_kw_args={},
     ):
         """
@@ -239,11 +240,8 @@ class multi_blade_row:
         tg_log_level : PyTurboGrid.TurboGridLogLevel, default: ``INFO``
             Logging settings for the underlying TG instances.
             The log_filename_suffix will be the ndf file name, and the flowpath for the worker instances.
-        turbogrid_path : str, default: ``None``
-            Optional specifying for cfxtg path. Otherwise, launcher will attempt to find it automatically.
         """
         self.tg_kw_args = tg_kw_args
-        self.turbogrid_path = turbogrid_path
         self.all_blade_rows = ndf_parser.NDFParser(ndf_path).get_blade_row_blades()
         self.all_blade_row_keys = list(self.all_blade_rows.keys())
         # print(f"Blade Rows to mesh: {self.all_blade_rows}")
