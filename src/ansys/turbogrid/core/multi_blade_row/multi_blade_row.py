@@ -130,7 +130,6 @@ class multi_blade_row:
         self.tg_container_launch_settings = tg_container_launch_settings
         self.turbogrid_path = turbogrid_path
         self.tg_kw_args = tg_kw_args
-        # path_to_localroot = "C:/ANSYSDev/gitSRC/CFX/CFXUE/src"
 
         if (
             self.turbogrid_location_type
@@ -153,7 +152,7 @@ class multi_blade_row:
             turbogrid_path=self.turbogrid_path,
             turbogrid_location_type=self.turbogrid_location_type,
             port=self.pyturbogrid_saas_port,
-            # additional_kw_args={"local-root": path_to_localroot},
+            additional_kw_args=self.tg_kw_args,
         )
 
     def __del__(self):
