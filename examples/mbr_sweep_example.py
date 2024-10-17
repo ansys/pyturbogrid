@@ -22,7 +22,7 @@
 # SOFTWARE.
 
 """
-.. _multi_blade_row_example:
+.. _multi_blade_row_sweep_example:
 
 Multi blade row meshing example
 -------------------------------

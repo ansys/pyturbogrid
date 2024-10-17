@@ -39,8 +39,6 @@ install_path = pathlib.PurePath(__file__).parent.parent.as_posix()
 
 
 def test_multi_blade_row_basic(pytestconfig):
-    machine = MBR()
-
     tg_container_launch_settings = {}
 
     pytest.turbogrid_install_type = PyTurboGrid.TurboGridLocationType.TURBOGRID_INSTALL
@@ -59,12 +57,18 @@ def test_multi_blade_row_basic(pytestconfig):
             "container_env_dict": pytestconfig.getoption("container_env_dict"),
             "ssh_key_filename": pytestconfig.getoption("ssh_key_filename"),
         }
-    machine.init_from_ndf(
-        ndf_path=f"{install_path}/tests/ndf/AxialFanMultiRow.ndf",
-        turbogrid_path=pytestconfig.getoption("local_cfxtg_path"),
+
+    # Note that for non-containerized environments, turbogrid_location_type and tg_container_launch_settings are not needed
+    # turbogrid_path can be None if you want the launcher to find your installation for you
+    machine = MBR(
         turbogrid_location_type=pytest.turbogrid_install_type,
         tg_container_launch_settings=tg_container_launch_settings,
+        turbogrid_path=pytestconfig.getoption("local_cfxtg_path"),
         tg_kw_args=json.loads(pytestconfig.getoption("tg_kw_args")),
+    )
+
+    machine.init_from_ndf(
+        ndf_path=f"{install_path}/tests/ndf/AxialFanMultiRow.ndf",
         # use_existing_tginit_cad=True,
     )
 
