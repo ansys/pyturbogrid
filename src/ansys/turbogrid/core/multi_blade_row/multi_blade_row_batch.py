@@ -60,6 +60,7 @@ class MultiBladeRow:
     _blade_boundary_layer_offsets: dict = None
     _blade_row_spanwise_counts: dict = None
     _custom_blade_settings: dict = None
+    _write_tginit_first: bool = True
 
     #: Number of decimal places to be used for values in the meshing reports.
     report_stats_decimal_places = 3
@@ -79,10 +80,6 @@ class MultiBladeRow:
         "Minimum Volume",
         "Orthogonality Angle",
     ]
-
-    #: Set True to write tginit first before processing blade rows in parallel by reading the tginit
-    #: instead of reading ndf in parallel and writing separate tginit for each blade row.
-    write_tginit_first = False
 
     #: When working in Ansys Labs, the number of attempts to be made for file transfer from
     #: container to the local working directory results folder.
@@ -288,8 +285,10 @@ class MultiBladeRow:
 
         reporter.start()
         if mode == self.TurboGridLocationType.TURBOGRID_INSTALL:
+            self._write_tginit_first = True
             self._execute_local(progress_updates_queue, blade_row_settings, num_producers)
         elif mode == self.TurboGridLocationType.TURBOGRID_ANSYS_LABS:
+            self._write_tginit_first = False
             self._execute_ansys_labs(
                 progress_updates_mgr, progress_updates_queue, blade_row_settings, num_producers
             )
@@ -318,7 +317,7 @@ class MultiBladeRow:
     ######################################
 
     def _execute_local(self, progress_updates_queue, blade_row_settings, num_producers):
-        if self.write_tginit_first:
+        if self._write_tginit_first:
             tginit_name = self._read_ndf(
                 self._ndf_file_full_path,
                 list(self._blade_rows_to_mesh.keys())[0],
@@ -367,7 +366,7 @@ class MultiBladeRow:
     def _execute_ansys_labs(
         self, progress_updates_mgr, progress_updates_queue, blade_row_settings, num_producers
     ):
-        if self.write_tginit_first:
+        if self._write_tginit_first:
             tginit_name_list = progress_updates_mgr.list()
             ndf_reader_proc = Process(
                 target=read_ndf_ansys_labs,
