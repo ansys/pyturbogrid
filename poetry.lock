@@ -3632,13 +3632,13 @@ test = ["cython (>=3.0)", "defusedxml (>=0.7.1)", "pytest (>=8.0)", "setuptools 
 
 [[package]]
 name = "sphinx-autoapi"
-version = "3.2.1"
+version = "3.3.3"
 description = "Sphinx API documentation generator"
 optional = false
 python-versions = ">=3.8"
 files = [
-    {file = "sphinx_autoapi-3.2.1-py2.py3-none-any.whl", hash = "sha256:72fe556abc579528a46494f4fcbeaeaaf3e0b031f6514f7b496f6c36754c5430"},
-    {file = "sphinx_autoapi-3.2.1.tar.gz", hash = "sha256:1f9d56b3a98d5653d1fad5644abeed2c042cec304a126ef72c236dae4af16b90"},
+    {file = "sphinx_autoapi-3.3.3-py3-none-any.whl", hash = "sha256:5c7349b42d45a492a611cb81fb48583d5148e9eab7fc6b1f326dc9273b9191e3"},
+    {file = "sphinx_autoapi-3.3.3.tar.gz", hash = "sha256:c44fd719580e9a3684ff82019f4f7f39fc970e3030ffd325936654a6f4d31f22"},
 ]
 
 [package.dependencies]
@@ -3649,9 +3649,7 @@ astroid = [
 Jinja2 = "*"
 PyYAML = "*"
 sphinx = ">=6.1.0"
-
-[package.extras]
-docs = ["furo", "sphinx", "sphinx-design"]
+stdlib_list = {version = "*", markers = "python_version < \"3.10\""}
 
 [[package]]
 name = "sphinx-autodoc-typehints"
@@ -3826,6 +3824,24 @@ pure-eval = "*"
 
 [package.extras]
 tests = ["cython", "littleutils", "pygments", "pytest", "typeguard"]
+
+[[package]]
+name = "stdlib-list"
+version = "0.11.0"
+description = "A list of Python Standard Libraries (2.7 through 3.12)."
+optional = false
+python-versions = ">=3.9"
+files = [
+    {file = "stdlib_list-0.11.0-py3-none-any.whl", hash = "sha256:8bf8decfffaaf273d4cfeb5bd852b910a00dec1037dcf163576803622bccf597"},
+    {file = "stdlib_list-0.11.0.tar.gz", hash = "sha256:b74a7b643a77a12637e907f3f62f0ab9f67300bce4014f6b2d3c8b4c8fd63c66"},
+]
+
+[package.extras]
+dev = ["build", "stdlib-list[doc,lint,test]"]
+doc = ["furo", "sphinx"]
+lint = ["mypy", "ruff"]
+support = ["sphobjinv"]
+test = ["coverage[toml]", "pytest", "pytest-cov"]
 
 [[package]]
 name = "tabulate"
