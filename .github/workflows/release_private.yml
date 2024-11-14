@@ -7,7 +7,7 @@ env:
     MAIN_PYTHON_VERSION: '3.10'
     LIBRARY_NAME: 'ansys-turbogrid-core'
     POETRY_HTTP_BASIC_PYANSYS_PRIVATE_PYPI_USERNAME: "PAT"
-    POETRY_HTTP_BASIC_PYANSYS_PRIVATE_PYPI_PASSWORD: ${{ secrets.PYANSYS_PRIVATE_PYPI_PAT }}  
+    POETRY_HTTP_BASIC_PYANSYS_PRIVATE_PYPI_PASSWORD: ${{ secrets.PYANSYS_PYPI_PRIVATE_PAT }}  
 
 concurrency:
     group: ${{ github.workflow }}-${{ github.ref }}

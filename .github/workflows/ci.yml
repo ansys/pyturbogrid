@@ -18,8 +18,8 @@ env:
   LIBRARY_NAMESPACE: 'ansys.turbogrid.core'
   DOCUMENTATION_CNAME: 'turbogrid.docs.pyansys.com'
   POETRY_HTTP_BASIC_PYANSYS_PRIVATE_PYPI_USERNAME: "PAT"
-  POETRY_HTTP_BASIC_PYANSYS_PRIVATE_PYPI_PASSWORD: ${{ secrets.PYANSYS_PRIVATE_PYPI_PAT }}  
-  PIP_EXTRA_INDEX_URL: "https://${{ secrets.PYANSYS_PRIVATE_PYPI_PAT }}@pkgs.dev.azure.com/pyansys/_packaging/pyansys/pypi/simple"
+  POETRY_HTTP_BASIC_PYANSYS_PRIVATE_PYPI_PASSWORD: ${{ secrets.PYANSYS_PYPI_PRIVATE_PAT }}  
+  PIP_EXTRA_INDEX_URL: "https://${{ secrets.PYANSYS_PYPI_PRIVATE_PAT }}@pkgs.dev.azure.com/pyansys/_packaging/pyansys/pypi/simple"
 
 # This deals with concurrent runs of this script.
 concurrency:
