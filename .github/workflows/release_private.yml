@@ -6,7 +6,6 @@ on:
 env:
     MAIN_PYTHON_VERSION: '3.10'
     LIBRARY_NAME: 'ansys-turbogrid-core'
-    PIP_EXTRA_INDEX_URL: "https://${{ secrets.PYANSYS_PRIVATE_PYPI_PAT }}@pkgs.dev.azure.com/pyansys/_packaging/pyansys/pypi/simple"
     POETRY_HTTP_BASIC_PYANSYS_PRIVATE_PYPI_USERNAME: "PAT"
     POETRY_HTTP_BASIC_PYANSYS_PRIVATE_PYPI_PASSWORD: ${{ secrets.PYANSYS_PRIVATE_PYPI_PAT }}  
 

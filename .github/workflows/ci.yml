@@ -111,7 +111,7 @@ jobs:
     steps:
       - uses: ansys/actions/build-library@v8
         with:
-          library-name: ${{ env.LIBRARY_NAME }}
+          library-name: ${{ env.LIBRARY_NAME }}-artifacts-${{ matrix.os }}-${{ matrix.python-version }}
           python-version: ${{ env.MAIN_PYTHON_VERSION }}      
       # - uses: ansys/actions/build-wheelhouse@v8
       #   with:
@@ -132,7 +132,7 @@ jobs:
     steps:
       - uses: ansys/actions/build-library@v8
         with:
-          library-name: ${{ env.LIBRARY_NAME }}
+          library-name: ${{ env.LIBRARY_NAME }}-artifacts-${{ matrix.os }}-${{ matrix.python-version }}
           python-version: ${{ env.MAIN_PYTHON_VERSION }}      
       # - uses: ansys/actions/build-wheelhouse@v8
       #   with:
