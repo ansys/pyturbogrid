@@ -28,6 +28,11 @@ packages = [{ include = "ansys", from = "src" }]
 name = "PyPI"
 priority = "primary"
 
+[[tool.poetry.source]]
+name = "pyansys-private-pypi"
+url = "https://pkgs.dev.azure.com/pyansys/_packaging/pyansys/pypi/simple/"
+priority = "supplemental"
+
 [tool.poetry.dependencies]
 python = ">=3.10,<4.0"
 matplotlib = ">=3.5.1"
