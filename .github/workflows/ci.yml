@@ -19,6 +19,7 @@ env:
   DOCUMENTATION_CNAME: 'turbogrid.docs.pyansys.com'
   POETRY_HTTP_BASIC_PYANSYS_PRIVATE_PYPI_USERNAME: "PAT"
   POETRY_HTTP_BASIC_PYANSYS_PRIVATE_PYPI_PASSWORD: ${{ secrets.PYANSYS_PRIVATE_PYPI_PAT }}  
+  PIP_EXTRA_INDEX_URL: "https://${{ secrets.PYANSYS_PRIVATE_PYPI_PAT }}@pkgs.dev.azure.com/pyansys/_packaging/pyansys/pypi/simple"
 
 # This deals with concurrent runs of this script.
 concurrency:
@@ -82,7 +83,7 @@ jobs:
     needs: [prereqs]
     env:
       ANSYSLMD_LICENSE_FILE: 1055@${{ secrets.LICENSE_SERVER }}
-      PYTURBOGRID_DOC_VERSION: 242
+      PYTURBOGRID_DOC_VERSION: 251
       PYTURBOGRID_DOC_ENGINE_CONNECTION: 6000    
     steps:
       - name: Restore Cached Docker image file
@@ -175,7 +176,7 @@ jobs:
           pip install pytest-cov
           pip install fabric
           pip install .
-          python3 -u -m pytest -vs --execution_mode=CONTAINERIZED --license_file=${{ env.ANSYSLMD_LICENSE_FILE }} --image_name=ghcr.io/ansys/ansys-api-turbogrid/tglin_reduced_ndf:242 --cfxtg_command_name=cfxtgpynoviewer --cfx_version=242 --ssh_key_filename=./tg_container_key --local_cfxtg_path="/" --container_env_dict='{"CUE_DEBUG_PY_COMMS":"1"}'
+          python3 -u -m pytest -vs --execution_mode=CONTAINERIZED --license_file=${{ env.ANSYSLMD_LICENSE_FILE }} --image_name=ghcr.io/ansys/ansys-api-turbogrid/tglin_reduced_ndf:251 --cfxtg_command_name=cfxtgpynoviewer --cfx_version=251 --ssh_key_filename=./tg_container_key --local_cfxtg_path="/" --container_env_dict='{"CUE_DEBUG_PY_COMMS":"1"}'
 
 
 # The build job is responsible for creating the build artifact and uploading it to PYPI using twine.
