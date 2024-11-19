@@ -1,7 +1,5 @@
-# Copyright (C) 2023 - 2024 ANSYS, Inc. and/or its affiliates.
-# Copyright (C) 2024 Concepts NREC, LLC.
-# SPDX-FileCopyrightText: 2024 ANSYS, Inc. All rights reserved
-# SPDX-FileCopyrightText: 2024 Concepts NREC, LLC All rights reserved
+# Copyright (C) 2023 - 2025 ANSYS, Inc. and/or its affiliates.
+# SPDX-FileCopyrightText: 2025 ANSYS, Inc. All rights reserved
 # SPDX-License-Identifier: MIT
 #
 #
@@ -24,7 +22,7 @@
 # SOFTWARE.
 
 """
-.. _multi_blade_row_batch_example:
+.. _multi_blade_row_tginit_example:
 
 Multi blade row meshing example
 -------------------------------
@@ -38,37 +36,25 @@ This basic example shows how to set up a multi blade row meshing instance and ex
 # Perform the required imports. It is assumed that the ``ansys-turbogrid-core``
 # package has been installed.
 
-import os
-import pathlib
 
-from ansys.turbogrid.core.multi_blade_row.multi_blade_row_batch import MultiBladeRow
+import pathlib
+import time
+
+install_path = pathlib.PurePath(__file__).parent.parent.as_posix()
+
+# from ansys.turbogrid.core.multi_blade_row.multi_blade_row import MachineSizingStrategy
+from ansys.turbogrid.core.multi_blade_row.multi_blade_row import multi_blade_row as MBR
 
 #################################################################################
-# Create and use a MultiBladeRow instance
-# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-# Create a MultiBladeRow instance, set it up for a multi blade row case and execute.
+# Create a multi_blade_row and initialize it
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# Use the Concepts NREC sample provided.
 
-if __name__ == "__main__":
-    # Set working directory.
-    working_directory = os.getcwd()
-
-    # NDF file for this example.
-    # Credits for the design go to: https://www.conceptsnrec.com/home
-    # © Copyright 2024 Concepts NREC
-    ndf_file_name = "AxialFanMultiRow.ndf"
-
-    # Build the path to the test data folder
-    test_data_path = pathlib.PurePath(__file__).parent.parent.as_posix()
-    test_data_path = os.path.join(test_data_path, "tests")
-    test_data_path = os.path.join(test_data_path, "ndf")
-
-    # Create a MultiBladeRow instance.
-    mbr_instance = MultiBladeRow(working_directory, test_data_path, ndf_file_name)
-
-    # Set up some settings.
-    mbr_instance.set_spanwise_counts(56, 73)
-    mbr_instance.set_global_size_factor(1.5)
-    mbr_instance.set_blade_boundary_layer_offsets(6e-6)
-
-    # Call the execute method to perform the meshing.
-    mbr_instance.execute()
+start_time = time.time()
+print(f"Start time: {time.asctime(time.localtime())}")
+machine = MBR()
+print(machine)
+tginit_path = machine.convert_ndf_to_tginit(f"{install_path}/tests/ndf/AxialFanMultiRow.ndf")
+print(tginit_path)
+blade_rows = machine.get_blade_rows_from_ndf(f"{install_path}/tests/ndf/AxialFanMultiRow.ndf")
+print(blade_rows)
