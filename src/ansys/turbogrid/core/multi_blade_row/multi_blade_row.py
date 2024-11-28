@@ -28,7 +28,6 @@
 # or multiple rows in parallel.
 """Module for working on a multi blade row turbomachinery case using PyTurboGrid instances in parallel."""
 
-import ast
 import concurrent.futures
 from enum import IntEnum
 from functools import partial
@@ -175,9 +174,10 @@ class multi_blade_row:
         return ndf_parser.NDFParser(ndf_path).get_blade_row_blades()
 
     def get_blade_row_names_from_tginit(self, tginit_path: str) -> list[str]:
-        return ast.literal_eval(
-            self.pyturbogrid_saas.perform_query(f"Get TGInit Blade Rows, path={tginit_path}")
-        )
+        return self.pyturbogrid_saas.getTGInitContents(tginit_path)["blade rows"]
+
+    def get_secondary_flow_paths_from_tginit(self, tginit_path: str) -> list[str]:
+        return self.pyturbogrid_saas.getTGInitContents(tginit_path)["secondary flow paths"]
 
     # Returns the TGInit full path
     # TODO: Path should be returned from engine, or passed to engine.
@@ -621,6 +621,9 @@ class multi_blade_row:
             threadsafe_queue: queue.Queue = queue.Queue()
             for item in self.cached_blade_mesh_surfaces:
                 threadsafe_queue.put(item)
+            for sfp in self.cached_sfp_mesh_surfaces:
+                for surface in self.cached_sfp_mesh_surfaces[sfp]:
+                    threadsafe_queue.put(surface)
             return threadsafe_queue
 
         # print("Mesh statistics have changed, regenerating...")
@@ -639,6 +642,15 @@ class multi_blade_row:
         self.cached_blade_mesh_surfaces_stats = mesh_stats
         for item in result_list:
             threadsafe_queue.put(item)
+        print(f"number of passage meshes: {len(result_list)}")
+        # Add theta mesh surfaces
+        self.cached_sfp_mesh_surfaces = {}
+        sfps = self.get_available_secondary_flow_path_meshes()
+        for sfp in sfps:
+            self.cached_sfp_mesh_surfaces[sfp] = self.pyturbogrid_saas.getThetaMesh(sfp)
+            print(f"number of sfp meshes for {sfp}: {len(self.cached_sfp_mesh_surfaces[sfp])}")
+            for surface in self.cached_sfp_mesh_surfaces[sfp]:
+                threadsafe_queue.put(surface)
 
         return threadsafe_queue
 
@@ -659,6 +671,39 @@ class multi_blade_row:
             self.cached_tginit_filename = tginit_path
 
         return deepcopy(self.cached_tginit_geometry)
+
+    # For now, assumes that the cad path is the TGInit path but with x_b.
+    # The cad path will need to be filled in by TG, who knows how to find it properly.
+    def add_secondary_flow_path_from_tginit(
+        self,
+        sfp_name: str,
+        tginit_path: str,
+    ):
+
+        tginit_contents = self.pyturbogrid_saas.getTGInitContents(tginit_path=tginit_path)
+
+        if sfp_name not in tginit_contents["secondary flow paths"]:
+            raise (f"Secondary Flow Path {sfp_name} is not in the TGInit file {tginit_path}")
+
+        sfp_family_types = tginit_contents["secondary flow paths"][sfp_name]
+
+        base, ext = os.path.splitext(tginit_path)
+        cad_path = base + ".x_b"
+
+        self.pyturbogrid_saas.generateThetaMesh(
+            name=sfp_name,
+            axis=tginit_contents["axis"],
+            units=tginit_contents["units"],
+            cad_path=cad_path,
+            wall_families=sfp_family_types["wall families"],
+            hubinterfacefamilies=sfp_family_types["hub families"],
+            shroudinterfacefamilies=sfp_family_types["shroud families"],
+            hubcurvefamily=tginit_contents["hub family"],
+            shroudcurvefamily=tginit_contents["shroud family"],
+        )
+
+    def get_available_secondary_flow_path_meshes(self):
+        return self.pyturbogrid_saas.getAvailableThetaMeshes()
 
     def __launch_instances__(self, ndf_file_name, tg_log_level, tg_worker_name, tg_worker_instance):
         """
@@ -794,13 +839,15 @@ class multi_blade_row:
 
             t3 = time.time()
             tg_worker_instance.pytg.set_obj_param(
-                object="/GEOMETRY/INLET", param_val_pairs="Opening Mode = Fully extend"
+                object="/GEOMETRY/INLET", param_val_pairs="Opening Mode = Parametric"
             )
             tg_worker_instance.pytg.set_obj_param(
-                object="/GEOMETRY/OUTLET", param_val_pairs="Opening Mode = Fully extend"
+                object="/GEOMETRY/OUTLET", param_val_pairs="Opening Mode = Parametric"
             )
             t4 = time.time()
-            tg_worker_instance.pytg.read_tginit(path=tginit_file_path, bladerow=tg_worker_name)
+            tg_worker_instance.pytg.read_tginit(
+                path=tginit_file_path, bladerow=tg_worker_name, autoregions=True, includemesh=False
+            )
             t5 = time.time()
             # tg_worker_instance.pytg.set_obj_param(
             #     object="/TOPOLOGY SET", param_val_pairs="ATM Stop After Main Layers=True"
