@@ -674,6 +674,8 @@ class multi_blade_row:
 
     # For now, assumes that the cad path is the TGInit path but with x_b.
     # The cad path will need to be filled in by TG, who knows how to find it properly.
+    # This method will generate the secondary flowpath mesh within the SaaS node,
+    # and try to fit opening regions in the individual worker nodes' upstream/downstream blocks where it makes sense.
     def add_secondary_flow_path_from_tginit(
         self,
         sfp_name: str,

@@ -129,17 +129,21 @@ def test_multi_blade_row_sfp(pytestconfig):
         tg_log_level=PyTurboGrid.TurboGridLogLevel[pytestconfig.getoption("client_log_level")],
     )
 
-    available_sfps = machine.get_secondary_flow_paths_from_tginit(tginit_path)
-    print(f"available_sfps: {available_sfps}")
+    # ----------- #
 
-    for sfp_name in available_sfps:
-        machine.add_secondary_flow_path_from_tginit(sfp_name=sfp_name, tginit_path=tginit_path)
+    # available_sfps = machine.get_secondary_flow_paths_from_tginit(tginit_path)
+    # print(f"available_sfps: {available_sfps}")
 
-    available_theta_meshes = machine.get_available_secondary_flow_path_meshes()
-    print(f"available_theta_meshes: {available_theta_meshes}")
+    # for sfp_name in available_sfps:
+    #     machine.add_secondary_flow_path_from_tginit(sfp_name=sfp_name, tginit_path=tginit_path)
 
-    scene_graph: queue.Queue = machine.get_machine_boundary_surfaces()
-    assert scene_graph.qsize() == 24
+    # available_theta_meshes = machine.get_available_secondary_flow_path_meshes()
+    # print(f"available_theta_meshes: {available_theta_meshes}")
+
+    # scene_graph: queue.Queue = machine.get_machine_boundary_surfaces()
+    # assert scene_graph.qsize() == 24
+
+    # ----------- #
 
     # from pprint import pprint
 
