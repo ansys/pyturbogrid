@@ -104,6 +104,8 @@ class multi_blade_row:
     cached_blade_mesh_surfaces_stats: dict = None
     cached_blade_mesh_surfaces: list[any] = None
 
+    log_prefix: str
+
     # Consider passing in the filename (whether ndf or tginit) as initializing as raii
     def __init__(
         self,
@@ -111,6 +113,7 @@ class multi_blade_row:
         tg_container_launch_settings: dict[str, str] = {},
         turbogrid_path: str = None,
         tg_kw_args={},
+        log_prefix: str = "",
     ):
         """
         Initialize the MBR object
@@ -129,7 +132,7 @@ class multi_blade_row:
         self.tg_container_launch_settings = tg_container_launch_settings
         self.turbogrid_path = turbogrid_path
         self.tg_kw_args = tg_kw_args
-
+        self.log_prefix = log_prefix
         if (
             self.turbogrid_location_type
             == PyTurboGrid.TurboGridLocationType.TURBOGRID_RUNNING_CONTAINER
@@ -147,7 +150,7 @@ class multi_blade_row:
 
         self.pyturbogrid_saas = launch_turbogrid(
             log_level=PyTurboGrid.TurboGridLogLevel.INFO,
-            log_filename_suffix="_saas",
+            log_filename_suffix=self.log_prefix + "_saas",
             turbogrid_path=self.turbogrid_path,
             turbogrid_location_type=self.turbogrid_location_type,
             port=self.pyturbogrid_saas_port,
@@ -198,7 +201,11 @@ class multi_blade_row:
         # self.all_blade_row_keys is not yet implemented at this point
         # TG should have a query to get this list instead of relying on the NDF file
         # it will throw
-        selected_brs = blade_rows_to_mesh if blade_rows_to_mesh else self.all_blade_row_keys
+        selected_brs = (
+            blade_rows_to_mesh
+            if blade_rows_to_mesh
+            else self.get_blade_row_names_from_tginit(tginit_path)
+        )
         # self.all_blade_rows = ndf_parser.NDFParser(ndf_path).get_blade_row_blades()
         self.all_blade_row_keys = selected_brs
 
@@ -209,7 +216,13 @@ class multi_blade_row:
         with concurrent.futures.ThreadPoolExecutor(
             max_workers=len(self.tg_worker_instances)
         ) as executor:
-            job = partial(self.__launch_instances_tginit__, tginit_path, tg_log_level, timings)
+            job = partial(
+                self.__launch_instances_tginit__,
+                tginit_path,
+                tg_log_level,
+                self.log_prefix,
+                timings,
+            )
             futures = [
                 executor.submit(job, key, val) for key, val in self.tg_worker_instances.items()
             ]
@@ -448,6 +461,30 @@ class multi_blade_row:
             object="/GEOMETRY/MACHINE DATA",
             param_val_pairs=f"Bladeset Count = {number_of_blade_sets}",
         )
+
+    def set_inlet_outlet_parametric_positions(self, blade_row_name: str, inlet_hs=[], outlet_hs=[]):
+        """
+        Set the position of the inlet/outlet blocks within the blade row mesh for blade_row_name.
+        """
+        if blade_row_name not in self.tg_worker_instances:
+            raise Exception(
+                f"No blade row with name {blade_row_name}. Available names: {self.all_blade_row_keys}"
+            )
+        self.tg_worker_instances[blade_row_name].pytg.suspend(object="/TOPOLOGY SET")
+        if len(inlet_hs):
+            self.tg_worker_instances[blade_row_name].pytg.set_obj_param(
+                object="/GEOMETRY/INLET",
+                param_val_pairs=f"Parametric Hub Location = {inlet_hs[0]}, Parametric Shroud Location = {inlet_hs[1]}",
+            )
+        if len(outlet_hs):
+            self.tg_worker_instances[blade_row_name].pytg.set_obj_param(
+                object="/GEOMETRY/OUTLET",
+                param_val_pairs=f"Parametric Hub Location = {outlet_hs[0]}, Parametric Shroud Location = {outlet_hs[1]}",
+            )
+        self.tg_worker_instances[blade_row_name].pytg.unsuspend(object="/TOPOLOGY SET")
+
+        # Parametric Hub Location = 0.5
+        # Parametric Shroud Location = 0.5
 
     def set_machine_sizing_strategy(self, strategy: MachineSizingStrategy):
         """
@@ -777,7 +814,13 @@ class multi_blade_row:
             print(f"{tg_worker_instance} traceback: {traceback.extract_tb(e.__traceback__)}")
 
     def __launch_instances_tginit__(
-        self, tginit_file_path, tg_log_level, timings, tg_worker_name, tg_worker_instance
+        self,
+        tginit_file_path,
+        tg_log_level,
+        log_prefix,
+        timings,
+        tg_worker_name,
+        tg_worker_instance,
     ):
         """
         :meta private:
@@ -808,7 +851,7 @@ class multi_blade_row:
             t1 = time.time()
             tg_worker_instance.pytg = launch_turbogrid(
                 log_level=tg_log_level,
-                log_filename_suffix=f"_{tginit_file_name}_{tg_worker_name}",
+                log_filename_suffix=f"{log_prefix}_{tginit_file_name}_{tg_worker_name}",
                 additional_kw_args=self.tg_kw_args,
                 turbogrid_path=self.turbogrid_path,
                 turbogrid_location_type=self.turbogrid_location_type,
