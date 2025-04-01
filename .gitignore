@@ -181,3 +181,7 @@ IGVHubCavity.def
 mbr_process_IGV.def
 mbr_process_Main.def
 ShrCavity.def
+AutoSaveState.tst
+mbr_IGV.tst
+mbr_Main.tst
+yaml_dump.yaml

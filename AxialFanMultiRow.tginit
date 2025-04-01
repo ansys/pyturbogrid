@@ -1,0 +1,98 @@
+
+FLOW PATH : flowpath1
+  Flow Path User Name = FlowPath
+  Axis of Rotation = Z
+  Coordinate System Orientation = Righthanded
+  Geometry Units = M
+  GEOMETRY OBJECT : Hub Contour
+    Parasolid Name = flowpath1_hub_curve
+  END
+  GEOMETRY OBJECT : Shroud Contour
+    Parasolid Name = flowpath1_shroud_curve
+  END
+  BLADE ROW : bladerow1
+    Number of Blade Sets = 6
+    GEOMETRY OBJECT : Inlet Contour
+      Parasolid Name = flowpath1_inlet_curve
+    END
+    GEOMETRY OBJECT : Outlet Contour
+      Parasolid Name = flowpath1_interface_curve_bladerow1_bladerow2
+    END
+    GEOMETRY OBJECT : Shroud Tip Profile
+      Parasolid Name = flowpath1_bladerow1_shroud_tip_clearance_curve
+    END
+    MAIN BLADE :
+      Blade User Name = Rotor
+      Hub Fillet = No
+      Shroud Fillet = No
+      GEOMETRY OBJECT : High Blade Surface
+        Parasolid Name = flowpath1_bladerow1_main_high_blade_surface
+      END
+      GEOMETRY OBJECT : Low Blade Surface
+        Parasolid Name = flowpath1_bladerow1_main_low_blade_surface
+      END
+      GEOMETRY OBJECT : High Blade Hub Curve
+        Parasolid Name = flowpath1_bladerow1_main_high_blade_hub_curve
+      END
+      GEOMETRY OBJECT : High Blade Shroud Curve
+        Parasolid Name = flowpath1_bladerow1_main_high_blade_shroud_curve
+      END
+      GEOMETRY OBJECT : Low Blade Hub Curve
+        Parasolid Name = flowpath1_bladerow1_main_low_blade_hub_curve
+      END
+      GEOMETRY OBJECT : Low Blade Shroud Curve
+        Parasolid Name = flowpath1_bladerow1_main_low_blade_shroud_curve
+      END
+      GEOMETRY OBJECT : Leading Edge Splitting Wire
+        Parasolid Name = flowpath1_bladerow1_main_le_splitting_curve
+      END
+      GEOMETRY OBJECT : Trailing Edge Splitting Wire
+        Parasolid Name = flowpath1_bladerow1_main_te_splitting_curve
+      END
+      GEOMETRY OBJECT : Blade Body BRep
+        Parasolid Name = flowpath1_bladerow1_main_blade_body_brep
+      END
+    END
+  END
+  BLADE ROW : bladerow2
+    Number of Blade Sets = 7
+    GEOMETRY OBJECT : Inlet Contour
+      Parasolid Name = flowpath1_interface_curve_bladerow1_bladerow2
+    END
+    GEOMETRY OBJECT : Outlet Contour
+      Parasolid Name = flowpath1_outlet_curve
+    END
+    MAIN BLADE :
+      Blade User Name = Stator
+      Hub Fillet = No
+      Shroud Fillet = No
+      GEOMETRY OBJECT : High Blade Surface
+        Parasolid Name = flowpath1_bladerow2_main_high_blade_surface
+      END
+      GEOMETRY OBJECT : Low Blade Surface
+        Parasolid Name = flowpath1_bladerow2_main_low_blade_surface
+      END
+      GEOMETRY OBJECT : High Blade Hub Curve
+        Parasolid Name = flowpath1_bladerow2_main_high_blade_hub_curve
+      END
+      GEOMETRY OBJECT : High Blade Shroud Curve
+        Parasolid Name = flowpath1_bladerow2_main_high_blade_shroud_curve
+      END
+      GEOMETRY OBJECT : Low Blade Hub Curve
+        Parasolid Name = flowpath1_bladerow2_main_low_blade_hub_curve
+      END
+      GEOMETRY OBJECT : Low Blade Shroud Curve
+        Parasolid Name = flowpath1_bladerow2_main_low_blade_shroud_curve
+      END
+      GEOMETRY OBJECT : Leading Edge Splitting Wire
+        Parasolid Name = flowpath1_bladerow2_main_le_splitting_curve
+      END
+      GEOMETRY OBJECT : Trailing Edge Splitting Wire
+        Parasolid Name = flowpath1_bladerow2_main_te_splitting_curve
+      END
+      GEOMETRY OBJECT : Blade Body BRep
+        Parasolid Name = flowpath1_bladerow2_main_blade_body_brep
+      END
+    END
+  END
+END

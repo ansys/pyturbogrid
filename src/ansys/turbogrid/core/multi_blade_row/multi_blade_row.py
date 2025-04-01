@@ -73,6 +73,12 @@ class MachineSizingStrategy(IntEnum):
     MIN_FACE_AREA = 1
 
 
+class InitStyle(IntEnum):
+    NO_INIT = 0
+    TGInit = 1
+    CAD = 2
+
+
 class multi_blade_row:
     """This class spawns multiple TG instances and can initialize and control an entire blade row at once."""
 
@@ -156,9 +162,14 @@ class multi_blade_row:
             port=self.pyturbogrid_saas_port,
             additional_kw_args=self.tg_kw_args,
         )
+        self.init_style = InitStyle.NO_INIT
 
     def __del__(self):
+        self.quit()
+
+    def quit(self):
         """This method will quit all TG instances."""
+        # print("multi_blade_row quit")
         if self.tg_worker_instances:
             with concurrent.futures.ThreadPoolExecutor(
                 max_workers=len(self.tg_worker_instances)
@@ -168,10 +179,61 @@ class multi_blade_row:
                     for key, val in self.tg_worker_instances.items()
                 ]
                 concurrent.futures.wait(futures)
+        self.tg_worker_instances = None
         if self.pyturbogrid_saas:
             self.pyturbogrid_saas.quit()
             if self.pyturbogrid_saas_execution_control:
                 del self.pyturbogrid_saas_execution_control
+        self.pyturbogrid_saas = None
+
+    def save_state(self) -> dict[str, any]:
+        print("save_state", self.init_style)
+        match self.init_style:
+            case InitStyle.TGInit:
+                # Save all the TG states
+                print("saving...")
+                file_dict = self.save_states("mbr_")
+                print("file_dict", file_dict)
+                return {
+                    "TGInit Path": self.tginit_path,
+                    "Blade Rows": self.all_blade_row_keys,
+                    "Sizing Strategy": self.current_machine_sizing_strategy,
+                    "Base Size Factors": self.base_gsf,
+                    "File Dict": file_dict,
+                }
+            case _:
+                raise Exception(f"Unable to save with init style {self.init_style}")
+
+    def init_from_state(
+        self,
+        file_name: str,
+        tg_log_level: PyTurboGrid.TurboGridLogLevel = PyTurboGrid.TurboGridLogLevel.INFO,
+    ):
+        import json
+
+        state_dict = json.load(open(file_name))
+        print(state_dict)
+
+        self.all_blade_row_keys = state_dict["Blade Rows"]
+
+        self.tg_worker_instances = {key: single_blade_row() for key in self.all_blade_row_keys}
+        self.base_gsf = state_dict["Base Size Factors"]
+        with concurrent.futures.ThreadPoolExecutor(
+            max_workers=len(self.tg_worker_instances)
+        ) as executor:
+            job = partial(
+                self.__launch_instances_state__,
+                tg_log_level,
+                state_dict["File Dict"],
+            )
+            futures = [
+                executor.submit(job, key, val) for key, val in self.tg_worker_instances.items()
+            ]
+            concurrent.futures.wait(futures)
+
+        # pprint.pprint(timings)
+        self.init_style = InitStyle.TGInit
+        self.tginit_path = state_dict["TGInit Path"]
 
     def get_blade_rows_from_ndf(self, ndf_path: str) -> dict:
         return ndf_parser.NDFParser(ndf_path).get_blade_row_blades()
@@ -229,6 +291,8 @@ class multi_blade_row:
             concurrent.futures.wait(futures)
 
         # pprint.pprint(timings)
+        self.init_style = InitStyle.TGInit
+        self.tginit_path = tginit_path
 
     def init_from_ndf(
         self,
@@ -495,7 +559,8 @@ class multi_blade_row:
 
         if self.current_machine_sizing_strategy == strategy:
             return False
-
+        else:
+            self.current_machine_sizing_strategy = strategy
         # When 3.9 is dropped, we can use match/case
         if strategy == MachineSizingStrategy.NONE:
             self.set_machine_base_size_factors({key: 1.0 for key in self.all_blade_row_keys})
@@ -520,8 +585,9 @@ class multi_blade_row:
         # Check sizes here!
         if self.base_gsf == size_factors:
             return False
+        else:
+            self.base_gsf = size_factors
 
-        self.base_gsf = size_factors
         with concurrent.futures.ThreadPoolExecutor(
             max_workers=len(self.tg_worker_instances)
         ) as executor:
@@ -541,6 +607,8 @@ class multi_blade_row:
 
         if size_factor == self.current_size_factor:
             return False
+        else:
+            self.current_size_factor = size_factor
 
         with concurrent.futures.ThreadPoolExecutor(
             max_workers=len(self.tg_worker_instances)
@@ -585,6 +653,24 @@ class multi_blade_row:
                 for key, val in self.tg_worker_instances.items()
             ]
             concurrent.futures.wait(futures)
+
+    # Returns a dictionary of tg_worker_name : file name
+    def save_states(self, optional_prefix: str = None) -> dict[str, str]:
+        """
+        Write out the .tst files representing each TG instance.
+
+        """
+        # print(f"save_meshes")
+
+        with concurrent.futures.ThreadPoolExecutor(
+            max_workers=len(self.tg_worker_instances)
+        ) as executor:
+            futures = [
+                executor.submit(self.__save_state__, key, val, optional_prefix)
+                for key, val in self.tg_worker_instances.items()
+            ]
+            done, not_done = concurrent.futures.wait(futures)
+            return {future.result()[0]: future.result()[1] for future in done}
 
     def get_mesh_statistics(self) -> dict[str, any]:
         """
@@ -962,6 +1048,30 @@ class multi_blade_row:
         except Exception as e:
             print(f"{tg_worker_instance} exception on __launch_instances_inf__: {e}")
 
+    def __launch_instances_state__(
+        self,
+        tg_log_level,
+        state_path_name_list,
+        tg_worker_name,
+        tg_worker_instance,
+    ):
+        """
+        :meta private:
+        """
+        try:
+            tg_worker_instance.pytg = launch_turbogrid(
+                log_level=tg_log_level,
+                log_filename_suffix=f"_{tg_worker_name}",
+                additional_kw_args=self.tg_kw_args,
+            )
+            tg_worker_instance.pytg.block_each_message = True
+            tg_worker_instance.pytg.read_state(filename=state_path_name_list[tg_worker_name])
+            tg_worker_instance.pytg.unsuspend(object="/TOPOLOGY SET")
+        except Exception as e:
+            print(f"{tg_worker_instance} exception on __launch_instances_inf__: {e}")
+            print(f"{tg_worker_instance} traceback: {traceback.extract_tb(e.__traceback__)}")
+
+    # Sets this TG's sf to self.base_gsf[tg_worker_name] * size_factor
     def __set_gsf__(self, size_factor, tg_worker_name, tg_worker_instance):
         """
         :meta private:
@@ -998,6 +1108,17 @@ class multi_blade_row:
         if optional_prefix:
             file_name = optional_prefix + file_name
         tg_worker_instance.pytg.save_mesh(file_name)
+
+    # Returns (worker name, file name)
+    def __save_state__(self, tg_worker_name, tg_worker_instance, optional_prefix: str = None):
+        """
+        :meta private:
+        """
+        file_name: str = tg_worker_name + ".tst"
+        if optional_prefix:
+            file_name = optional_prefix + file_name
+        tg_worker_instance.pytg.save_state(filename=file_name)
+        return tg_worker_name, file_name
 
     def __quit__(self, tg_worker_instance):
         """

@@ -25,7 +25,8 @@
 import json
 import os
 import pathlib
-import queue
+
+# import queue
 
 from ansys.turbogrid.api.pyturbogrid_core import PyTurboGrid
 import pytest
@@ -156,3 +157,59 @@ def test_multi_blade_row_sfp(pytestconfig):
     #     pprint(mesh)
     #     p.add_mesh(mesh, color=[random.random(), random.random(), random.random()])
     # p.show(None)
+
+
+def test_multi_blade_row_save(pytestconfig):
+    machine = MBR(
+        turbogrid_location_type=PyTurboGrid.TurboGridLocationType.TURBOGRID_INSTALL,
+        turbogrid_path=pytestconfig.getoption("local_cfxtg_path"),
+        tg_kw_args=json.loads(pytestconfig.getoption("tg_kw_args")),
+    )
+
+    tginit_path = pathlib.PurePath(
+        os.path.join(install_path, "tests", "sfp", "RadTurbine.tginit")
+    ).as_posix()
+
+    machine.init_from_tginit(
+        tginit_path=tginit_path,
+        blade_rows_to_mesh=machine.get_blade_row_names_from_tginit(tginit_path),
+        tg_log_level=PyTurboGrid.TurboGridLogLevel[pytestconfig.getoption("client_log_level")],
+    )
+
+    for br_name, io_positions_dict in {
+        "IGV": {"outlet": [0.5, 0.5]},
+        "Main": {"outlet": [0.3, 0.3]},
+    }.items():
+        machine.set_inlet_outlet_parametric_positions(
+            br_name,
+            [],
+            io_positions_dict["outlet"],
+        )
+
+    original_mesh_stats = machine.get_mesh_statistics()
+    dict_result = machine.save_state()
+    print(dict_result)
+    save_path = os.path.join(install_path, "tests", "_testdata", "mbr_state.tst")
+    with open(save_path, "w", encoding="utf-8") as f:
+        f.write(json.dumps(dict_result))
+    machine.quit()
+
+    machine2 = MBR(
+        turbogrid_location_type=PyTurboGrid.TurboGridLocationType.TURBOGRID_INSTALL,
+        turbogrid_path=pytestconfig.getoption("local_cfxtg_path"),
+        tg_kw_args=json.loads(pytestconfig.getoption("tg_kw_args")),
+    )
+
+    machine2.init_from_state(str(save_path))
+    from_state_mesh_stats = machine2.get_mesh_statistics()
+
+    from deepdiff import DeepDiff
+    from pprint import pprint
+
+    print("original_mesh_stats")
+    pprint(original_mesh_stats)
+    print("from_state_mesh_stats")
+    pprint(from_state_mesh_stats)
+    diff = DeepDiff(original_mesh_stats, from_state_mesh_stats)
+    print(diff)
+    machine2.quit()
