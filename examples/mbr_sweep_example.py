@@ -22,7 +22,7 @@
 # SOFTWARE.
 
 """
-.. _multi_blade_row_example:
+.. _multi_blade_row_sweep_example:
 
 Multi blade row meshing example
 -------------------------------
@@ -42,6 +42,7 @@ import time
 
 install_path = pathlib.PurePath(__file__).parent.parent.as_posix()
 
+from ansys.turbogrid.core.multi_blade_row.multi_blade_row import MachineSizingStrategy
 from ansys.turbogrid.core.multi_blade_row.multi_blade_row import multi_blade_row as MBR
 
 all_face_areas = {}
@@ -56,18 +57,22 @@ all_element_counts = {}
 start_time = time.time()
 print(f"Start time: {time.asctime(time.localtime())}")
 machine = MBR()
-machine.init_from_ndf(f"{install_path}/tests/ndf/AxialFanMultiRow.ndf")
+machine.init_from_ndf(
+    f"{install_path}/tests/ndf/AxialFanMultiRow.ndf",
+    # use_existing_tginit_cad=True, # Use this if you've already generated the CAD
+)
 # machine.plot_machine()
 brs = machine.get_blade_row_names()
 original_face_areas = machine.get_average_base_face_areas()
 print(f"original_face_areas: {original_face_areas}")
+machine.plot_machine()
 
 #################################################################################
 # Set the sizing strategy for the machine
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # If this is omitted, the defaults for TurboGrid will be used.
 
-machine.set_machine_sizing_strategy(MBR.MachineSizingStrategy.MIN_FACE_AREA)
+machine.set_machine_sizing_strategy(MachineSizingStrategy.MIN_FACE_AREA)
 
 
 #################################################################################

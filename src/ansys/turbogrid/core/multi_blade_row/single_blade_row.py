@@ -32,9 +32,11 @@
 # Since SBRs are threads launched by the parent, they inherit from threading.Thread
 # Note that SBRs collect the public methods from the underlying PyTurboGrid objects
 
+from ansys.turbogrid.api.pyturbogrid_core import PyTurboGrid
+
 
 class single_blade_row:
-    pytg: any
+    pytg: PyTurboGrid
 
     def __init__(self):
         pass
