@@ -2403,19 +2403,19 @@ files = [
 
 [[package]]
 name = "notebook"
-version = "7.4.0"
+version = "7.4.2"
 description = "Jupyter Notebook - A web-based notebook environment for interactive computing"
 optional = false
 python-versions = ">=3.8"
 groups = ["doc"]
 files = [
-    {file = "notebook-7.4.0-py3-none-any.whl", hash = "sha256:005fd21f4db6093a7b739b17df5fe60597811adb07e8255f458db4035d208e3a"},
-    {file = "notebook-7.4.0.tar.gz", hash = "sha256:581d88f83709d90ce738dfd1d759892b96e3cbbc9c4a989912ed6c6a08f0d3e8"},
+    {file = "notebook-7.4.2-py3-none-any.whl", hash = "sha256:9ccef602721aaa5530852e3064710b8ae5415c4e2ce26f8896d0433222755259"},
+    {file = "notebook-7.4.2.tar.gz", hash = "sha256:e739defd28c3f615a6bfb0a2564bd75018a9cc6613aa00bbd9c15e68eed2de1b"},
 ]
 
 [package.dependencies]
 jupyter-server = ">=2.4.0,<3"
-jupyterlab = ">=4.4.0rc0,<4.5"
+jupyterlab = ">=4.4.0,<4.5"
 jupyterlab-server = ">=2.27.1,<3"
 notebook-shim = ">=0.2,<0.3"
 tornado = ">=6.2.0"
