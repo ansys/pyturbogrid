@@ -324,14 +324,22 @@ class multi_blade_row:
             ]
             concurrent.futures.wait(futures)
 
-    def init_from_tgmachine(self, tgmachine_path: str, tg_log_level):
+    def init_from_tgmachine(
+        self,
+        tgmachine_path: str,
+        tg_log_level: PyTurboGrid.TurboGridLogLevel = PyTurboGrid.TurboGridLogLevel.INFO,
+    ):
         """
         Initialize the MBR representation with a TGMachine file.
         Still under development
         """
         # print(f"init_from_tgmachine tgmachine_path = {tgmachine_path}")
-        tgmachine_file = open(tgmachine_path, "r")
-        machine_info = json.load(tgmachine_file)
+        with open(tgmachine_path, "r") as f:
+            lines = f.readlines()
+
+        json_lines = [line for line in lines if not line.lstrip().startswith("#")]
+        machine_info = json.loads("".join(json_lines))
+
         n_rows: int = machine_info["Number of Blade Rows"]
         interface_method: str = machine_info["Interface Method"]
         # print(f"   n_rows = {n_rows}")
