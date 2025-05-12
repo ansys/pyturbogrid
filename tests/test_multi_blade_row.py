@@ -119,3 +119,4 @@ def test_multi_blade_row_tgmachine(pytestconfig):
     # print(f"Blade Rows: {machine.get_blade_row_names()}")
     # print(f"Average Face Area: {machine.get_average_base_face_areas()}")
     # print(f"Mesh Stats: {machine.get_mesh_statistics()}")
+    assert all(value != 0.0 for value in machine.get_average_base_face_areas())
