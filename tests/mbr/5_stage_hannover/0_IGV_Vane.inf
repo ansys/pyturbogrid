@@ -1,7 +1,6 @@
-# By courtesy of University of Hannover
-# https://gitlab.uni-hannover.de/tfd_compressor_group/tfd-4ac_opentestcase
-# https://creativecommons.org/licenses/by/4.0/
-
+! By courtesy of University of Hannover
+! https://gitlab.uni-hannover.de/tfd_compressor_group/tfd-4ac_opentestcase
+! https://creativecommons.org/licenses/by/4.0/
 !======  CFX-BladeGen Export  ========
 Axis of Rotation: Z
 Number of Blade Sets: 26

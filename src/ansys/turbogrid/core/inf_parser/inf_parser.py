@@ -28,6 +28,9 @@ class INFParser:
         with open(filename, mode="r", encoding="utf-8") as file:
             lines = file.readlines()
             for line in lines:
+                # '!' is the comment marker for an inf file
+                if line.startswith("!"):
+                    continue
                 # An INF file will have information formatted like "Number of Blade Sets: 36"
                 if ":" in line:
                     split = line.split(":")
