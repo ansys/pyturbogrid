@@ -217,10 +217,11 @@ jobs:
           twine-username: "__token__"
           twine-token: ${{ secrets.PYPI_TOKEN }}
 
-      - name: "Release to GitHub"
-        uses: ansys/actions/release-github@v9
-        with:
-          library-name: ${{ env.LIBRARY_NAME }}
+      # This currently doesn't work and prevents doc-deploy-stable from running.
+      # - name: "Release to GitHub"
+      #   uses: ansys/actions/release-github@v9
+      #   with:
+      #     library-name: ${{ env.LIBRARY_NAME }}
 
   doc-deploy-dev:
     name: "Deploy development documentation"
