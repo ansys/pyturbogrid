@@ -1,0 +1,1731 @@
+[
+    {
+        "objectID": "api_reference/multi_blade_row",
+        "href": "api_reference/multi_blade_row.html#multi_blade_row",
+        "title": "multi_blade_row",
+        "section": "multi_blade_row",
+        "text": "Module for working on a multi blade row turbomachinery case using PyTurboGrid instances in parallel.\nClasses:\nMachineSizingStrategy(value)\nThese are machine sizing strategies that can be optionally applied using set_machine_sizing_strategy.\nmulti_blade_row([turbogrid_location_type, ...])\nThis class spawns multiple TG instances and can initialize and control an entire blade row at once.\nBases: IntEnum\nThese are machine sizing strategies that can be optionally applied using set_machine_sizing_strategy.\nBases: object\nThis class spawns multiple TG instances and can initialize and control an entire blade row at once.\nMethods:\n__init__([turbogrid_location_type, ...])\nInitialize the MBR object\nget_average_background_face_areas()\nQuery the background topology face areas for each blade row.\nget_average_base_face_areas()\nQuery the base topology face areas for each blade row.\nget_element_counts()\nQuery the element count for each blade row.\nget_local_gsf()\nQuery the blade-row-local global size factor for each blade row.\nget_mesh_statistics()\nText to be added\nget_mesh_statistics_histogram_data(...[, ...])\nText to be added\nget_spanwise_element_counts()\nQuery the number of spanwise elements for each blade row.\ninit_from_ndf(ndf_path[, ...])\nInitialize the MBR representation with an ndf file.\ninit_from_tgmachine(tgmachine_path[, ...])\nInitialize the MBR representation with a TGMachine file.\nplot_machine()\nDisplay the machine's mesh boundaries using pyvista.\nsave_meshes([optional_prefix])\nWrite out the .def files representing the entire blade row.\nset_global_size_factor(blade_row_name, ...)\nSet the blade-row-local global size factor for blade_row_name.\nset_machine_base_size_factors(size_factors)\nManual setting for per-blade-row sizings, and set the machine size factor to 1.0.\nset_machine_size_factor(size_factor)\nSet the entire machine's size factor.\nset_machine_sizing_strategy(strategy)\nSet the automatic machine sizing strategy for this machine.\nset_machine_target_node_count(target_node_count)\nInstead of size factors, a target node count can be specified.\nset_number_of_blade_sets(blade_row_name, ...)\nSet the number of blade sets for blade_row_name.\nInitialize the MBR object\nQuery the background topology face areas for each blade row.\nThis is TurboGrid specific information.\nQuery the base topology face areas for each blade row.\nThis is TurboGrid specific information.\nQuery the element count for each blade row.\nQuery the blade-row-local global size factor for each blade row.\nText to be added\nText to be added\nQuery the number of spanwise elements for each blade row.\nInitialize the MBR representation with an ndf file.\nThe file must be compatible with TurboGrid import ndf.\nInitialize the MBR representation with a TGMachine file.\nStill under development\nDisplay the machine’s mesh boundaries using pyvista.\nExperimental.\nWrite out the .def files representing the entire blade row.\nBlade rows that threw errors will not write meshes (check the logs.)\nThe assembly can be opened directly in CFX-Pre (Meshes contain some topology.)\nSet the blade-row-local global size factor for blade_row_name.\nManual setting for per-blade-row sizings, and set the machine size factor to 1.0.\nSet the entire machine’s size factor. Higher means more (and smaller) elements.\nSet the automatic machine sizing strategy for this machine.\nThe machine simulation must be initialized already.\nInstead of size factors, a target node count can be specified.\nLess robust but more predictable than using a size factor.\nCount must be over 50,000, and a count too high may be problematic.\nSet the number of blade sets for blade_row_name.\nmulti_blade_row\nMachineSizingStrategy\nmulti_blade_row\nIntEnum\nobject\n__init__\nget_average_background_face_areas\nget_average_base_face_areas\nget_element_counts\nget_local_gsf\nget_mesh_statistics\nget_mesh_statistics_histogram_data\nget_spanwise_element_counts\ninit_from_ndf\ninit_from_tgmachine\nplot_machine\nsave_meshes\nset_global_size_factor\nset_machine_base_size_factors\nset_machine_size_factor\nset_machine_sizing_strategy\nset_machine_target_node_count\nset_number_of_blade_sets"
+    },
+    {
+        "objectID": "api_reference/multi_blade_row",
+        "href": "api_reference/multi_blade_row.html#ansys.turbogrid.core.multi_blade_row.multi_blade_row.MachineSizingStrategy",
+        "title": "multi_blade_row > multi_blade_row > MachineSizingStrategy",
+        "section": "multi_blade_row > MachineSizingStrategy",
+        "text": "class ansys.turbogrid.core.multi_blade_row.multi_blade_row.MachineSizingStrategy(value)\n\nBases: IntEnum\n\nThese are machine sizing strategies that can be optionally applied using set_machine_sizing_strategy."
+    },
+    {
+        "objectID": "api_reference/multi_blade_row",
+        "href": "api_reference/multi_blade_row.html#ansys.turbogrid.core.multi_blade_row.multi_blade_row.multi_blade_row",
+        "title": "multi_blade_row > multi_blade_row > multi_blade_row",
+        "section": "multi_blade_row > multi_blade_row",
+        "text": "class ansys.turbogrid.core.multi_blade_row.multi_blade_row.multi_blade_row(turbogrid_location_type=TurboGridLocationType.TURBOGRID_INSTALL, tg_container_launch_settings: dict[str, str] = {}, turbogrid_path: str | None = None, tg_kw_args={})\n\nBases: object\n\nThis class spawns multiple TG instances and can initialize and control an entire blade row at once.\n\nMethods:\n\n\n\n\n\n\n\n__init__([turbogrid_location_type, ...])\n\nInitialize the MBR object\n\nget_average_background_face_areas()\n\nQuery the background topology face areas for each blade row.\n\nget_average_base_face_areas()\n\nQuery the base topology face areas for each blade row.\n\nget_element_counts()\n\nQuery the element count for each blade row.\n\nget_local_gsf()\n\nQuery the blade-row-local global size factor for each blade row.\n\nget_mesh_statistics()\n\nText to be added\n\nget_mesh_statistics_histogram_data(...[, ...])\n\nText to be added\n\nget_spanwise_element_counts()\n\nQuery the number of spanwise elements for each blade row.\n\ninit_from_ndf(ndf_path[, ...])\n\nInitialize the MBR representation with an ndf file.\n\ninit_from_tgmachine(tgmachine_path[, ...])\n\nInitialize the MBR representation with a TGMachine file.\n\nplot_machine()\n\nDisplay the machine's mesh boundaries using pyvista.\n\nsave_meshes([optional_prefix])\n\nWrite out the .def files representing the entire blade row.\n\nset_global_size_factor(blade_row_name, ...)\n\nSet the blade-row-local global size factor for blade_row_name.\n\nset_machine_base_size_factors(size_factors)\n\nManual setting for per-blade-row sizings, and set the machine size factor to 1.0.\n\nset_machine_size_factor(size_factor)\n\nSet the entire machine's size factor.\n\nset_machine_sizing_strategy(strategy)\n\nSet the automatic machine sizing strategy for this machine.\n\nset_machine_target_node_count(target_node_count)\n\nInstead of size factors, a target node count can be specified.\n\nset_number_of_blade_sets(blade_row_name, ...)\n\nSet the number of blade sets for blade_row_name.\n\n\n\n__init__(turbogrid_location_type=TurboGridLocationType.TURBOGRID_INSTALL, tg_container_launch_settings: dict[str, str] = {}, turbogrid_path: str | None = None, tg_kw_args={})\n\nInitialize the MBR object\n\n\n\nget_average_background_face_areas() -> dict\n\nQuery the background topology face areas for each blade row.\nThis is TurboGrid specific information.\n\n\n\nget_average_base_face_areas() -> dict\n\nQuery the base topology face areas for each blade row.\nThis is TurboGrid specific information.\n\n\n\nget_element_counts() -> dict\n\nQuery the element count for each blade row.\n\n\n\nget_local_gsf() -> dict\n\nQuery the blade-row-local global size factor for each blade row.\n\n\n\nget_mesh_statistics() -> dict[str, any]\n\nText to be added\n\n\n\nget_mesh_statistics_histogram_data(target_statistic: str, custom_bin_limits: list | None = None, custom_bin_units: str | None = None) -> dict[str, any]\n\nText to be added\n\n\n\nget_spanwise_element_counts() -> dict\n\nQuery the number of spanwise elements for each blade row.\n\n\n\ninit_from_ndf(ndf_path: str, use_existing_tginit_cad: bool = False, tg_log_level: TurboGridLogLevel = TurboGridLogLevel.INFO)\n\nInitialize the MBR representation with an ndf file.\nThe file must be compatible with TurboGrid import ndf.\n\n\n\ninit_from_tgmachine(tgmachine_path: str, tg_log_level: TurboGridLogLevel = TurboGridLogLevel.INFO)\n\nInitialize the MBR representation with a TGMachine file.\nStill under development\n\n\n\nplot_machine()\n\nDisplay the machine’s mesh boundaries using pyvista.\nExperimental.\n\n\n\nsave_meshes(optional_prefix: str | None = None)\n\nWrite out the .def files representing the entire blade row.\nBlade rows that threw errors will not write meshes (check the logs.)\nThe assembly can be opened directly in CFX-Pre (Meshes contain some topology.)\n\n\n\nset_global_size_factor(blade_row_name: str, size_factor: float)\n\nSet the blade-row-local global size factor for blade_row_name.\n\n\n\nset_machine_base_size_factors(size_factors: dict[str, float])\n\nManual setting for per-blade-row sizings, and set the machine size factor to 1.0.\n\n\n\nset_machine_size_factor(size_factor: float)\n\nSet the entire machine’s size factor. Higher means more (and smaller) elements.\n\n\n\nset_machine_sizing_strategy(strategy: MachineSizingStrategy)\n\nSet the automatic machine sizing strategy for this machine.\nThe machine simulation must be initialized already.\n\n\n\nset_machine_target_node_count(target_node_count: int)\n\nInstead of size factors, a target node count can be specified.\nLess robust but more predictable than using a size factor.\nCount must be over 50,000, and a count too high may be problematic.\n\n\n\nset_number_of_blade_sets(blade_row_name: str, number_of_blade_sets: int)\n\nSet the number of blade sets for blade_row_name."
+    },
+    {
+        "objectID": "api_reference/multi_blade_row",
+        "href": "api_reference/multi_blade_row.html#ansys.turbogrid.core.multi_blade_row.multi_blade_row.multi_blade_row.__init__",
+        "title": "multi_blade_row > multi_blade_row > __init__",
+        "section": "multi_blade_row > __init__",
+        "text": "__init__(turbogrid_location_type=TurboGridLocationType.TURBOGRID_INSTALL, tg_container_launch_settings: dict[str, str] = {}, turbogrid_path: str | None = None, tg_kw_args={})\n\nInitialize the MBR object"
+    },
+    {
+        "objectID": "api_reference/multi_blade_row",
+        "href": "api_reference/multi_blade_row.html#ansys.turbogrid.core.multi_blade_row.multi_blade_row.multi_blade_row.get_average_background_face_areas",
+        "title": "multi_blade_row > multi_blade_row > get_average_background_face_areas",
+        "section": "multi_blade_row > get_average_background_face_areas",
+        "text": "get_average_background_face_areas() -> dict\n\nQuery the background topology face areas for each blade row.\nThis is TurboGrid specific information."
+    },
+    {
+        "objectID": "api_reference/multi_blade_row",
+        "href": "api_reference/multi_blade_row.html#ansys.turbogrid.core.multi_blade_row.multi_blade_row.multi_blade_row.get_average_base_face_areas",
+        "title": "multi_blade_row > multi_blade_row > get_average_base_face_areas",
+        "section": "multi_blade_row > get_average_base_face_areas",
+        "text": "get_average_base_face_areas() -> dict\n\nQuery the base topology face areas for each blade row.\nThis is TurboGrid specific information."
+    },
+    {
+        "objectID": "api_reference/multi_blade_row",
+        "href": "api_reference/multi_blade_row.html#ansys.turbogrid.core.multi_blade_row.multi_blade_row.multi_blade_row.get_element_counts",
+        "title": "multi_blade_row > multi_blade_row > get_element_counts",
+        "section": "multi_blade_row > get_element_counts",
+        "text": "get_element_counts() -> dict\n\nQuery the element count for each blade row."
+    },
+    {
+        "objectID": "api_reference/multi_blade_row",
+        "href": "api_reference/multi_blade_row.html#ansys.turbogrid.core.multi_blade_row.multi_blade_row.multi_blade_row.get_local_gsf",
+        "title": "multi_blade_row > multi_blade_row > get_local_gsf",
+        "section": "multi_blade_row > get_local_gsf",
+        "text": "get_local_gsf() -> dict\n\nQuery the blade-row-local global size factor for each blade row."
+    },
+    {
+        "objectID": "api_reference/multi_blade_row",
+        "href": "api_reference/multi_blade_row.html#ansys.turbogrid.core.multi_blade_row.multi_blade_row.multi_blade_row.get_mesh_statistics",
+        "title": "multi_blade_row > multi_blade_row > get_mesh_statistics",
+        "section": "multi_blade_row > get_mesh_statistics",
+        "text": "get_mesh_statistics() -> dict[str, any]\n\nText to be added"
+    },
+    {
+        "objectID": "api_reference/multi_blade_row",
+        "href": "api_reference/multi_blade_row.html#ansys.turbogrid.core.multi_blade_row.multi_blade_row.multi_blade_row.get_mesh_statistics_histogram_data",
+        "title": "multi_blade_row > multi_blade_row > get_mesh_statistics_histogram_data",
+        "section": "multi_blade_row > get_mesh_statistics_histogram_data",
+        "text": "get_mesh_statistics_histogram_data(target_statistic: str, custom_bin_limits: list | None = None, custom_bin_units: str | None = None) -> dict[str, any]\n\nText to be added"
+    },
+    {
+        "objectID": "api_reference/multi_blade_row",
+        "href": "api_reference/multi_blade_row.html#ansys.turbogrid.core.multi_blade_row.multi_blade_row.multi_blade_row.get_spanwise_element_counts",
+        "title": "multi_blade_row > multi_blade_row > get_spanwise_element_counts",
+        "section": "multi_blade_row > get_spanwise_element_counts",
+        "text": "get_spanwise_element_counts() -> dict\n\nQuery the number of spanwise elements for each blade row."
+    },
+    {
+        "objectID": "api_reference/multi_blade_row",
+        "href": "api_reference/multi_blade_row.html#ansys.turbogrid.core.multi_blade_row.multi_blade_row.multi_blade_row.init_from_ndf",
+        "title": "multi_blade_row > multi_blade_row > init_from_ndf",
+        "section": "multi_blade_row > init_from_ndf",
+        "text": "init_from_ndf(ndf_path: str, use_existing_tginit_cad: bool = False, tg_log_level: TurboGridLogLevel = TurboGridLogLevel.INFO)\n\nInitialize the MBR representation with an ndf file.\nThe file must be compatible with TurboGrid import ndf."
+    },
+    {
+        "objectID": "api_reference/multi_blade_row",
+        "href": "api_reference/multi_blade_row.html#ansys.turbogrid.core.multi_blade_row.multi_blade_row.multi_blade_row.init_from_tgmachine",
+        "title": "multi_blade_row > multi_blade_row > init_from_tgmachine",
+        "section": "multi_blade_row > init_from_tgmachine",
+        "text": "init_from_tgmachine(tgmachine_path: str, tg_log_level: TurboGridLogLevel = TurboGridLogLevel.INFO)\n\nInitialize the MBR representation with a TGMachine file.\nStill under development"
+    },
+    {
+        "objectID": "api_reference/multi_blade_row",
+        "href": "api_reference/multi_blade_row.html#ansys.turbogrid.core.multi_blade_row.multi_blade_row.multi_blade_row.plot_machine",
+        "title": "multi_blade_row > multi_blade_row > plot_machine",
+        "section": "multi_blade_row > plot_machine",
+        "text": "plot_machine()\n\nDisplay the machine’s mesh boundaries using pyvista.\nExperimental."
+    },
+    {
+        "objectID": "api_reference/multi_blade_row",
+        "href": "api_reference/multi_blade_row.html#ansys.turbogrid.core.multi_blade_row.multi_blade_row.multi_blade_row.save_meshes",
+        "title": "multi_blade_row > multi_blade_row > save_meshes",
+        "section": "multi_blade_row > save_meshes",
+        "text": "save_meshes(optional_prefix: str | None = None)\n\nWrite out the .def files representing the entire blade row.\nBlade rows that threw errors will not write meshes (check the logs.)\nThe assembly can be opened directly in CFX-Pre (Meshes contain some topology.)"
+    },
+    {
+        "objectID": "api_reference/multi_blade_row",
+        "href": "api_reference/multi_blade_row.html#ansys.turbogrid.core.multi_blade_row.multi_blade_row.multi_blade_row.set_global_size_factor",
+        "title": "multi_blade_row > multi_blade_row > set_global_size_factor",
+        "section": "multi_blade_row > set_global_size_factor",
+        "text": "set_global_size_factor(blade_row_name: str, size_factor: float)\n\nSet the blade-row-local global size factor for blade_row_name."
+    },
+    {
+        "objectID": "api_reference/multi_blade_row",
+        "href": "api_reference/multi_blade_row.html#ansys.turbogrid.core.multi_blade_row.multi_blade_row.multi_blade_row.set_machine_base_size_factors",
+        "title": "multi_blade_row > multi_blade_row > set_machine_base_size_factors",
+        "section": "multi_blade_row > set_machine_base_size_factors",
+        "text": "set_machine_base_size_factors(size_factors: dict[str, float])\n\nManual setting for per-blade-row sizings, and set the machine size factor to 1.0."
+    },
+    {
+        "objectID": "api_reference/multi_blade_row",
+        "href": "api_reference/multi_blade_row.html#ansys.turbogrid.core.multi_blade_row.multi_blade_row.multi_blade_row.set_machine_size_factor",
+        "title": "multi_blade_row > multi_blade_row > set_machine_size_factor",
+        "section": "multi_blade_row > set_machine_size_factor",
+        "text": "set_machine_size_factor(size_factor: float)\n\nSet the entire machine’s size factor. Higher means more (and smaller) elements."
+    },
+    {
+        "objectID": "api_reference/multi_blade_row",
+        "href": "api_reference/multi_blade_row.html#ansys.turbogrid.core.multi_blade_row.multi_blade_row.multi_blade_row.set_machine_sizing_strategy",
+        "title": "multi_blade_row > multi_blade_row > set_machine_sizing_strategy",
+        "section": "multi_blade_row > set_machine_sizing_strategy",
+        "text": "set_machine_sizing_strategy(strategy: MachineSizingStrategy)\n\nSet the automatic machine sizing strategy for this machine.\nThe machine simulation must be initialized already."
+    },
+    {
+        "objectID": "api_reference/multi_blade_row",
+        "href": "api_reference/multi_blade_row.html#ansys.turbogrid.core.multi_blade_row.multi_blade_row.multi_blade_row.set_machine_target_node_count",
+        "title": "multi_blade_row > multi_blade_row > set_machine_target_node_count",
+        "section": "multi_blade_row > set_machine_target_node_count",
+        "text": "set_machine_target_node_count(target_node_count: int)\n\nInstead of size factors, a target node count can be specified.\nLess robust but more predictable than using a size factor.\nCount must be over 50,000, and a count too high may be problematic."
+    },
+    {
+        "objectID": "api_reference/multi_blade_row",
+        "href": "api_reference/multi_blade_row.html#ansys.turbogrid.core.multi_blade_row.multi_blade_row.multi_blade_row.set_number_of_blade_sets",
+        "title": "multi_blade_row > multi_blade_row > set_number_of_blade_sets",
+        "section": "multi_blade_row > set_number_of_blade_sets",
+        "text": "set_number_of_blade_sets(blade_row_name: str, number_of_blade_sets: int)\n\nSet the number of blade sets for blade_row_name."
+    },
+    {
+        "objectID": "api_reference/multi_blade_row",
+        "href": "api_reference/multi_blade_row.html#description",
+        "title": "multi_blade_row > Description",
+        "section": "Description",
+        "text": "set_global_size_factor\nset_machine_base_size_factors\nset_machine_size_factor\nset_machine_target_node_count\nThis strategy attempts to size each blade row so that the element sizes are all equal,\nby using the blade row with the smallest face area as the target.\nThis is the most robust strategy, although can result in many elements for the larger blade rows,\nand if the blade row is too large, the sizing may be huge.\nDescription"
+    },
+    {
+        "objectID": "api_reference/multi_blade_row",
+        "href": "api_reference/multi_blade_row.html#parameters",
+        "title": "multi_blade_row > Parameters",
+        "section": "Parameters",
+        "text": "For container/cloud operation, this can be changed. Generally only used by devs/github.\nFor dev usage.\nOptional specifying for cfxtg path. Otherwise, launcher will attempt to find it automatically.\nParameters\nTURBOGRID_INSTALL\n{}\nNone"
+    },
+    {
+        "objectID": "api_reference/multi_blade_row",
+        "href": "api_reference/multi_blade_row.html#parameters",
+        "title": "multi_blade_row > Parameters",
+        "section": "Parameters",
+        "text": "The full absolute path and file name for the ndf file.\nIf true, a .tginit and .x_b file with the same name as the ndf_path will be used.\nIf false, TG will (re)generate these files.\nLogging settings for the underlying TG instances.\nThe log_filename_suffix will be the ndf file name, and the flowpath for the worker instances.\nParameters\nFalse\nINFO"
+    },
+    {
+        "objectID": "api_reference/ndf_parser",
+        "href": "api_reference/ndf_parser.html#ndf_parser",
+        "title": "ndf_parser",
+        "section": "ndf_parser",
+        "text": "Module for facilitating parsing on NDF file.\nClasses:\nNDFParser(ndf_file_full_name)\nFacilitates parsing of NDF file and finding various details about the blade rows.\nBases: object\nFacilitates parsing of NDF file and finding various details about the blade rows.\nMethods:\n__init__(ndf_file_full_name)\nInitialize the class using name with full path of an NDF file.\nget_blade_row_blades()\nGet the name of the blade rows and blades in each row.\nInitialize the class using name with full path of an NDF file.\nGet the name of the blade rows and blades in each row.\nndf_parser\nNDFParser\nobject\n__init__\nget_blade_row_blades"
+    },
+    {
+        "objectID": "api_reference/ndf_parser",
+        "href": "api_reference/ndf_parser.html#ansys.turbogrid.core.ndf_parser.ndf_parser.NDFParser",
+        "title": "ndf_parser > ndf_parser > NDFParser",
+        "section": "ndf_parser > NDFParser",
+        "text": "class ansys.turbogrid.core.ndf_parser.ndf_parser.NDFParser(ndf_file_full_name: str)\n\nBases: object\n\nFacilitates parsing of NDF file and finding various details about the blade rows.\n\nMethods:\n\n\n\n\n\n\n\n__init__(ndf_file_full_name)\n\nInitialize the class using name with full path of an NDF file.\n\nget_blade_row_blades()\n\nGet the name of the blade rows and blades in each row.\n\n\n\n__init__(ndf_file_full_name: str)\n\nInitialize the class using name with full path of an NDF file.\n\n\n\nget_blade_row_blades() -> dict\n\nGet the name of the blade rows and blades in each row."
+    },
+    {
+        "objectID": "api_reference/ndf_parser",
+        "href": "api_reference/ndf_parser.html#ansys.turbogrid.core.ndf_parser.ndf_parser.NDFParser.__init__",
+        "title": "ndf_parser > ndf_parser > __init__",
+        "section": "ndf_parser > __init__",
+        "text": "__init__(ndf_file_full_name: str)\n\nInitialize the class using name with full path of an NDF file."
+    },
+    {
+        "objectID": "api_reference/ndf_parser",
+        "href": "api_reference/ndf_parser.html#ansys.turbogrid.core.ndf_parser.ndf_parser.NDFParser.get_blade_row_blades",
+        "title": "ndf_parser > ndf_parser > get_blade_row_blades",
+        "section": "ndf_parser > get_blade_row_blades",
+        "text": "get_blade_row_blades() -> dict\n\nGet the name of the blade rows and blades in each row."
+    },
+    {
+        "objectID": "api_reference/ndf_parser",
+        "href": "api_reference/ndf_parser.html#parameters",
+        "title": "ndf_parser > Parameters",
+        "section": "Parameters",
+        "text": "Name with full path of the NDF file to be parsed.\nParameters"
+    },
+    {
+        "objectID": "api_reference/ndf_parser",
+        "href": "api_reference/ndf_parser.html#returns",
+        "title": "ndf_parser > Returns",
+        "section": "Returns",
+        "text": "The names of the blade rows and blade in each row return in the form:\n{ “bladerow1” : [“blade1”, ], “bladerow2” : [“blade2”, “splitter1”, ], … }\nIf a blade row has no name in the NDF file, a name in the form “bladerowIndex”\nwill be assigned where Index is the position of the row in the NDF file among the\nrows starting at position 1.\nReturns"
+    },
+    {
+        "objectID": "examples/index",
+        "href": "examples/index.html#examples",
+        "title": "Examples",
+        "section": "Examples",
+        "text": "These examples show how you use PyTurboGrid. If PyTurboGrid is\ninstalled on your machine, you can download these examples as Python files\nor Jupyter notebooks and run them locally.\nsphx_glr_examples_basic_read_inf_rotor37.py\nsphx_glr_examples_mbr_from_tginit_example.py\nsphx_glr_examples_mbr_sweep_example.py\nsphx_glr_examples_mesh_statistics_report.py\nsphx_glr_examples_multi_blade_row_batch_example.py\nDownload all examples in Python source code: examples_python.zip\nDownload all examples in Jupyter notebooks: examples_jupyter.zip\nGallery generated by Sphinx-Gallery\nExamples\nDownload all examples in Python source code: examples_python.zip\nDownload all examples in Jupyter notebooks: examples_jupyter.zip"
+    },
+    {
+        "objectID": "api_reference/launcher",
+        "href": "api_reference/launcher.html#launcher",
+        "title": "launcher",
+        "section": "launcher",
+        "text": "Module for launching a local instance of Ansys TurboGrid.\nClasses:\nTurboGridVersion(value)\nProvide an enumeration over supported TurboGrid versions.\nFunctions:\nget_latest_ansys_version()\nGet the latest installed Ansys version from AWP_ROOTxxx environment variables.\nget_turbogrid_exe_path(**launch_argvals)\nGet the path to a local installation of TurboGrid.\nlaunch_turbogrid([product_version, ...])\nLaunch TurboGrid locally in server mode.\nlaunch_turbogrid_ansys_labs([...])\nLaunch TurboGrid from within the Ansys Labs environment.\nlaunch_turbogrid_container(...)\n\nBases: Enum\nProvide an enumeration over supported TurboGrid versions.\nAttributes:\nversion_23R2\n\nversion_24R1\n\nversion_24R2\n\nversion_25R1\n\nversion_25R2\n\nGet the latest installed Ansys version from AWP_ROOTxxx environment variables.\nThe xxx is the three-digit Ansys version. For example, the AWP_ROOT232\nenvironment variable specifies the path to the directory where Ansys 2023 R2\nis installed. If Ansys 2023 R2 is installed in the default directory on Windows,\nthe value for this environment variable is C:\\Program Files\\ANSYS Inc\\v232.\nGet the path to a local installation of TurboGrid.\nThe path is obtained by searching in this order:\nThe path specified by the turbogrid_path parameter from launch_argvals.\nThe path specified by the PYTURBOGRID_TURBOGRID_ROOT environment variable.\nThe path of the TurboGrid installation specified by the product_version parameter\nfrom launch_argvals, using the corresponding AWP_ROOTxxx environment variable.\nThe path of the TurboGrid installation from the AWP_ROOTxxx environment variable for\nthe latest installed Ansys version.\nLaunch TurboGrid locally in server mode.\nLaunch TurboGrid from within the Ansys Labs environment.\nlauncher\nTurboGridVersion\nget_latest_ansys_version\nAWP_ROOTxxx\nget_turbogrid_exe_path\nlaunch_turbogrid\nlaunch_turbogrid_ansys_labs\nlaunch_turbogrid_container\nEnum\nversion_23R2\nversion_24R1\nversion_24R2\nversion_25R1\nversion_25R2\nAWP_ROOTxxx\nxxx\nAWP_ROOT232\nC:\\Program Files\\ANSYS Inc\\v232\nturbogrid_path\nlaunch_argvals\nPYTURBOGRID_TURBOGRID_ROOT\nproduct_version\nlaunch_argvals\nAWP_ROOTxxx\nAWP_ROOTxxx"
+    },
+    {
+        "objectID": "api_reference/launcher",
+        "href": "api_reference/launcher.html#ansys.turbogrid.core.launcher.launcher.TurboGridVersion",
+        "title": "launcher > launcher > TurboGridVersion",
+        "section": "launcher > TurboGridVersion",
+        "text": "class ansys.turbogrid.core.launcher.launcher.TurboGridVersion(value)\n\nBases: Enum\n\nProvide an enumeration over supported TurboGrid versions.\n\nAttributes:\n\n\n\n\n\n\n\nversion_23R2\n\n\n\nversion_24R1\n\n\n\nversion_24R2\n\n\n\nversion_25R1\n\n\n\nversion_25R2\n\n\n\n\n\nversion_23R2 = '23.2.0'\n\n\n\n\n\nversion_24R1 = '24.1.0'\n\n\n\n\n\nversion_24R2 = '24.2.0'\n\n\n\n\n\nversion_25R1 = '25.1.0'\n\n\n\n\n\nversion_25R2 = '25.2.0'\n\n"
+    },
+    {
+        "objectID": "api_reference/launcher",
+        "href": "api_reference/launcher.html#ansys.turbogrid.core.launcher.launcher.TurboGridVersion.version_23R2",
+        "title": "launcher > launcher > version_23R2",
+        "section": "launcher > version_23R2",
+        "text": "version_23R2 = '23.2.0'\n\n"
+    },
+    {
+        "objectID": "api_reference/launcher",
+        "href": "api_reference/launcher.html#ansys.turbogrid.core.launcher.launcher.TurboGridVersion.version_24R1",
+        "title": "launcher > launcher > version_24R1",
+        "section": "launcher > version_24R1",
+        "text": "version_24R1 = '24.1.0'\n\n"
+    },
+    {
+        "objectID": "api_reference/launcher",
+        "href": "api_reference/launcher.html#ansys.turbogrid.core.launcher.launcher.TurboGridVersion.version_24R2",
+        "title": "launcher > launcher > version_24R2",
+        "section": "launcher > version_24R2",
+        "text": "version_24R2 = '24.2.0'\n\n"
+    },
+    {
+        "objectID": "api_reference/launcher",
+        "href": "api_reference/launcher.html#ansys.turbogrid.core.launcher.launcher.TurboGridVersion.version_25R1",
+        "title": "launcher > launcher > version_25R1",
+        "section": "launcher > version_25R1",
+        "text": "version_25R1 = '25.1.0'\n\n"
+    },
+    {
+        "objectID": "api_reference/launcher",
+        "href": "api_reference/launcher.html#ansys.turbogrid.core.launcher.launcher.TurboGridVersion.version_25R2",
+        "title": "launcher > launcher > version_25R2",
+        "section": "launcher > version_25R2",
+        "text": "version_25R2 = '25.2.0'\n\n"
+    },
+    {
+        "objectID": "api_reference/launcher",
+        "href": "api_reference/launcher.html#ansys.turbogrid.core.launcher.launcher.get_latest_ansys_version",
+        "title": "launcher > launcher > get_latest_ansys_version",
+        "section": "launcher > get_latest_ansys_version",
+        "text": "ansys.turbogrid.core.launcher.launcher.get_latest_ansys_version() -> str\n\nGet the latest installed Ansys version from AWP_ROOTxxx environment variables.\n\nThe xxx is the three-digit Ansys version. For example, the AWP_ROOT232\nenvironment variable specifies the path to the directory where Ansys 2023 R2\nis installed. If Ansys 2023 R2 is installed in the default directory on Windows,\nthe value for this environment variable is C:\\Program Files\\ANSYS Inc\\v232."
+    },
+    {
+        "objectID": "api_reference/launcher",
+        "href": "api_reference/launcher.html#ansys.turbogrid.core.launcher.launcher.get_turbogrid_exe_path",
+        "title": "launcher > launcher > get_turbogrid_exe_path",
+        "section": "launcher > get_turbogrid_exe_path",
+        "text": "ansys.turbogrid.core.launcher.launcher.get_turbogrid_exe_path(**launch_argvals) -> Path\n\nGet the path to a local installation of TurboGrid.\n\nThe path is obtained by searching in this order:\n\nThe path specified by the turbogrid_path parameter from launch_argvals.\n\nThe path specified by the PYTURBOGRID_TURBOGRID_ROOT environment variable.\n\nThe path of the TurboGrid installation specified by the product_version parameter\nfrom launch_argvals, using the corresponding AWP_ROOTxxx environment variable.\n\nThe path of the TurboGrid installation from the AWP_ROOTxxx environment variable for\nthe latest installed Ansys version."
+    },
+    {
+        "objectID": "api_reference/launcher",
+        "href": "api_reference/launcher.html#ansys.turbogrid.core.launcher.launcher.launch_turbogrid",
+        "title": "launcher > launcher > launch_turbogrid",
+        "section": "launcher > launch_turbogrid",
+        "text": "ansys.turbogrid.core.launcher.launcher.launch_turbogrid(product_version: str | None = None, turbogrid_path: str | None = None, log_level: TurboGridLogLevel = TurboGridLogLevel.INFO, turbogrid_location_type=TurboGridLocationType.TURBOGRID_INSTALL, additional_args_str: str | None = None, additional_kw_args: dict | None = None, port: int | None = None, host: str = '127.0.0.1', log_filename_suffix: str = '', **kwargs) -> PyTurboGrid\n\nLaunch TurboGrid locally in server mode."
+    },
+    {
+        "objectID": "api_reference/launcher",
+        "href": "api_reference/launcher.html#ansys.turbogrid.core.launcher.launcher.launch_turbogrid_ansys_labs",
+        "title": "launcher > launcher > launch_turbogrid_ansys_labs",
+        "section": "launcher > launch_turbogrid_ansys_labs",
+        "text": "ansys.turbogrid.core.launcher.launcher.launch_turbogrid_ansys_labs(product_version: str = 'latest', log_level: TurboGridLogLevel = TurboGridLogLevel.INFO) -> PyTurboGrid\n\nLaunch TurboGrid from within the Ansys Labs environment."
+    },
+    {
+        "objectID": "api_reference/launcher",
+        "href": "api_reference/launcher.html#ansys.turbogrid.core.launcher.launcher.launch_turbogrid_container",
+        "title": "launcher > launcher > launch_turbogrid_container",
+        "section": "launcher > launch_turbogrid_container",
+        "text": "ansys.turbogrid.core.launcher.launcher.launch_turbogrid_container(cfxtg_command_name, image_name, container_name, cfx_version, license_file, keep_stopped_containers, container_env_dict) -> deployed_tg_container\n\n"
+    },
+    {
+        "objectID": "api_reference/launcher",
+        "href": "api_reference/launcher.html#returns",
+        "title": "launcher > Returns",
+        "section": "Returns",
+        "text": "Latest installed Ansys version in this format: \"23.2.0\".\nReturns\n\"23.2.0\""
+    },
+    {
+        "objectID": "api_reference/launcher",
+        "href": "api_reference/launcher.html#returns",
+        "title": "launcher > Returns",
+        "section": "Returns",
+        "text": "Path of a local TurboGrid installation.\nReturns"
+    },
+    {
+        "objectID": "api_reference/launcher",
+        "href": "api_reference/launcher.html#parameters",
+        "title": "launcher > Parameters",
+        "section": "Parameters",
+        "text": "Version of TurboGrid to use in the numeric format. For example, \"23.2.0\"\nfor 2023 R2. The default is None, in which case the latest installed\nversion is used.\nPath to the cfxtg command for starting TurboGrid. The default is None,\nin which case the value for the product_version parameter is used.\nLevel of logging information written to the terminal. The default is INFO.\nOptions are INFO, WARNING, ERROR, CRITICAL, and DEBUG.\nThis setting also affects the level of output that is written to the log files.\nAdditional arguments to send to TurboGrid.\nAdditional arguments to send to TurboGrid.\nPort for TurboGrid communications. The default is None, in which case\nan available port is automatically selected.\nHost for TurboGrid communications. The default is 127.0.0.1, or the local host\nSuffix for name of the log files written out.\nParameters\nNone\n\"23.2.0\"\nNone\nNone\ncfxtg\nNone\nproduct_version\nINFO\nINFO\nINFO\nWARNING\nERROR\nCRITICAL\nDEBUG\nNone\nNone\nNone\nNone\n127.0.0.1 (this is the local host IP for windows and linux)\n127.0.0.1, or the local host"
+    },
+    {
+        "objectID": "api_reference/launcher",
+        "href": "api_reference/launcher.html#returns",
+        "title": "launcher > Returns",
+        "section": "Returns",
+        "text": "TurboGrid session.\nReturns"
+    },
+    {
+        "objectID": "api_reference/launcher",
+        "href": "api_reference/launcher.html#parameters",
+        "title": "launcher > Parameters",
+        "section": "Parameters",
+        "text": "Version of TurboGrid to launch in the Ansys Labs environment. Only certain versions are supported.\nLevel of logging information written to the terminal. The default is INFO.\nOptions are INFO, WARNING, ERROR, CRITICAL, and DEBUG.\nThis setting also affects the level of output that is written to the log files.\nParameters\nlatest\nINFO\nINFO\nINFO\nWARNING\nERROR\nCRITICAL\nDEBUG"
+    },
+    {
+        "objectID": "api_reference/launcher",
+        "href": "api_reference/launcher.html#returns",
+        "title": "launcher > Returns",
+        "section": "Returns",
+        "text": "TurboGrid session.\nReturns"
+    },
+    {
+        "objectID": "examples/mbr_from_tginit_example",
+        "href": "examples/mbr_from_tginit_example.html#multi-blade-row-meshing-example",
+        "title": "Multi blade row meshing example",
+        "section": "Multi blade row meshing example",
+        "text": "This basic example shows how to set up a multi blade row meshing instance and execute it in parallel.\nMulti blade row meshing example"
+    },
+    {
+        "objectID": "examples/mbr_from_tginit_example",
+        "href": "examples/mbr_from_tginit_example.html#perform-required-imports",
+        "title": "Multi blade row meshing example > Perform required imports",
+        "section": "Perform required imports",
+        "text": "Perform the required imports. It is assumed that the ansys-turbogrid-core\npackage has been installed.\nPerform required imports\nansys-turbogrid-core"
+    },
+    {
+        "objectID": "examples/mbr_from_tginit_example",
+        "href": "examples/mbr_from_tginit_example.html#create-a-multi_blade_row-and-initialize-it",
+        "title": "Multi blade row meshing example > Create a multi_blade_row and initialize it",
+        "section": "Create a multi_blade_row and initialize it",
+        "text": "Use the Concepts NREC sample provided.\nDownload Jupyter notebook: mbr_from_tginit_example.ipynb\nDownload Python source code: mbr_from_tginit_example.py\nDownload zipped: mbr_from_tginit_example.zip\nGallery generated by Sphinx-Gallery\nCreate a multi_blade_row and initialize it\nDownload Jupyter notebook: mbr_from_tginit_example.ipynb\nDownload Python source code: mbr_from_tginit_example.py\nDownload zipped: mbr_from_tginit_example.zip"
+    },
+    {
+        "objectID": "examples/mesh_statistics_report",
+        "href": "examples/mesh_statistics_report.html#mesh-statistics-report",
+        "title": "Mesh statistics report",
+        "section": "Mesh statistics report",
+        "text": "To generate a mesh statistics report, you use the mesh_statistics module\nand CCL (CFX command language) queries. This example shows how to generate\na mesh statistics report for the blade model in the read_inf_rotor37\nexample.\nJinja is used to generate\nthis report in HTML format, starting from the report_template.html file.\nMesh statistics report\nmesh_statistics\nreport_template.html"
+    },
+    {
+        "objectID": "examples/mesh_statistics_report",
+        "href": "examples/mesh_statistics_report.html#report-for-rotor37",
+        "title": "Mesh statistics report > Report for rotor37",
+        "section": "Report for rotor37",
+        "text": "Report for rotor37"
+    },
+    {
+        "objectID": "examples/mesh_statistics_report",
+        "href": "examples/mesh_statistics_report.html#perform-required-imports",
+        "title": "Mesh statistics report > Perform required imports",
+        "section": "Perform required imports",
+        "text": "Note: This example requires the jinja2 module to be installed before python is executed:\nPerform the required imports.\nPerform required imports"
+    },
+    {
+        "objectID": "examples/mesh_statistics_report",
+        "href": "examples/mesh_statistics_report.html#set-up-a-turbogrid-session",
+        "title": "Mesh statistics report > Set up a TurboGrid session",
+        "section": "Set up a TurboGrid session",
+        "text": "Set up a TurboGrid session with a basic case and mesh, similar to the\nread_inf_rotor37 example.\nSet up a TurboGrid session"
+    },
+    {
+        "objectID": "examples/mesh_statistics_report",
+        "href": "examples/mesh_statistics_report.html#determine-domains",
+        "title": "Mesh statistics report > Determine domains",
+        "section": "Determine domains",
+        "text": "Determine which domains are available by querying the CCL (CFX command\nlanguage).\nDetermine domains"
+    },
+    {
+        "objectID": "examples/mesh_statistics_report",
+        "href": "examples/mesh_statistics_report.html#set-up-case-details",
+        "title": "Mesh statistics report > Set up case details",
+        "section": "Set up case details",
+        "text": "Set up the information to show under “Case Details” in the report.\nSet up case details"
+    },
+    {
+        "objectID": "examples/mesh_statistics_report",
+        "href": "examples/mesh_statistics_report.html#create-meshstatistics-object",
+        "title": "Mesh statistics report > Create MeshStatistics object",
+        "section": "Create MeshStatistics object",
+        "text": "Create the MeshStatistics object for obtaining the mesh statistics.\nCreate MeshStatistics object\nMeshStatistics\nMeshStatistics"
+    },
+    {
+        "objectID": "examples/mesh_statistics_report",
+        "href": "examples/mesh_statistics_report.html#calculate-and-store-mesh-statistics",
+        "title": "Mesh statistics report > Calculate and store mesh statistics",
+        "section": "Calculate and store mesh statistics",
+        "text": "Calculate and store the basic mesh statistics for each domain separately and\nfor all domains.\nCalculate and store mesh statistics"
+    },
+    {
+        "objectID": "examples/mesh_statistics_report",
+        "href": "examples/mesh_statistics_report.html#check-loaded-mesh-statistics",
+        "title": "Mesh statistics report > Check loaded mesh statistics",
+        "section": "Check loaded mesh statistics",
+        "text": "Check the currently loaded mesh statistics to ensure that they are for all\ndomains.\nCheck loaded mesh statistics"
+    },
+    {
+        "objectID": "examples/mesh_statistics_report",
+        "href": "examples/mesh_statistics_report.html#get-mesh-statistics-table-information",
+        "title": "Mesh statistics report > Get mesh statistics table information",
+        "section": "Get mesh statistics table information",
+        "text": "Get the mesh statistics table information in a form that can easily be used to\ngenerate the table in the report.\nGet mesh statistics table information"
+    },
+    {
+        "objectID": "examples/mesh_statistics_report",
+        "href": "examples/mesh_statistics_report.html#generate-histograms",
+        "title": "Mesh statistics report > Generate histograms",
+        "section": "Generate histograms",
+        "text": "Generate histograms for all required mesh quality measures.\nGenerate histograms"
+    },
+    {
+        "objectID": "examples/mesh_statistics_report",
+        "href": "examples/mesh_statistics_report.html#quit-session",
+        "title": "Mesh statistics report > Quit session",
+        "section": "Quit session",
+        "text": "Quit the TurboGrid session as all of the relevant information has now been\nassembled.\nQuit session"
+    },
+    {
+        "objectID": "examples/mesh_statistics_report",
+        "href": "examples/mesh_statistics_report.html#set-up-jinja-library",
+        "title": "Mesh statistics report > Set up Jinja library",
+        "section": "Set up Jinja library",
+        "text": "Set up the Jinja library with the relevant template and data.\nYou must have a local (downloaded) copy of the report template\nreport_template.html.\nThis is located in the examples directory of the pyturbogrid source code. If\nyou do not have the pyturbogrid source code available, the template can be\ndownloaded from report_template.html.\nThe python command below assumes that the example is being executed by running\nthe mesh_statistics_report.py script non-interactively and that the\nreport_template.html file is located in the same directory as the script.\nOtherwise, ospath.dirname(__file__) must be replaced with the name of the\nfolder that contains the report_template.html file.\nSet up Jinja library\nreport_template.html\nreport_template.html\nospath.dirname(__file__)\nreport_template.html"
+    },
+    {
+        "objectID": "examples/mesh_statistics_report",
+        "href": "examples/mesh_statistics_report.html#generate-report",
+        "title": "Mesh statistics report > Generate report",
+        "section": "Generate report",
+        "text": "Generate the HTML report.\nDownload Jupyter notebook: mesh_statistics_report.ipynb\nDownload Python source code: mesh_statistics_report.py\nDownload zipped: mesh_statistics_report.zip\nGallery generated by Sphinx-Gallery\nGenerate report\nDownload Jupyter notebook: mesh_statistics_report.ipynb\nDownload Python source code: mesh_statistics_report.py\nDownload zipped: mesh_statistics_report.zip"
+    },
+    {
+        "objectID": "getting_started/index",
+        "href": "getting_started/index.html#getting-started",
+        "title": "Getting started",
+        "section": "Getting started",
+        "text": "PyTurboGrid provides access to Ansys TurboGrid from a Python environment.\nTo run PyTurboGrid, you must have a licensed local installation of TurboGrid 2023 R2 or later.\nGetting started"
+    },
+    {
+        "objectID": "getting_started/index",
+        "href": "getting_started/index.html#installation",
+        "title": "Getting started > Installation",
+        "section": "Installation",
+        "text": "The ansys-turbogrid-core package supports Python 3.9, 3.10, 3.11 and 3.12 on Windows and Linux. Two modes\nof installation are available:\nUser installation\nDeveloper installation\nInstallation\nansys-turbogrid-core"
+    },
+    {
+        "objectID": "getting_started/index",
+        "href": "getting_started/index.html#user-installation",
+        "title": "Getting started > User installation",
+        "section": "User installation",
+        "text": "To use PyTurboGrid, you must install the ansys-turbogrid-core package from PyPI.\nTo ensure that you have the latest version of pip, run this command:\nTo install PyTurboGrid, run this command:\nUser installation\nansys-turbogrid-core"
+    },
+    {
+        "objectID": "getting_started/index",
+        "href": "getting_started/index.html#developer-installation",
+        "title": "Getting started > Developer installation",
+        "section": "Developer installation",
+        "text": "A developer installation consists of cloning the pyturbogrid repository\nand installing the project in editable mode. When you install PyTurboGrid from\nsource code, you can modify and enhance the code.\nOverall guidance on contributing to a PyAnsys library appears in the\nContributing topic\nin the PyAnsys Developer’s Guide. Ensure that you are thoroughly familiar\nwith this guide before attempting to\ncontribute to PyTurboGrid.\nClone the pyturbogrid repository:\nTo avoid incompatibilites in requirements when working in multiple\nPython projects, create and activate a virtual environment. For\nmore information, see Virtual environments in the PyAnsys\nDeveloper’s Guide.\nTo ensure that you have the latest version of pip, run this command:\nAssuming that your current working directory is the top-level directory\nof your locally cloned pyturbogrid repository, install PyTurboGrid\nfrom this local repository in editable mode by running these commands\nin the root directory:\nDeveloper installation\npyturbogrid\npyturbogrid\npyturbogrid"
+    },
+    {
+        "objectID": "getting_started/index",
+        "href": "getting_started/index.html#requirements",
+        "title": "Getting started > Requirements",
+        "section": "Requirements",
+        "text": "You must have a licensed local installation of Ansys TurboGrid 2023 R2 or later.\nThe AWP_ROOTxxx environment variable, where xxx is the three-digit\nAnsys version, allows PyTurboGrid to find your local TurboGrid installation.\nA Windows installation automatically sets this root environment variable.\nFor example, if you install Ansys 2023 R2 in the default directory,\nthe installer sets the AWP_ROOT232 environment variable to\nC:\\Program Files\\ANSYS Inc\\v232.\nA Linux installation does not automatically set this root environment\nvariable. For example, if you install Ansys 2023 R2 in the default\ndirectory, you must manually set the AWP_ROOT232 environment\nvariable to /usr/ansys_inc/v232.\nRequirements\nAWP_ROOTxxx\nxxx\nAWP_ROOT232\nC:\\Program Files\\ANSYS Inc\\v232\nAWP_ROOT232\n/usr/ansys_inc/v232"
+    },
+    {
+        "objectID": "getting_started/index",
+        "href": "getting_started/index.html#license-and-acknowledgments",
+        "title": "Getting started > License and acknowledgments",
+        "section": "License and acknowledgments",
+        "text": "PyTurboGrid is licensed under the MIT license.\nPyTurboGrid makes no commercial claim over Ansys whatsoever. This library extends the\nfunctionality of Ansys TurboGrid by adding a Python interface to TurboGrid without\nchanging the core behavior or license of the original software. The use of the\ninteractive control of PyTurboGrid requires a legally licensed local copy of TurboGrid.\nFor more information on TurboGrid, see the Ansys TurboGrid page on the Ansys website.\nLicense and acknowledgments"
+    },
+    {
+        "objectID": "examples/basic_read_inf_rotor37",
+        "href": "examples/basic_read_inf_rotor37.html#basic-mesh-generation",
+        "title": "Basic mesh generation",
+        "section": "Basic mesh generation",
+        "text": "This basic example shows how to launch PyTurboGrid, load a blade model\nby reading an INF file, and generate a mesh.\nBasic mesh generation"
+    },
+    {
+        "objectID": "examples/basic_read_inf_rotor37",
+        "href": "examples/basic_read_inf_rotor37.html#model-overview",
+        "title": "Basic mesh generation > Model overview",
+        "section": "Model overview",
+        "text": "Model overview"
+    },
+    {
+        "objectID": "examples/basic_read_inf_rotor37",
+        "href": "examples/basic_read_inf_rotor37.html#perform-required-imports",
+        "title": "Basic mesh generation > Perform required imports",
+        "section": "Perform required imports",
+        "text": "Perform the required imports. It is assumed that the ansys-turbogrid-core\npackage has been installed.\nPerform required imports\nansys-turbogrid-core"
+    },
+    {
+        "objectID": "examples/basic_read_inf_rotor37",
+        "href": "examples/basic_read_inf_rotor37.html#launch-turbogrid-instance",
+        "title": "Basic mesh generation > Launch TurboGrid instance",
+        "section": "Launch TurboGrid instance",
+        "text": "Launch a TurboGrid instance in the most basic way.\nLaunch TurboGrid instance"
+    },
+    {
+        "objectID": "examples/basic_read_inf_rotor37",
+        "href": "examples/basic_read_inf_rotor37.html#find-turbogrid-examples",
+        "title": "Basic mesh generation > Find TurboGrid examples",
+        "section": "Find TurboGrid examples",
+        "text": "Find the examples folder for TurboGrid based on the path to the directory\nwhere it is installed. Calling the get_turbogrid_exe_path() method ensures\nuse of the examples folder in the current TurboGrid installation.\nFind TurboGrid examples\nexamples\nget_turbogrid_exe_path()\nexamples"
+    },
+    {
+        "objectID": "examples/basic_read_inf_rotor37",
+        "href": "examples/basic_read_inf_rotor37.html#ensure-folder-with-examples-exists",
+        "title": "Basic mesh generation > Ensure folder with examples exists",
+        "section": "Ensure folder with examples exists",
+        "text": "Ensure that the examples folder exists.\nEnsure folder with examples exists\nexamples"
+    },
+    {
+        "objectID": "examples/basic_read_inf_rotor37",
+        "href": "examples/basic_read_inf_rotor37.html#read-file-for-rotor37-example",
+        "title": "Basic mesh generation > Read file for rotor37 example",
+        "section": "Read file for rotor37 example",
+        "text": "Read the BladeGen INF file for the rotor37 example.\nRead file for rotor37 example"
+    },
+    {
+        "objectID": "examples/basic_read_inf_rotor37",
+        "href": "examples/basic_read_inf_rotor37.html#generate-mesh",
+        "title": "Basic mesh generation > Generate mesh",
+        "section": "Generate mesh",
+        "text": "Generate a mesh with the default settings.\nGenerate mesh"
+    },
+    {
+        "objectID": "examples/basic_read_inf_rotor37",
+        "href": "examples/basic_read_inf_rotor37.html#get-mesh-statistics",
+        "title": "Basic mesh generation > Get mesh statistics",
+        "section": "Get mesh statistics",
+        "text": "Get the mesh statistics from the current session.\nGet mesh statistics"
+    },
+    {
+        "objectID": "examples/basic_read_inf_rotor37",
+        "href": "examples/basic_read_inf_rotor37.html#print-mesh-statistics",
+        "title": "Basic mesh generation > Print mesh statistics",
+        "section": "Print mesh statistics",
+        "text": "Print the mesh statistics in a format suitable for reading.\nA JSON serializer can print nested dictionary content with indentation\nand formatting.\nPrint mesh statistics"
+    },
+    {
+        "objectID": "examples/basic_read_inf_rotor37",
+        "href": "examples/basic_read_inf_rotor37.html#save-mesh",
+        "title": "Basic mesh generation > Save mesh",
+        "section": "Save mesh",
+        "text": "Save the mesh.\nSave mesh"
+    },
+    {
+        "objectID": "examples/basic_read_inf_rotor37",
+        "href": "examples/basic_read_inf_rotor37.html#quit-session",
+        "title": "Basic mesh generation > Quit session",
+        "section": "Quit session",
+        "text": "Quit the TurboGrid session.\nDownload Jupyter notebook: basic_read_inf_rotor37.ipynb\nDownload Python source code: basic_read_inf_rotor37.py\nDownload zipped: basic_read_inf_rotor37.zip\nGallery generated by Sphinx-Gallery\nQuit session\nDownload Jupyter notebook: basic_read_inf_rotor37.ipynb\nDownload Python source code: basic_read_inf_rotor37.py\nDownload zipped: basic_read_inf_rotor37.zip"
+    },
+    {
+        "objectID": "index",
+        "href": "index.html#pyturbogrid-documentation-044",
+        "title": "PyTurboGrid documentation 0.4.4",
+        "section": "PyTurboGrid documentation 0.4.4",
+        "text": "PyTurboGrid documentation 0.4.4"
+    },
+    {
+        "objectID": "index",
+        "href": "index.html#introduction",
+        "title": "PyTurboGrid documentation 0.4.4 > Introduction",
+        "section": "Introduction",
+        "text": "Ansys TurboGrid is a high-quality turbomachinery meshing software app. It features\nnovel automated mesh generation capabilities in a simple-to-use, streamlined\nworkspace. You can apply the tools in TurboGrid to a wide variety of turbomachinery\nequipment to help produce accurate simulation results.\nIntroduction"
+    },
+    {
+        "objectID": "index",
+        "href": "index.html#what-is-pyturbogrid",
+        "title": "PyTurboGrid documentation 0.4.4 > What is PyTurboGrid?",
+        "section": "What is PyTurboGrid?",
+        "text": "PyTurboGrid is part of the larger PyAnsys\neffort to facilitate the use of Ansys technologies directly from Python.\nPyTurboGrid implements a client-server architecture. Communication between\nPyTurboGrid (client) and the running TurboGrid process (server) is based on\nthe plain TCP/IP technology. However, you need to interact only with the\nPython interface.\nYou can use PyTurboGrid to programmatically launch an instance of TurboGrid,\nload a model, read in a session file, generate a mesh, and query statistics\nfor this mesh.\nPyTurboGrid lets you use TurboGrid within a Python environment of your choice\nin conjunction with other PyAnsys libraries and external Python libraries.\nWhat is PyTurboGrid?"
+    },
+    {
+        "objectID": "index",
+        "href": "index.html#project-index",
+        "title": "PyTurboGrid documentation 0.4.4 > Project index",
+        "section": "Project index",
+        "text": "genindex\nProject index"
+    },
+    {
+        "objectID": "api_reference/pyturbogrid_core",
+        "href": "api_reference/pyturbogrid_core.html#pyturbogrid_core",
+        "title": "pyturbogrid_core",
+        "section": "pyturbogrid_core",
+        "text": "Module in the ansys-turbogrid-api package that is internally used by modules in the pyturbogrid\npackage for interactions with a running Ansys TurboGrid application.\nClasses:\nPyTurboGrid(socket_port, ...[, log_level, ...])\nThis class enables you to launch, interact with, and quit, a session of TurboGrid.\nThis class enables you to launch, interact with, and quit, a session of TurboGrid.\nRefer to the launcher module to see how to create an instance of this class.\nAttributes:\nQUERY_ERROR_PREFIX\n\nalready_exited\n\napp_name\n\nblock_each_message\n\nclient_socket\n\nconsole_log_file\n\nengine_ccl_observers\n\nengine_incoming_error_queue\n\nengine_incoming_message_queue\n\nengine_proc\n\nengine_ready\n\nhost_ip\n\nlog_filename_suffix\n\noutgoing_log_file\n\nprint_messages_in_console\n\nproc_port\n\nprocess_log_file\n\npyengine_log_level\n\nread_message_process\n\nrun_read_message_process\n\nrun_send_message_process\n\nsend_message_process\n\nClasses:\nTurboGridLocationType(value)\nSpecifies whether the PyTurboGrid class should launch TurboGrid from the given location, or connect to a running session of TurboGrid.\nTurboGridLogLevel(value)\nControls which logging messages are reported.\nMethods:\n__init__(socket_port, ...[, log_level, ...])\n\nend_session()\nStop recording a session file.\ngetBoundaryGeometry([prefix_string])\n\ngetTGInitTopology(tginit_path[, ...])\n\nget_object_param(object, param)\nReturns the parameter value.\nget_version()\nGet the version of the application which is being run in the current session.\nquery_average_background_face_area()\nReturns the average background face area, averaged again from the hub, midspan and shroud.\nquery_average_base_face_area()\nReturns the average base face area, averaged again from each layer.\nquery_mesh_statistics([domain])\nReturns mesh quality measures from TurboGrid for the current session and specified domain.\nquery_mesh_statistics_histogram_data(variable)\nReturns data that can be used to plot mesh statistics histograms.\nquery_number_of_spanwise_elements()\nReturns the total number of elements in the spanwise direction.\nquery_valid_topology_choices()\nReturns the permitted topology methods for the blade geometry in the current session.\nquit()\nQuit the application instance.\nread_inf(filename)\nRead a blade model from a BladeGen *.inf file.\nread_ndf(ndffilename[, cadfilename, ...])\nRead a blade model from an NDF (*.ndf) file.\nread_session(filename)\nRead a session file to repeat a previous session.\nread_state(filename)\nRestore a previous state from a saved state file.\nread_tginit(path[, bladerow])\nRead a blade row from a *.tginit file.\nsave_image(filename[, format])\nSave the current contents of the viewer window to a file.\nsave_mesh(filename, onefile[, onedomain, ...])\nSave generated mesh to a file.\nsave_state(filename)\nSave the current state into a file.\nsend_ccl(ccl)\nSend the provided CCL to the application.\nset_global_size_factor(global_size_factor)\nSet the global size factor.\nset_inlet_hub_position(parametric_hub_location)\nSet the parametric position of the inlet line on the hub.\nset_inlet_shroud_position(...)\nSet the parametric position of the inlet line on the shroud.\nset_obj_param(object, param_val_pairs)\nUpdate the value for a CCL object parameter.\nset_outlet_hub_position(parametric_hub_location)\nSet the parametric position of the outlet line on the hub.\nset_outlet_shroud_position(...)\nSet the parametric position of the outlet line on the shroud.\nset_topology_choice(atm_topology_choice)\nSet the topology method to be used for the topology set generation process.\nset_topology_list(atm_topology_list)\nSet the list of topology pieces to be used for topology generation.\nstart_session(filename)\nStart recording a new session.\nsuspend(object)\nSuspend a TurboGrid object.\nunsuspend(object)\nUnsuspend a TurboGrid object.\nSpecifies whether the PyTurboGrid class should launch TurboGrid from the given location, or connect to a running session of TurboGrid.\n:member-order: bysource\nAttributes:\nTURBOGRID_ANSYS_LABS\n\nTURBOGRID_INSTALL\n\nTURBOGRID_RUNNING_CONTAINER\n\ndenominator\nthe denominator of a rational number in lowest terms\nimag\nthe imaginary part of a complex number\nnumerator\nthe numerator of a rational number in lowest terms\nreal\nthe real part of a complex number\nMethods:\nas_integer_ratio()\nReturn integer ratio.\nbit_count()\nNumber of ones in the binary representation of the absolute value of self.\nbit_length()\nNumber of bits necessary to represent self in binary.\nconjugate\nReturns self, the complex conjugate of any int.\nfrom_bytes(byteorder, *[, signed])\nReturn the integer represented by the given array of bytes.\nto_bytes(length, byteorder, *[, signed])\nReturn an array of bytes representing an integer.\nReturn integer ratio.\nReturn a pair of integers, whose ratio is exactly equal to the original int\nand with a positive denominator.\nNumber of ones in the binary representation of the absolute value of self.\nAlso known as the population count.\nNumber of bits necessary to represent self in binary.\nReturns self, the complex conjugate of any int.\nthe denominator of a rational number in lowest terms\nReturn the integer represented by the given array of bytes.\nHolds the array of bytes to convert.  The argument must either\nsupport the buffer protocol or be an iterable object producing bytes.\nBytes and bytearray are examples of built-in objects that support the\nbuffer protocol.\nThe byte order used to represent the integer.  If byteorder is ‘big’,\nthe most significant byte is at the beginning of the byte array.  If\nbyteorder is ‘little’, the most significant byte is at the end of the\nbyte array.  To request the native byte order of the host system, use\n`sys.byteorder’ as the byte order value.\nIndicates whether two’s complement is used to represent the integer.\nthe imaginary part of a complex number\nthe numerator of a rational number in lowest terms\nthe real part of a complex number\nReturn an array of bytes representing an integer.\nLength of bytes object to use.  An OverflowError is raised if the\ninteger is not representable with the given number of bytes.\nThe byte order used to represent the integer.  If byteorder is ‘big’,\nthe most significant byte is at the beginning of the byte array.  If\nbyteorder is ‘little’, the most significant byte is at the end of the\nbyte array.  To request the native byte order of the host system, use\n`sys.byteorder’ as the byte order value.\nDetermines whether two’s complement is used to represent the integer.\nIf signed is False and a negative integer is given, an OverflowError\nis raised.\nControls which logging messages are reported. The higher values report the fewest messages.\n:member-order: bysource\nAttributes:\nCRITICAL\n\nDEBUG\n\nERROR\n\nINFO\n\nNETWORK_DEBUG\n\nNOTSET\n\nWARNING\n\ndenominator\nthe denominator of a rational number in lowest terms\nimag\nthe imaginary part of a complex number\nnumerator\nthe numerator of a rational number in lowest terms\nreal\nthe real part of a complex number\nMethods:\nas_integer_ratio()\nReturn integer ratio.\nbit_count()\nNumber of ones in the binary representation of the absolute value of self.\nbit_length()\nNumber of bits necessary to represent self in binary.\nconjugate\nReturns self, the complex conjugate of any int.\nfrom_bytes(byteorder, *[, signed])\nReturn the integer represented by the given array of bytes.\nto_bytes(length, byteorder, *[, signed])\nReturn an array of bytes representing an integer.\nReturn integer ratio.\nReturn a pair of integers, whose ratio is exactly equal to the original int\nand with a positive denominator.\nNumber of ones in the binary representation of the absolute value of self.\nAlso known as the population count.\nNumber of bits necessary to represent self in binary.\nReturns self, the complex conjugate of any int.\nthe denominator of a rational number in lowest terms\nReturn the integer represented by the given array of bytes.\nHolds the array of bytes to convert.  The argument must either\nsupport the buffer protocol or be an iterable object producing bytes.\nBytes and bytearray are examples of built-in objects that support the\nbuffer protocol.\nThe byte order used to represent the integer.  If byteorder is ‘big’,\nthe most significant byte is at the beginning of the byte array.  If\nbyteorder is ‘little’, the most significant byte is at the end of the\nbyte array.  To request the native byte order of the host system, use\n`sys.byteorder’ as the byte order value.\nIndicates whether two’s complement is used to represent the integer.\nthe imaginary part of a complex number\nthe numerator of a rational number in lowest terms\nthe real part of a complex number\nReturn an array of bytes representing an integer.\nLength of bytes object to use.  An OverflowError is raised if the\ninteger is not representable with the given number of bytes.\nThe byte order used to represent the integer.  If byteorder is ‘big’,\nthe most significant byte is at the beginning of the byte array.  If\nbyteorder is ‘little’, the most significant byte is at the end of the\nbyte array.  To request the native byte order of the host system, use\n`sys.byteorder’ as the byte order value.\nDetermines whether two’s complement is used to represent the integer.\nIf signed is False and a negative integer is given, an OverflowError\nis raised.\nStop recording a session file.\nReturns the parameter value.\nGet the version of the application which is being run in the current session.\nReturns the average background face area, averaged again from the hub, midspan and shroud.\nReturns the average base face area, averaged again from each layer.\nReturns mesh quality measures from TurboGrid for the current session and specified domain. Note: It is suggested to use the mesh_statistics module instead of directly calling this.\nReturns data that can be used to plot mesh statistics histograms.\nReturns the total number of elements in the spanwise direction.\nReturns the permitted topology methods for the blade geometry in the current session.\nQuit the application instance.\nRead a blade model from a BladeGen *.inf file.\nRead a blade model from an NDF (*.ndf) file. TurboGrid uses the details in the NDF file to generate and import a CAD file containing the blade geometry.\nRead a session file to repeat a previous session.\nRestore a previous state from a saved state file.\nRead a blade row from a *.tginit file.\nSave the current contents of the viewer window to a file.\nSave generated mesh to a file.\nSave the current state into a file.\nSend the provided CCL to the application.\nSet the global size factor.\nSet the parametric position of the inlet line on the hub.\nSet the parametric position of the inlet line on the shroud.\nUpdate the value for a CCL object parameter.\nSet the parametric position of the outlet line on the hub.\nSet the parametric position of the outlet line on the shroud.\nSet the topology method to be used for the topology set generation process.\nExample\nSet the list of topology pieces to be used for topology generation.\nExample\nStart recording a new session.\nSuspend a TurboGrid object.\nUnsuspend a TurboGrid object.\npyturbogrid_core\nPyTurboGrid\nlauncher\nQUERY_ERROR_PREFIX\nalready_exited\napp_name\nblock_each_message\nclient_socket\nconsole_log_file\nengine_ccl_observers\nengine_incoming_error_queue\nengine_incoming_message_queue\nengine_proc\nengine_ready\nhost_ip\nlog_filename_suffix\noutgoing_log_file\nprint_messages_in_console\nproc_port\nprocess_log_file\npyengine_log_level\nread_message_process\nrun_read_message_process\nrun_send_message_process\nsend_message_process\nTurboGridLocationType\nTurboGridLogLevel\n__init__\nend_session\ngetBoundaryGeometry\ngetTGInitTopology\nget_object_param\nget_version\nquery_average_background_face_area\nquery_average_base_face_area\nquery_mesh_statistics\nquery_mesh_statistics_histogram_data\nquery_number_of_spanwise_elements\nquery_valid_topology_choices\nquit\nread_inf\nread_ndf\nread_session\nread_state\nread_tginit\nsave_image\nsave_mesh\nsave_state\nsend_ccl\nset_global_size_factor\nset_inlet_hub_position\nset_inlet_shroud_position\nset_obj_param\nset_outlet_hub_position\nset_outlet_shroud_position\nset_topology_choice\nset_topology_list\nstart_session\nsuspend\nunsuspend\nTURBOGRID_ANSYS_LABS\nTURBOGRID_INSTALL\nTURBOGRID_RUNNING_CONTAINER\ndenominator\nimag\nnumerator\nreal\nas_integer_ratio\nbit_count\nbit_length\nconjugate\nfrom_bytes\nto_bytes\nCRITICAL\nDEBUG\nERROR\nINFO\nNETWORK_DEBUG\nNOTSET\nWARNING\ndenominator\nimag\nnumerator\nreal\nas_integer_ratio\nbit_count\nbit_length\nconjugate\nfrom_bytes\nto_bytes\nmesh_statistics"
+    },
+    {
+        "objectID": "api_reference/pyturbogrid_core",
+        "href": "api_reference/pyturbogrid_core.html#ansys.turbogrid.api.pyturbogrid_core.PyTurboGrid",
+        "title": "pyturbogrid_core > pyturbogrid_core > PyTurboGrid",
+        "section": "pyturbogrid_core > PyTurboGrid",
+        "text": "class ansys.turbogrid.api.pyturbogrid_core.PyTurboGrid(socket_port: int | None, turbogrid_location_type: TurboGridLocationType, cfxtg_location, additional_args_str: str | None, additional_kw_args: dict | None, log_level=TurboGridLogLevel.INFO, host_ip: str = '127.0.0.1', pim_app_name: str = 'turbogrid', pim_app_ver: str = '241', log_filename_suffix: str = '')\n\nThis class enables you to launch, interact with, and quit, a session of TurboGrid.\nRefer to the launcher module to see how to create an instance of this class.\n\nAttributes:\n\n\n\n\n\n\n\nQUERY_ERROR_PREFIX\n\n\n\nalready_exited\n\n\n\napp_name\n\n\n\nblock_each_message\n\n\n\nclient_socket\n\n\n\nconsole_log_file\n\n\n\nengine_ccl_observers\n\n\n\nengine_incoming_error_queue\n\n\n\nengine_incoming_message_queue\n\n\n\nengine_proc\n\n\n\nengine_ready\n\n\n\nhost_ip\n\n\n\nlog_filename_suffix\n\n\n\noutgoing_log_file\n\n\n\nprint_messages_in_console\n\n\n\nproc_port\n\n\n\nprocess_log_file\n\n\n\npyengine_log_level\n\n\n\nread_message_process\n\n\n\nrun_read_message_process\n\n\n\nrun_send_message_process\n\n\n\nsend_message_process\n\n\n\nClasses:\n\n\n\n\n\n\n\nTurboGridLocationType(value)\n\nSpecifies whether the PyTurboGrid class should launch TurboGrid from the given location, or connect to a running session of TurboGrid.\n\nTurboGridLogLevel(value)\n\nControls which logging messages are reported.\n\nMethods:\n\n\n\n\n\n\n\n__init__(socket_port, ...[, log_level, ...])\n\n\n\nend_session()\n\nStop recording a session file.\n\ngetBoundaryGeometry([prefix_string])\n\n\n\ngetTGInitTopology(tginit_path[, ...])\n\n\n\nget_object_param(object, param)\n\nReturns the parameter value.\n\nget_version()\n\nGet the version of the application which is being run in the current session.\n\nquery_average_background_face_area()\n\nReturns the average background face area, averaged again from the hub, midspan and shroud.\n\nquery_average_base_face_area()\n\nReturns the average base face area, averaged again from each layer.\n\nquery_mesh_statistics([domain])\n\nReturns mesh quality measures from TurboGrid for the current session and specified domain.\n\nquery_mesh_statistics_histogram_data(variable)\n\nReturns data that can be used to plot mesh statistics histograms.\n\nquery_number_of_spanwise_elements()\n\nReturns the total number of elements in the spanwise direction.\n\nquery_valid_topology_choices()\n\nReturns the permitted topology methods for the blade geometry in the current session.\n\nquit()\n\nQuit the application instance.\n\nread_inf(filename)\n\nRead a blade model from a BladeGen *.inf file.\n\nread_ndf(ndffilename[, cadfilename, ...])\n\nRead a blade model from an NDF (*.ndf) file.\n\nread_session(filename)\n\nRead a session file to repeat a previous session.\n\nread_state(filename)\n\nRestore a previous state from a saved state file.\n\nread_tginit(path[, bladerow])\n\nRead a blade row from a *.tginit file.\n\nsave_image(filename[, format])\n\nSave the current contents of the viewer window to a file.\n\nsave_mesh(filename, onefile[, onedomain, ...])\n\nSave generated mesh to a file.\n\nsave_state(filename)\n\nSave the current state into a file.\n\nsend_ccl(ccl)\n\nSend the provided CCL to the application.\n\nset_global_size_factor(global_size_factor)\n\nSet the global size factor.\n\nset_inlet_hub_position(parametric_hub_location)\n\nSet the parametric position of the inlet line on the hub.\n\nset_inlet_shroud_position(...)\n\nSet the parametric position of the inlet line on the shroud.\n\nset_obj_param(object, param_val_pairs)\n\nUpdate the value for a CCL object parameter.\n\nset_outlet_hub_position(parametric_hub_location)\n\nSet the parametric position of the outlet line on the hub.\n\nset_outlet_shroud_position(...)\n\nSet the parametric position of the outlet line on the shroud.\n\nset_topology_choice(atm_topology_choice)\n\nSet the topology method to be used for the topology set generation process.\n\nset_topology_list(atm_topology_list)\n\nSet the list of topology pieces to be used for topology generation.\n\nstart_session(filename)\n\nStart recording a new session.\n\nsuspend(object)\n\nSuspend a TurboGrid object.\n\nunsuspend(object)\n\nUnsuspend a TurboGrid object.\n\n\n\nQUERY_ERROR_PREFIX = 'ERROR:'\n\n\n\n\n\nclass TurboGridLocationType(value)\n\nSpecifies whether the PyTurboGrid class should launch TurboGrid from the given location, or connect to a running session of TurboGrid.\n:member-order: bysource\n\nAttributes:\n\n\n\n\n\n\n\nTURBOGRID_ANSYS_LABS\n\n\n\nTURBOGRID_INSTALL\n\n\n\nTURBOGRID_RUNNING_CONTAINER\n\n\n\ndenominator\n\nthe denominator of a rational number in lowest terms\n\nimag\n\nthe imaginary part of a complex number\n\nnumerator\n\nthe numerator of a rational number in lowest terms\n\nreal\n\nthe real part of a complex number\n\nMethods:\n\n\n\n\n\n\n\nas_integer_ratio()\n\nReturn integer ratio.\n\nbit_count()\n\nNumber of ones in the binary representation of the absolute value of self.\n\nbit_length()\n\nNumber of bits necessary to represent self in binary.\n\nconjugate\n\nReturns self, the complex conjugate of any int.\n\nfrom_bytes(byteorder, *[, signed])\n\nReturn the integer represented by the given array of bytes.\n\nto_bytes(length, byteorder, *[, signed])\n\nReturn an array of bytes representing an integer.\n\n\n\nTURBOGRID_ANSYS_LABS = 2\n\n\n\n\n\nTURBOGRID_INSTALL = 0\n\n\n\n\n\nTURBOGRID_RUNNING_CONTAINER = 1\n\n\n\n\n\nas_integer_ratio()\n\nReturn integer ratio.\n\nReturn a pair of integers, whose ratio is exactly equal to the original int\nand with a positive denominator.\n\n>>> (10).as_integer_ratio()\n(10, 1)\n>>> (-10).as_integer_ratio()\n(-10, 1)\n>>> (0).as_integer_ratio()\n(0, 1)\n\n\n\nbit_count()\n\nNumber of ones in the binary representation of the absolute value of self.\n\nAlso known as the population count.\n\n>>> bin(13)\n'0b1101'\n>>> (13).bit_count()\n3\n\n\n\nbit_length()\n\nNumber of bits necessary to represent self in binary.\n\n>>> bin(37)\n'0b100101'\n>>> (37).bit_length()\n6\n\n\n\nconjugate()\n\nReturns self, the complex conjugate of any int.\n\n\n\ndenominator\n\nthe denominator of a rational number in lowest terms\n\n\n\nfrom_bytes(byteorder, *, signed=False)\n\nReturn the integer represented by the given array of bytes.\n\nbytes\n\nHolds the array of bytes to convert.  The argument must either\nsupport the buffer protocol or be an iterable object producing bytes.\nBytes and bytearray are examples of built-in objects that support the\nbuffer protocol.\n\nbyteorder\n\nThe byte order used to represent the integer.  If byteorder is ‘big’,\nthe most significant byte is at the beginning of the byte array.  If\nbyteorder is ‘little’, the most significant byte is at the end of the\nbyte array.  To request the native byte order of the host system, use\n`sys.byteorder’ as the byte order value.\n\nsigned\n\nIndicates whether two’s complement is used to represent the integer.\n\n\n\nimag\n\nthe imaginary part of a complex number\n\n\n\nnumerator\n\nthe numerator of a rational number in lowest terms\n\n\n\nreal\n\nthe real part of a complex number\n\n\n\nto_bytes(length, byteorder, *, signed=False)\n\nReturn an array of bytes representing an integer.\n\nlength\n\nLength of bytes object to use.  An OverflowError is raised if the\ninteger is not representable with the given number of bytes.\n\nbyteorder\n\nThe byte order used to represent the integer.  If byteorder is ‘big’,\nthe most significant byte is at the beginning of the byte array.  If\nbyteorder is ‘little’, the most significant byte is at the end of the\nbyte array.  To request the native byte order of the host system, use\n`sys.byteorder’ as the byte order value.\n\nsigned\n\nDetermines whether two’s complement is used to represent the integer.\nIf signed is False and a negative integer is given, an OverflowError\nis raised.\n\n\n\nclass TurboGridLogLevel(value)\n\nControls which logging messages are reported. The higher values report the fewest messages.\n:member-order: bysource\n\nAttributes:\n\n\n\n\n\n\n\nCRITICAL\n\n\n\nDEBUG\n\n\n\nERROR\n\n\n\nINFO\n\n\n\nNETWORK_DEBUG\n\n\n\nNOTSET\n\n\n\nWARNING\n\n\n\ndenominator\n\nthe denominator of a rational number in lowest terms\n\nimag\n\nthe imaginary part of a complex number\n\nnumerator\n\nthe numerator of a rational number in lowest terms\n\nreal\n\nthe real part of a complex number\n\nMethods:\n\n\n\n\n\n\n\nas_integer_ratio()\n\nReturn integer ratio.\n\nbit_count()\n\nNumber of ones in the binary representation of the absolute value of self.\n\nbit_length()\n\nNumber of bits necessary to represent self in binary.\n\nconjugate\n\nReturns self, the complex conjugate of any int.\n\nfrom_bytes(byteorder, *[, signed])\n\nReturn the integer represented by the given array of bytes.\n\nto_bytes(length, byteorder, *[, signed])\n\nReturn an array of bytes representing an integer.\n\n\n\nCRITICAL = 50\n\n\n\n\n\nDEBUG = 10\n\n\n\n\n\nERROR = 40\n\n\n\n\n\nINFO = 20\n\n\n\n\n\nNETWORK_DEBUG = 15\n\n\n\n\n\nNOTSET = 0\n\n\n\n\n\nWARNING = 30\n\n\n\n\n\nas_integer_ratio()\n\nReturn integer ratio.\n\nReturn a pair of integers, whose ratio is exactly equal to the original int\nand with a positive denominator.\n\n>>> (10).as_integer_ratio()\n(10, 1)\n>>> (-10).as_integer_ratio()\n(-10, 1)\n>>> (0).as_integer_ratio()\n(0, 1)\n\n\n\nbit_count()\n\nNumber of ones in the binary representation of the absolute value of self.\n\nAlso known as the population count.\n\n>>> bin(13)\n'0b1101'\n>>> (13).bit_count()\n3\n\n\n\nbit_length()\n\nNumber of bits necessary to represent self in binary.\n\n>>> bin(37)\n'0b100101'\n>>> (37).bit_length()\n6\n\n\n\nconjugate()\n\nReturns self, the complex conjugate of any int.\n\n\n\ndenominator\n\nthe denominator of a rational number in lowest terms\n\n\n\nfrom_bytes(byteorder, *, signed=False)\n\nReturn the integer represented by the given array of bytes.\n\nbytes\n\nHolds the array of bytes to convert.  The argument must either\nsupport the buffer protocol or be an iterable object producing bytes.\nBytes and bytearray are examples of built-in objects that support the\nbuffer protocol.\n\nbyteorder\n\nThe byte order used to represent the integer.  If byteorder is ‘big’,\nthe most significant byte is at the beginning of the byte array.  If\nbyteorder is ‘little’, the most significant byte is at the end of the\nbyte array.  To request the native byte order of the host system, use\n`sys.byteorder’ as the byte order value.\n\nsigned\n\nIndicates whether two’s complement is used to represent the integer.\n\n\n\nimag\n\nthe imaginary part of a complex number\n\n\n\nnumerator\n\nthe numerator of a rational number in lowest terms\n\n\n\nreal\n\nthe real part of a complex number\n\n\n\nto_bytes(length, byteorder, *, signed=False)\n\nReturn an array of bytes representing an integer.\n\nlength\n\nLength of bytes object to use.  An OverflowError is raised if the\ninteger is not representable with the given number of bytes.\n\nbyteorder\n\nThe byte order used to represent the integer.  If byteorder is ‘big’,\nthe most significant byte is at the beginning of the byte array.  If\nbyteorder is ‘little’, the most significant byte is at the end of the\nbyte array.  To request the native byte order of the host system, use\n`sys.byteorder’ as the byte order value.\n\nsigned\n\nDetermines whether two’s complement is used to represent the integer.\nIf signed is False and a negative integer is given, an OverflowError\nis raised.\n\n\n\n__init__(socket_port: int | None, turbogrid_location_type: TurboGridLocationType, cfxtg_location, additional_args_str: str | None, additional_kw_args: dict | None, log_level=TurboGridLogLevel.INFO, host_ip: str = '127.0.0.1', pim_app_name: str = 'turbogrid', pim_app_ver: str = '241', log_filename_suffix: str = '')\n\n\n\n\n\nalready_exited = False\n\n\n\n\n\napp_name = 'App'\n\n\n\n\n\nblock_each_message: bool = False\n\n\n\n\n\nclient_socket: socket = 0\n\n\n\n\n\nconsole_log_file: TextIOWrapper = 0\n\n\n\n\n\nend_session()\n\nStop recording a session file.\n\n\n\nengine_ccl_observers: Set[ICCLChangeObserver] = {}\n\n\n\n\n\nengine_incoming_error_queue: <module 'queue' from '/opt/hostedtoolcache/Python/3.10.17/x64/lib/python3.10/queue.py'> = 0\n\n\n\n\n\nengine_incoming_message_queue: <module 'queue' from '/opt/hostedtoolcache/Python/3.10.17/x64/lib/python3.10/queue.py'> = 0\n\n\n\n\n\nengine_proc: Popen = 0\n\n\n\n\n\nengine_ready: bool = False\n\n\n\n\n\ngetBoundaryGeometry(prefix_string: str = '') -> list[any]\n\n\n\n\n\ngetTGInitTopology(tginit_path: str, transformIOToLines: bool = False) -> dict[str, any]\n\n\n\n\n\nget_object_param(object: str, param: str) -> str\n\nReturns the parameter value.\n\n\n\nget_version() -> str\n\nGet the version of the application which is being run in the current session.\n\n\n\nhost_ip: str = '127.0.0.1'\n\n\n\n\n\nlog_filename_suffix: str = ''\n\n\n\n\n\noutgoing_log_file: TextIOWrapper = 0\n\n\n\n\n\nprint_messages_in_console: bool = False\n\n\n\n\n\nproc_port: int | None = None\n\n\n\n\n\nprocess_log_file: TextIOWrapper = 0\n\n\n\n\n\npyengine_log_level: ServerLogLevel = 20\n\n\n\n\n\nquery_average_background_face_area() -> float\n\nReturns the average background face area, averaged again from the hub, midspan and shroud.\n\n\n\nquery_average_base_face_area() -> float\n\nReturns the average base face area, averaged again from each layer.\n\n\n\nquery_mesh_statistics(domain: str = 'ALL') -> dict\n\nReturns mesh quality measures from TurboGrid for the current session and specified domain. Note: It is suggested to use the mesh_statistics module instead of directly calling this.\n\n\n\nquery_mesh_statistics_histogram_data(variable: str, domain: str = 'ALL', number_of_bins: int = 20, upper_bound: float | None = None, lower_bound: float | None = None, bin_units: str = '', scale: str = 'Linear', use_absolute_values: bool = False, bin_divisions: list | None = None) -> dict\n\nReturns data that can be used to plot mesh statistics histograms.\n\n\n\nquery_number_of_spanwise_elements() -> int\n\nReturns the total number of elements in the spanwise direction.\n\n\n\nquery_valid_topology_choices() -> list\n\nReturns the permitted topology methods for the blade geometry in the current session.\n\n\n\nquit()\n\nQuit the application instance.\n\n\n\nread_inf(filename: str)\n\nRead a blade model from a BladeGen *.inf file.\n\n\n\nread_message_process: CUEEngineReadMessageService = 0\n\n\n\n\n\nread_ndf(ndffilename: str, cadfilename: str = '', flowpath: str = '', bladerow: str = '', bladename: str = '')\n\nRead a blade model from an NDF (*.ndf) file. TurboGrid uses the details in the NDF file to generate and import a CAD file containing the blade geometry.\n\n\n\nread_session(filename: str)\n\nRead a session file to repeat a previous session.\n\n\n\nread_state(filename: str)\n\nRestore a previous state from a saved state file.\n\n\n\nread_tginit(path: str, bladerow: str = '')\n\nRead a blade row from a *.tginit file.\n\n\n\nrun_read_message_process: bool = True\n\n\n\n\n\nrun_send_message_process: bool = True\n\n\n\n\n\nsave_image(filename: str, format: str = 'png')\n\nSave the current contents of the viewer window to a file.\n\n\n\nsave_mesh(filename: str, onefile: bool, onedomain: bool = True, addsecondary=True)\n\nSave generated mesh to a file.\n\n\n\nsave_state(filename: str)\n\nSave the current state into a file.\n\n\n\nsend_ccl(ccl: str) -> bool\n\nSend the provided CCL to the application.\n\n\n\nsend_message_process: CUEEngineSendMessageService = 0\n\n\n\n\n\nset_global_size_factor(global_size_factor: str)\n\nSet the global size factor.\n\n\n\nset_inlet_hub_position(parametric_hub_location: str)\n\nSet the parametric position of the inlet line on the hub.\n\n\n\nset_inlet_shroud_position(parametric_shroud_location: str)\n\nSet the parametric position of the inlet line on the shroud.\n\n\n\nset_obj_param(object: str, param_val_pairs: str)\n\nUpdate the value for a CCL object parameter.\n\n\n\nset_outlet_hub_position(parametric_hub_location: str)\n\nSet the parametric position of the outlet line on the hub.\n\n\n\nset_outlet_shroud_position(parametric_shroud_location: str)\n\nSet the parametric position of the outlet line on the shroud.\n\n\n\nset_topology_choice(atm_topology_choice: str)\n\nSet the topology method to be used for the topology set generation process.\n\nExample\n\n>>> turbogrid.set_topology_choice(\"Single Round Round Refined\")\n\n\n\nset_topology_list(atm_topology_list: str)\n\nSet the list of topology pieces to be used for topology generation.\n\nExample\n\n>>> turbogrid.set_topology_list(\"LECircleHigh_TECircleLow\")\n\n\n\nstart_session(filename: str)\n\nStart recording a new session.\n\n\n\nsuspend(object: str)\n\nSuspend a TurboGrid object.\n\n\n\nunsuspend(object: str)\n\nUnsuspend a TurboGrid object."
+    },
+    {
+        "objectID": "api_reference/pyturbogrid_core",
+        "href": "api_reference/pyturbogrid_core.html#ansys.turbogrid.api.pyturbogrid_core.PyTurboGrid.QUERY_ERROR_PREFIX",
+        "title": "pyturbogrid_core > pyturbogrid_core > QUERY_ERROR_PREFIX",
+        "section": "pyturbogrid_core > QUERY_ERROR_PREFIX",
+        "text": "QUERY_ERROR_PREFIX = 'ERROR:'\n\n"
+    },
+    {
+        "objectID": "api_reference/pyturbogrid_core",
+        "href": "api_reference/pyturbogrid_core.html#ansys.turbogrid.api.pyturbogrid_core.PyTurboGrid.TurboGridLocationType",
+        "title": "pyturbogrid_core > pyturbogrid_core > TurboGridLocationType",
+        "section": "pyturbogrid_core > TurboGridLocationType",
+        "text": "class TurboGridLocationType(value)\n\nSpecifies whether the PyTurboGrid class should launch TurboGrid from the given location, or connect to a running session of TurboGrid.\n:member-order: bysource\n\nAttributes:\n\n\n\n\n\n\n\nTURBOGRID_ANSYS_LABS\n\n\n\nTURBOGRID_INSTALL\n\n\n\nTURBOGRID_RUNNING_CONTAINER\n\n\n\ndenominator\n\nthe denominator of a rational number in lowest terms\n\nimag\n\nthe imaginary part of a complex number\n\nnumerator\n\nthe numerator of a rational number in lowest terms\n\nreal\n\nthe real part of a complex number\n\nMethods:\n\n\n\n\n\n\n\nas_integer_ratio()\n\nReturn integer ratio.\n\nbit_count()\n\nNumber of ones in the binary representation of the absolute value of self.\n\nbit_length()\n\nNumber of bits necessary to represent self in binary.\n\nconjugate\n\nReturns self, the complex conjugate of any int.\n\nfrom_bytes(byteorder, *[, signed])\n\nReturn the integer represented by the given array of bytes.\n\nto_bytes(length, byteorder, *[, signed])\n\nReturn an array of bytes representing an integer.\n\n\n\nTURBOGRID_ANSYS_LABS = 2\n\n\n\n\n\nTURBOGRID_INSTALL = 0\n\n\n\n\n\nTURBOGRID_RUNNING_CONTAINER = 1\n\n\n\n\n\nas_integer_ratio()\n\nReturn integer ratio.\n\nReturn a pair of integers, whose ratio is exactly equal to the original int\nand with a positive denominator.\n\n>>> (10).as_integer_ratio()\n(10, 1)\n>>> (-10).as_integer_ratio()\n(-10, 1)\n>>> (0).as_integer_ratio()\n(0, 1)\n\n\n\nbit_count()\n\nNumber of ones in the binary representation of the absolute value of self.\n\nAlso known as the population count.\n\n>>> bin(13)\n'0b1101'\n>>> (13).bit_count()\n3\n\n\n\nbit_length()\n\nNumber of bits necessary to represent self in binary.\n\n>>> bin(37)\n'0b100101'\n>>> (37).bit_length()\n6\n\n\n\nconjugate()\n\nReturns self, the complex conjugate of any int.\n\n\n\ndenominator\n\nthe denominator of a rational number in lowest terms\n\n\n\nfrom_bytes(byteorder, *, signed=False)\n\nReturn the integer represented by the given array of bytes.\n\nbytes\n\nHolds the array of bytes to convert.  The argument must either\nsupport the buffer protocol or be an iterable object producing bytes.\nBytes and bytearray are examples of built-in objects that support the\nbuffer protocol.\n\nbyteorder\n\nThe byte order used to represent the integer.  If byteorder is ‘big’,\nthe most significant byte is at the beginning of the byte array.  If\nbyteorder is ‘little’, the most significant byte is at the end of the\nbyte array.  To request the native byte order of the host system, use\n`sys.byteorder’ as the byte order value.\n\nsigned\n\nIndicates whether two’s complement is used to represent the integer.\n\n\n\nimag\n\nthe imaginary part of a complex number\n\n\n\nnumerator\n\nthe numerator of a rational number in lowest terms\n\n\n\nreal\n\nthe real part of a complex number\n\n\n\nto_bytes(length, byteorder, *, signed=False)\n\nReturn an array of bytes representing an integer.\n\nlength\n\nLength of bytes object to use.  An OverflowError is raised if the\ninteger is not representable with the given number of bytes.\n\nbyteorder\n\nThe byte order used to represent the integer.  If byteorder is ‘big’,\nthe most significant byte is at the beginning of the byte array.  If\nbyteorder is ‘little’, the most significant byte is at the end of the\nbyte array.  To request the native byte order of the host system, use\n`sys.byteorder’ as the byte order value.\n\nsigned\n\nDetermines whether two’s complement is used to represent the integer.\nIf signed is False and a negative integer is given, an OverflowError\nis raised."
+    },
+    {
+        "objectID": "api_reference/pyturbogrid_core",
+        "href": "api_reference/pyturbogrid_core.html#ansys.turbogrid.api.pyturbogrid_core.PyTurboGrid.TurboGridLocationType.TURBOGRID_ANSYS_LABS",
+        "title": "pyturbogrid_core > pyturbogrid_core > TURBOGRID_ANSYS_LABS",
+        "section": "pyturbogrid_core > TURBOGRID_ANSYS_LABS",
+        "text": "TURBOGRID_ANSYS_LABS = 2\n\n"
+    },
+    {
+        "objectID": "api_reference/pyturbogrid_core",
+        "href": "api_reference/pyturbogrid_core.html#ansys.turbogrid.api.pyturbogrid_core.PyTurboGrid.TurboGridLocationType.TURBOGRID_INSTALL",
+        "title": "pyturbogrid_core > pyturbogrid_core > TURBOGRID_INSTALL",
+        "section": "pyturbogrid_core > TURBOGRID_INSTALL",
+        "text": "TURBOGRID_INSTALL = 0\n\n"
+    },
+    {
+        "objectID": "api_reference/pyturbogrid_core",
+        "href": "api_reference/pyturbogrid_core.html#ansys.turbogrid.api.pyturbogrid_core.PyTurboGrid.TurboGridLocationType.TURBOGRID_RUNNING_CONTAINER",
+        "title": "pyturbogrid_core > pyturbogrid_core > TURBOGRID_RUNNING_CONTAINER",
+        "section": "pyturbogrid_core > TURBOGRID_RUNNING_CONTAINER",
+        "text": "TURBOGRID_RUNNING_CONTAINER = 1\n\n"
+    },
+    {
+        "objectID": "api_reference/pyturbogrid_core",
+        "href": "api_reference/pyturbogrid_core.html#ansys.turbogrid.api.pyturbogrid_core.PyTurboGrid.TurboGridLocationType.as_integer_ratio",
+        "title": "pyturbogrid_core > pyturbogrid_core > as_integer_ratio",
+        "section": "pyturbogrid_core > as_integer_ratio",
+        "text": "as_integer_ratio()\n\nReturn integer ratio.\n\nReturn a pair of integers, whose ratio is exactly equal to the original int\nand with a positive denominator.\n\n>>> (10).as_integer_ratio()\n(10, 1)\n>>> (-10).as_integer_ratio()\n(-10, 1)\n>>> (0).as_integer_ratio()\n(0, 1)"
+    },
+    {
+        "objectID": "api_reference/pyturbogrid_core",
+        "href": "api_reference/pyturbogrid_core.html#ansys.turbogrid.api.pyturbogrid_core.PyTurboGrid.TurboGridLocationType.bit_count",
+        "title": "pyturbogrid_core > pyturbogrid_core > bit_count",
+        "section": "pyturbogrid_core > bit_count",
+        "text": "bit_count()\n\nNumber of ones in the binary representation of the absolute value of self.\n\nAlso known as the population count.\n\n>>> bin(13)\n'0b1101'\n>>> (13).bit_count()\n3"
+    },
+    {
+        "objectID": "api_reference/pyturbogrid_core",
+        "href": "api_reference/pyturbogrid_core.html#ansys.turbogrid.api.pyturbogrid_core.PyTurboGrid.TurboGridLocationType.bit_length",
+        "title": "pyturbogrid_core > pyturbogrid_core > bit_length",
+        "section": "pyturbogrid_core > bit_length",
+        "text": "bit_length()\n\nNumber of bits necessary to represent self in binary.\n\n>>> bin(37)\n'0b100101'\n>>> (37).bit_length()\n6"
+    },
+    {
+        "objectID": "api_reference/pyturbogrid_core",
+        "href": "api_reference/pyturbogrid_core.html#ansys.turbogrid.api.pyturbogrid_core.PyTurboGrid.TurboGridLocationType.conjugate",
+        "title": "pyturbogrid_core > pyturbogrid_core > conjugate",
+        "section": "pyturbogrid_core > conjugate",
+        "text": "conjugate()\n\nReturns self, the complex conjugate of any int."
+    },
+    {
+        "objectID": "api_reference/pyturbogrid_core",
+        "href": "api_reference/pyturbogrid_core.html#ansys.turbogrid.api.pyturbogrid_core.PyTurboGrid.TurboGridLocationType.denominator",
+        "title": "pyturbogrid_core > pyturbogrid_core > denominator",
+        "section": "pyturbogrid_core > denominator",
+        "text": "denominator\n\nthe denominator of a rational number in lowest terms"
+    },
+    {
+        "objectID": "api_reference/pyturbogrid_core",
+        "href": "api_reference/pyturbogrid_core.html#ansys.turbogrid.api.pyturbogrid_core.PyTurboGrid.TurboGridLocationType.from_bytes",
+        "title": "pyturbogrid_core > pyturbogrid_core > from_bytes",
+        "section": "pyturbogrid_core > from_bytes",
+        "text": "from_bytes(byteorder, *, signed=False)\n\nReturn the integer represented by the given array of bytes.\n\nbytes\n\nHolds the array of bytes to convert.  The argument must either\nsupport the buffer protocol or be an iterable object producing bytes.\nBytes and bytearray are examples of built-in objects that support the\nbuffer protocol.\n\nbyteorder\n\nThe byte order used to represent the integer.  If byteorder is ‘big’,\nthe most significant byte is at the beginning of the byte array.  If\nbyteorder is ‘little’, the most significant byte is at the end of the\nbyte array.  To request the native byte order of the host system, use\n`sys.byteorder’ as the byte order value.\n\nsigned\n\nIndicates whether two’s complement is used to represent the integer."
+    },
+    {
+        "objectID": "api_reference/pyturbogrid_core",
+        "href": "api_reference/pyturbogrid_core.html#ansys.turbogrid.api.pyturbogrid_core.PyTurboGrid.TurboGridLocationType.imag",
+        "title": "pyturbogrid_core > pyturbogrid_core > imag",
+        "section": "pyturbogrid_core > imag",
+        "text": "imag\n\nthe imaginary part of a complex number"
+    },
+    {
+        "objectID": "api_reference/pyturbogrid_core",
+        "href": "api_reference/pyturbogrid_core.html#ansys.turbogrid.api.pyturbogrid_core.PyTurboGrid.TurboGridLocationType.numerator",
+        "title": "pyturbogrid_core > pyturbogrid_core > numerator",
+        "section": "pyturbogrid_core > numerator",
+        "text": "numerator\n\nthe numerator of a rational number in lowest terms"
+    },
+    {
+        "objectID": "api_reference/pyturbogrid_core",
+        "href": "api_reference/pyturbogrid_core.html#ansys.turbogrid.api.pyturbogrid_core.PyTurboGrid.TurboGridLocationType.real",
+        "title": "pyturbogrid_core > pyturbogrid_core > real",
+        "section": "pyturbogrid_core > real",
+        "text": "real\n\nthe real part of a complex number"
+    },
+    {
+        "objectID": "api_reference/pyturbogrid_core",
+        "href": "api_reference/pyturbogrid_core.html#ansys.turbogrid.api.pyturbogrid_core.PyTurboGrid.TurboGridLocationType.to_bytes",
+        "title": "pyturbogrid_core > pyturbogrid_core > to_bytes",
+        "section": "pyturbogrid_core > to_bytes",
+        "text": "to_bytes(length, byteorder, *, signed=False)\n\nReturn an array of bytes representing an integer.\n\nlength\n\nLength of bytes object to use.  An OverflowError is raised if the\ninteger is not representable with the given number of bytes.\n\nbyteorder\n\nThe byte order used to represent the integer.  If byteorder is ‘big’,\nthe most significant byte is at the beginning of the byte array.  If\nbyteorder is ‘little’, the most significant byte is at the end of the\nbyte array.  To request the native byte order of the host system, use\n`sys.byteorder’ as the byte order value.\n\nsigned\n\nDetermines whether two’s complement is used to represent the integer.\nIf signed is False and a negative integer is given, an OverflowError\nis raised."
+    },
+    {
+        "objectID": "api_reference/pyturbogrid_core",
+        "href": "api_reference/pyturbogrid_core.html#ansys.turbogrid.api.pyturbogrid_core.PyTurboGrid.TurboGridLogLevel",
+        "title": "pyturbogrid_core > pyturbogrid_core > TurboGridLogLevel",
+        "section": "pyturbogrid_core > TurboGridLogLevel",
+        "text": "class TurboGridLogLevel(value)\n\nControls which logging messages are reported. The higher values report the fewest messages.\n:member-order: bysource\n\nAttributes:\n\n\n\n\n\n\n\nCRITICAL\n\n\n\nDEBUG\n\n\n\nERROR\n\n\n\nINFO\n\n\n\nNETWORK_DEBUG\n\n\n\nNOTSET\n\n\n\nWARNING\n\n\n\ndenominator\n\nthe denominator of a rational number in lowest terms\n\nimag\n\nthe imaginary part of a complex number\n\nnumerator\n\nthe numerator of a rational number in lowest terms\n\nreal\n\nthe real part of a complex number\n\nMethods:\n\n\n\n\n\n\n\nas_integer_ratio()\n\nReturn integer ratio.\n\nbit_count()\n\nNumber of ones in the binary representation of the absolute value of self.\n\nbit_length()\n\nNumber of bits necessary to represent self in binary.\n\nconjugate\n\nReturns self, the complex conjugate of any int.\n\nfrom_bytes(byteorder, *[, signed])\n\nReturn the integer represented by the given array of bytes.\n\nto_bytes(length, byteorder, *[, signed])\n\nReturn an array of bytes representing an integer.\n\n\n\nCRITICAL = 50\n\n\n\n\n\nDEBUG = 10\n\n\n\n\n\nERROR = 40\n\n\n\n\n\nINFO = 20\n\n\n\n\n\nNETWORK_DEBUG = 15\n\n\n\n\n\nNOTSET = 0\n\n\n\n\n\nWARNING = 30\n\n\n\n\n\nas_integer_ratio()\n\nReturn integer ratio.\n\nReturn a pair of integers, whose ratio is exactly equal to the original int\nand with a positive denominator.\n\n>>> (10).as_integer_ratio()\n(10, 1)\n>>> (-10).as_integer_ratio()\n(-10, 1)\n>>> (0).as_integer_ratio()\n(0, 1)\n\n\n\nbit_count()\n\nNumber of ones in the binary representation of the absolute value of self.\n\nAlso known as the population count.\n\n>>> bin(13)\n'0b1101'\n>>> (13).bit_count()\n3\n\n\n\nbit_length()\n\nNumber of bits necessary to represent self in binary.\n\n>>> bin(37)\n'0b100101'\n>>> (37).bit_length()\n6\n\n\n\nconjugate()\n\nReturns self, the complex conjugate of any int.\n\n\n\ndenominator\n\nthe denominator of a rational number in lowest terms\n\n\n\nfrom_bytes(byteorder, *, signed=False)\n\nReturn the integer represented by the given array of bytes.\n\nbytes\n\nHolds the array of bytes to convert.  The argument must either\nsupport the buffer protocol or be an iterable object producing bytes.\nBytes and bytearray are examples of built-in objects that support the\nbuffer protocol.\n\nbyteorder\n\nThe byte order used to represent the integer.  If byteorder is ‘big’,\nthe most significant byte is at the beginning of the byte array.  If\nbyteorder is ‘little’, the most significant byte is at the end of the\nbyte array.  To request the native byte order of the host system, use\n`sys.byteorder’ as the byte order value.\n\nsigned\n\nIndicates whether two’s complement is used to represent the integer.\n\n\n\nimag\n\nthe imaginary part of a complex number\n\n\n\nnumerator\n\nthe numerator of a rational number in lowest terms\n\n\n\nreal\n\nthe real part of a complex number\n\n\n\nto_bytes(length, byteorder, *, signed=False)\n\nReturn an array of bytes representing an integer.\n\nlength\n\nLength of bytes object to use.  An OverflowError is raised if the\ninteger is not representable with the given number of bytes.\n\nbyteorder\n\nThe byte order used to represent the integer.  If byteorder is ‘big’,\nthe most significant byte is at the beginning of the byte array.  If\nbyteorder is ‘little’, the most significant byte is at the end of the\nbyte array.  To request the native byte order of the host system, use\n`sys.byteorder’ as the byte order value.\n\nsigned\n\nDetermines whether two’s complement is used to represent the integer.\nIf signed is False and a negative integer is given, an OverflowError\nis raised."
+    },
+    {
+        "objectID": "api_reference/pyturbogrid_core",
+        "href": "api_reference/pyturbogrid_core.html#ansys.turbogrid.api.pyturbogrid_core.PyTurboGrid.TurboGridLogLevel.CRITICAL",
+        "title": "pyturbogrid_core > pyturbogrid_core > CRITICAL",
+        "section": "pyturbogrid_core > CRITICAL",
+        "text": "CRITICAL = 50\n\n"
+    },
+    {
+        "objectID": "api_reference/pyturbogrid_core",
+        "href": "api_reference/pyturbogrid_core.html#ansys.turbogrid.api.pyturbogrid_core.PyTurboGrid.TurboGridLogLevel.DEBUG",
+        "title": "pyturbogrid_core > pyturbogrid_core > DEBUG",
+        "section": "pyturbogrid_core > DEBUG",
+        "text": "DEBUG = 10\n\n"
+    },
+    {
+        "objectID": "api_reference/pyturbogrid_core",
+        "href": "api_reference/pyturbogrid_core.html#ansys.turbogrid.api.pyturbogrid_core.PyTurboGrid.TurboGridLogLevel.ERROR",
+        "title": "pyturbogrid_core > pyturbogrid_core > ERROR",
+        "section": "pyturbogrid_core > ERROR",
+        "text": "ERROR = 40\n\n"
+    },
+    {
+        "objectID": "api_reference/pyturbogrid_core",
+        "href": "api_reference/pyturbogrid_core.html#ansys.turbogrid.api.pyturbogrid_core.PyTurboGrid.TurboGridLogLevel.INFO",
+        "title": "pyturbogrid_core > pyturbogrid_core > INFO",
+        "section": "pyturbogrid_core > INFO",
+        "text": "INFO = 20\n\n"
+    },
+    {
+        "objectID": "api_reference/pyturbogrid_core",
+        "href": "api_reference/pyturbogrid_core.html#ansys.turbogrid.api.pyturbogrid_core.PyTurboGrid.TurboGridLogLevel.NETWORK_DEBUG",
+        "title": "pyturbogrid_core > pyturbogrid_core > NETWORK_DEBUG",
+        "section": "pyturbogrid_core > NETWORK_DEBUG",
+        "text": "NETWORK_DEBUG = 15\n\n"
+    },
+    {
+        "objectID": "api_reference/pyturbogrid_core",
+        "href": "api_reference/pyturbogrid_core.html#ansys.turbogrid.api.pyturbogrid_core.PyTurboGrid.TurboGridLogLevel.NOTSET",
+        "title": "pyturbogrid_core > pyturbogrid_core > NOTSET",
+        "section": "pyturbogrid_core > NOTSET",
+        "text": "NOTSET = 0\n\n"
+    },
+    {
+        "objectID": "api_reference/pyturbogrid_core",
+        "href": "api_reference/pyturbogrid_core.html#ansys.turbogrid.api.pyturbogrid_core.PyTurboGrid.TurboGridLogLevel.WARNING",
+        "title": "pyturbogrid_core > pyturbogrid_core > WARNING",
+        "section": "pyturbogrid_core > WARNING",
+        "text": "WARNING = 30\n\n"
+    },
+    {
+        "objectID": "api_reference/pyturbogrid_core",
+        "href": "api_reference/pyturbogrid_core.html#ansys.turbogrid.api.pyturbogrid_core.PyTurboGrid.TurboGridLogLevel.as_integer_ratio",
+        "title": "pyturbogrid_core > pyturbogrid_core > as_integer_ratio",
+        "section": "pyturbogrid_core > as_integer_ratio",
+        "text": "as_integer_ratio()\n\nReturn integer ratio.\n\nReturn a pair of integers, whose ratio is exactly equal to the original int\nand with a positive denominator.\n\n>>> (10).as_integer_ratio()\n(10, 1)\n>>> (-10).as_integer_ratio()\n(-10, 1)\n>>> (0).as_integer_ratio()\n(0, 1)"
+    },
+    {
+        "objectID": "api_reference/pyturbogrid_core",
+        "href": "api_reference/pyturbogrid_core.html#ansys.turbogrid.api.pyturbogrid_core.PyTurboGrid.TurboGridLogLevel.bit_count",
+        "title": "pyturbogrid_core > pyturbogrid_core > bit_count",
+        "section": "pyturbogrid_core > bit_count",
+        "text": "bit_count()\n\nNumber of ones in the binary representation of the absolute value of self.\n\nAlso known as the population count.\n\n>>> bin(13)\n'0b1101'\n>>> (13).bit_count()\n3"
+    },
+    {
+        "objectID": "api_reference/pyturbogrid_core",
+        "href": "api_reference/pyturbogrid_core.html#ansys.turbogrid.api.pyturbogrid_core.PyTurboGrid.TurboGridLogLevel.bit_length",
+        "title": "pyturbogrid_core > pyturbogrid_core > bit_length",
+        "section": "pyturbogrid_core > bit_length",
+        "text": "bit_length()\n\nNumber of bits necessary to represent self in binary.\n\n>>> bin(37)\n'0b100101'\n>>> (37).bit_length()\n6"
+    },
+    {
+        "objectID": "api_reference/pyturbogrid_core",
+        "href": "api_reference/pyturbogrid_core.html#ansys.turbogrid.api.pyturbogrid_core.PyTurboGrid.TurboGridLogLevel.conjugate",
+        "title": "pyturbogrid_core > pyturbogrid_core > conjugate",
+        "section": "pyturbogrid_core > conjugate",
+        "text": "conjugate()\n\nReturns self, the complex conjugate of any int."
+    },
+    {
+        "objectID": "api_reference/pyturbogrid_core",
+        "href": "api_reference/pyturbogrid_core.html#ansys.turbogrid.api.pyturbogrid_core.PyTurboGrid.TurboGridLogLevel.denominator",
+        "title": "pyturbogrid_core > pyturbogrid_core > denominator",
+        "section": "pyturbogrid_core > denominator",
+        "text": "denominator\n\nthe denominator of a rational number in lowest terms"
+    },
+    {
+        "objectID": "api_reference/pyturbogrid_core",
+        "href": "api_reference/pyturbogrid_core.html#ansys.turbogrid.api.pyturbogrid_core.PyTurboGrid.TurboGridLogLevel.from_bytes",
+        "title": "pyturbogrid_core > pyturbogrid_core > from_bytes",
+        "section": "pyturbogrid_core > from_bytes",
+        "text": "from_bytes(byteorder, *, signed=False)\n\nReturn the integer represented by the given array of bytes.\n\nbytes\n\nHolds the array of bytes to convert.  The argument must either\nsupport the buffer protocol or be an iterable object producing bytes.\nBytes and bytearray are examples of built-in objects that support the\nbuffer protocol.\n\nbyteorder\n\nThe byte order used to represent the integer.  If byteorder is ‘big’,\nthe most significant byte is at the beginning of the byte array.  If\nbyteorder is ‘little’, the most significant byte is at the end of the\nbyte array.  To request the native byte order of the host system, use\n`sys.byteorder’ as the byte order value.\n\nsigned\n\nIndicates whether two’s complement is used to represent the integer."
+    },
+    {
+        "objectID": "api_reference/pyturbogrid_core",
+        "href": "api_reference/pyturbogrid_core.html#ansys.turbogrid.api.pyturbogrid_core.PyTurboGrid.TurboGridLogLevel.imag",
+        "title": "pyturbogrid_core > pyturbogrid_core > imag",
+        "section": "pyturbogrid_core > imag",
+        "text": "imag\n\nthe imaginary part of a complex number"
+    },
+    {
+        "objectID": "api_reference/pyturbogrid_core",
+        "href": "api_reference/pyturbogrid_core.html#ansys.turbogrid.api.pyturbogrid_core.PyTurboGrid.TurboGridLogLevel.numerator",
+        "title": "pyturbogrid_core > pyturbogrid_core > numerator",
+        "section": "pyturbogrid_core > numerator",
+        "text": "numerator\n\nthe numerator of a rational number in lowest terms"
+    },
+    {
+        "objectID": "api_reference/pyturbogrid_core",
+        "href": "api_reference/pyturbogrid_core.html#ansys.turbogrid.api.pyturbogrid_core.PyTurboGrid.TurboGridLogLevel.real",
+        "title": "pyturbogrid_core > pyturbogrid_core > real",
+        "section": "pyturbogrid_core > real",
+        "text": "real\n\nthe real part of a complex number"
+    },
+    {
+        "objectID": "api_reference/pyturbogrid_core",
+        "href": "api_reference/pyturbogrid_core.html#ansys.turbogrid.api.pyturbogrid_core.PyTurboGrid.TurboGridLogLevel.to_bytes",
+        "title": "pyturbogrid_core > pyturbogrid_core > to_bytes",
+        "section": "pyturbogrid_core > to_bytes",
+        "text": "to_bytes(length, byteorder, *, signed=False)\n\nReturn an array of bytes representing an integer.\n\nlength\n\nLength of bytes object to use.  An OverflowError is raised if the\ninteger is not representable with the given number of bytes.\n\nbyteorder\n\nThe byte order used to represent the integer.  If byteorder is ‘big’,\nthe most significant byte is at the beginning of the byte array.  If\nbyteorder is ‘little’, the most significant byte is at the end of the\nbyte array.  To request the native byte order of the host system, use\n`sys.byteorder’ as the byte order value.\n\nsigned\n\nDetermines whether two’s complement is used to represent the integer.\nIf signed is False and a negative integer is given, an OverflowError\nis raised."
+    },
+    {
+        "objectID": "api_reference/pyturbogrid_core",
+        "href": "api_reference/pyturbogrid_core.html#ansys.turbogrid.api.pyturbogrid_core.PyTurboGrid.__init__",
+        "title": "pyturbogrid_core > pyturbogrid_core > __init__",
+        "section": "pyturbogrid_core > __init__",
+        "text": "__init__(socket_port: int | None, turbogrid_location_type: TurboGridLocationType, cfxtg_location, additional_args_str: str | None, additional_kw_args: dict | None, log_level=TurboGridLogLevel.INFO, host_ip: str = '127.0.0.1', pim_app_name: str = 'turbogrid', pim_app_ver: str = '241', log_filename_suffix: str = '')\n\n"
+    },
+    {
+        "objectID": "api_reference/pyturbogrid_core",
+        "href": "api_reference/pyturbogrid_core.html#ansys.turbogrid.api.pyturbogrid_core.PyTurboGrid.already_exited",
+        "title": "pyturbogrid_core > pyturbogrid_core > already_exited",
+        "section": "pyturbogrid_core > already_exited",
+        "text": "already_exited = False\n\n"
+    },
+    {
+        "objectID": "api_reference/pyturbogrid_core",
+        "href": "api_reference/pyturbogrid_core.html#ansys.turbogrid.api.pyturbogrid_core.PyTurboGrid.app_name",
+        "title": "pyturbogrid_core > pyturbogrid_core > app_name",
+        "section": "pyturbogrid_core > app_name",
+        "text": "app_name = 'App'\n\n"
+    },
+    {
+        "objectID": "api_reference/pyturbogrid_core",
+        "href": "api_reference/pyturbogrid_core.html#ansys.turbogrid.api.pyturbogrid_core.PyTurboGrid.block_each_message",
+        "title": "pyturbogrid_core > pyturbogrid_core > block_each_message",
+        "section": "pyturbogrid_core > block_each_message",
+        "text": "block_each_message: bool = False\n\n"
+    },
+    {
+        "objectID": "api_reference/pyturbogrid_core",
+        "href": "api_reference/pyturbogrid_core.html#ansys.turbogrid.api.pyturbogrid_core.PyTurboGrid.client_socket",
+        "title": "pyturbogrid_core > pyturbogrid_core > client_socket",
+        "section": "pyturbogrid_core > client_socket",
+        "text": "client_socket: socket = 0\n\n"
+    },
+    {
+        "objectID": "api_reference/pyturbogrid_core",
+        "href": "api_reference/pyturbogrid_core.html#ansys.turbogrid.api.pyturbogrid_core.PyTurboGrid.console_log_file",
+        "title": "pyturbogrid_core > pyturbogrid_core > console_log_file",
+        "section": "pyturbogrid_core > console_log_file",
+        "text": "console_log_file: TextIOWrapper = 0\n\n"
+    },
+    {
+        "objectID": "api_reference/pyturbogrid_core",
+        "href": "api_reference/pyturbogrid_core.html#ansys.turbogrid.api.pyturbogrid_core.PyTurboGrid.end_session",
+        "title": "pyturbogrid_core > pyturbogrid_core > end_session",
+        "section": "pyturbogrid_core > end_session",
+        "text": "end_session()\n\nStop recording a session file."
+    },
+    {
+        "objectID": "api_reference/pyturbogrid_core",
+        "href": "api_reference/pyturbogrid_core.html#ansys.turbogrid.api.pyturbogrid_core.PyTurboGrid.engine_ccl_observers",
+        "title": "pyturbogrid_core > pyturbogrid_core > engine_ccl_observers",
+        "section": "pyturbogrid_core > engine_ccl_observers",
+        "text": "engine_ccl_observers: Set[ICCLChangeObserver] = {}\n\n"
+    },
+    {
+        "objectID": "api_reference/pyturbogrid_core",
+        "href": "api_reference/pyturbogrid_core.html#ansys.turbogrid.api.pyturbogrid_core.PyTurboGrid.engine_incoming_error_queue",
+        "title": "pyturbogrid_core > pyturbogrid_core > engine_incoming_error_queue",
+        "section": "pyturbogrid_core > engine_incoming_error_queue",
+        "text": "engine_incoming_error_queue: <module 'queue' from '/opt/hostedtoolcache/Python/3.10.17/x64/lib/python3.10/queue.py'> = 0\n\n"
+    },
+    {
+        "objectID": "api_reference/pyturbogrid_core",
+        "href": "api_reference/pyturbogrid_core.html#ansys.turbogrid.api.pyturbogrid_core.PyTurboGrid.engine_incoming_message_queue",
+        "title": "pyturbogrid_core > pyturbogrid_core > engine_incoming_message_queue",
+        "section": "pyturbogrid_core > engine_incoming_message_queue",
+        "text": "engine_incoming_message_queue: <module 'queue' from '/opt/hostedtoolcache/Python/3.10.17/x64/lib/python3.10/queue.py'> = 0\n\n"
+    },
+    {
+        "objectID": "api_reference/pyturbogrid_core",
+        "href": "api_reference/pyturbogrid_core.html#ansys.turbogrid.api.pyturbogrid_core.PyTurboGrid.engine_proc",
+        "title": "pyturbogrid_core > pyturbogrid_core > engine_proc",
+        "section": "pyturbogrid_core > engine_proc",
+        "text": "engine_proc: Popen = 0\n\n"
+    },
+    {
+        "objectID": "api_reference/pyturbogrid_core",
+        "href": "api_reference/pyturbogrid_core.html#ansys.turbogrid.api.pyturbogrid_core.PyTurboGrid.engine_ready",
+        "title": "pyturbogrid_core > pyturbogrid_core > engine_ready",
+        "section": "pyturbogrid_core > engine_ready",
+        "text": "engine_ready: bool = False\n\n"
+    },
+    {
+        "objectID": "api_reference/pyturbogrid_core",
+        "href": "api_reference/pyturbogrid_core.html#ansys.turbogrid.api.pyturbogrid_core.PyTurboGrid.getBoundaryGeometry",
+        "title": "pyturbogrid_core > pyturbogrid_core > getBoundaryGeometry",
+        "section": "pyturbogrid_core > getBoundaryGeometry",
+        "text": "getBoundaryGeometry(prefix_string: str = '') -> list[any]\n\n"
+    },
+    {
+        "objectID": "api_reference/pyturbogrid_core",
+        "href": "api_reference/pyturbogrid_core.html#ansys.turbogrid.api.pyturbogrid_core.PyTurboGrid.getTGInitTopology",
+        "title": "pyturbogrid_core > pyturbogrid_core > getTGInitTopology",
+        "section": "pyturbogrid_core > getTGInitTopology",
+        "text": "getTGInitTopology(tginit_path: str, transformIOToLines: bool = False) -> dict[str, any]\n\n"
+    },
+    {
+        "objectID": "api_reference/pyturbogrid_core",
+        "href": "api_reference/pyturbogrid_core.html#ansys.turbogrid.api.pyturbogrid_core.PyTurboGrid.get_object_param",
+        "title": "pyturbogrid_core > pyturbogrid_core > get_object_param",
+        "section": "pyturbogrid_core > get_object_param",
+        "text": "get_object_param(object: str, param: str) -> str\n\nReturns the parameter value."
+    },
+    {
+        "objectID": "api_reference/pyturbogrid_core",
+        "href": "api_reference/pyturbogrid_core.html#ansys.turbogrid.api.pyturbogrid_core.PyTurboGrid.get_version",
+        "title": "pyturbogrid_core > pyturbogrid_core > get_version",
+        "section": "pyturbogrid_core > get_version",
+        "text": "get_version() -> str\n\nGet the version of the application which is being run in the current session."
+    },
+    {
+        "objectID": "api_reference/pyturbogrid_core",
+        "href": "api_reference/pyturbogrid_core.html#ansys.turbogrid.api.pyturbogrid_core.PyTurboGrid.host_ip",
+        "title": "pyturbogrid_core > pyturbogrid_core > host_ip",
+        "section": "pyturbogrid_core > host_ip",
+        "text": "host_ip: str = '127.0.0.1'\n\n"
+    },
+    {
+        "objectID": "api_reference/pyturbogrid_core",
+        "href": "api_reference/pyturbogrid_core.html#ansys.turbogrid.api.pyturbogrid_core.PyTurboGrid.log_filename_suffix",
+        "title": "pyturbogrid_core > pyturbogrid_core > log_filename_suffix",
+        "section": "pyturbogrid_core > log_filename_suffix",
+        "text": "log_filename_suffix: str = ''\n\n"
+    },
+    {
+        "objectID": "api_reference/pyturbogrid_core",
+        "href": "api_reference/pyturbogrid_core.html#ansys.turbogrid.api.pyturbogrid_core.PyTurboGrid.outgoing_log_file",
+        "title": "pyturbogrid_core > pyturbogrid_core > outgoing_log_file",
+        "section": "pyturbogrid_core > outgoing_log_file",
+        "text": "outgoing_log_file: TextIOWrapper = 0\n\n"
+    },
+    {
+        "objectID": "api_reference/pyturbogrid_core",
+        "href": "api_reference/pyturbogrid_core.html#ansys.turbogrid.api.pyturbogrid_core.PyTurboGrid.print_messages_in_console",
+        "title": "pyturbogrid_core > pyturbogrid_core > print_messages_in_console",
+        "section": "pyturbogrid_core > print_messages_in_console",
+        "text": "print_messages_in_console: bool = False\n\n"
+    },
+    {
+        "objectID": "api_reference/pyturbogrid_core",
+        "href": "api_reference/pyturbogrid_core.html#ansys.turbogrid.api.pyturbogrid_core.PyTurboGrid.proc_port",
+        "title": "pyturbogrid_core > pyturbogrid_core > proc_port",
+        "section": "pyturbogrid_core > proc_port",
+        "text": "proc_port: int | None = None\n\n"
+    },
+    {
+        "objectID": "api_reference/pyturbogrid_core",
+        "href": "api_reference/pyturbogrid_core.html#ansys.turbogrid.api.pyturbogrid_core.PyTurboGrid.process_log_file",
+        "title": "pyturbogrid_core > pyturbogrid_core > process_log_file",
+        "section": "pyturbogrid_core > process_log_file",
+        "text": "process_log_file: TextIOWrapper = 0\n\n"
+    },
+    {
+        "objectID": "api_reference/pyturbogrid_core",
+        "href": "api_reference/pyturbogrid_core.html#ansys.turbogrid.api.pyturbogrid_core.PyTurboGrid.pyengine_log_level",
+        "title": "pyturbogrid_core > pyturbogrid_core > pyengine_log_level",
+        "section": "pyturbogrid_core > pyengine_log_level",
+        "text": "pyengine_log_level: ServerLogLevel = 20\n\n"
+    },
+    {
+        "objectID": "api_reference/pyturbogrid_core",
+        "href": "api_reference/pyturbogrid_core.html#ansys.turbogrid.api.pyturbogrid_core.PyTurboGrid.query_average_background_face_area",
+        "title": "pyturbogrid_core > pyturbogrid_core > query_average_background_face_area",
+        "section": "pyturbogrid_core > query_average_background_face_area",
+        "text": "query_average_background_face_area() -> float\n\nReturns the average background face area, averaged again from the hub, midspan and shroud."
+    },
+    {
+        "objectID": "api_reference/pyturbogrid_core",
+        "href": "api_reference/pyturbogrid_core.html#ansys.turbogrid.api.pyturbogrid_core.PyTurboGrid.query_average_base_face_area",
+        "title": "pyturbogrid_core > pyturbogrid_core > query_average_base_face_area",
+        "section": "pyturbogrid_core > query_average_base_face_area",
+        "text": "query_average_base_face_area() -> float\n\nReturns the average base face area, averaged again from each layer."
+    },
+    {
+        "objectID": "api_reference/pyturbogrid_core",
+        "href": "api_reference/pyturbogrid_core.html#ansys.turbogrid.api.pyturbogrid_core.PyTurboGrid.query_mesh_statistics",
+        "title": "pyturbogrid_core > pyturbogrid_core > query_mesh_statistics",
+        "section": "pyturbogrid_core > query_mesh_statistics",
+        "text": "query_mesh_statistics(domain: str = 'ALL') -> dict\n\nReturns mesh quality measures from TurboGrid for the current session and specified domain. Note: It is suggested to use the mesh_statistics module instead of directly calling this."
+    },
+    {
+        "objectID": "api_reference/pyturbogrid_core",
+        "href": "api_reference/pyturbogrid_core.html#ansys.turbogrid.api.pyturbogrid_core.PyTurboGrid.query_mesh_statistics_histogram_data",
+        "title": "pyturbogrid_core > pyturbogrid_core > query_mesh_statistics_histogram_data",
+        "section": "pyturbogrid_core > query_mesh_statistics_histogram_data",
+        "text": "query_mesh_statistics_histogram_data(variable: str, domain: str = 'ALL', number_of_bins: int = 20, upper_bound: float | None = None, lower_bound: float | None = None, bin_units: str = '', scale: str = 'Linear', use_absolute_values: bool = False, bin_divisions: list | None = None) -> dict\n\nReturns data that can be used to plot mesh statistics histograms."
+    },
+    {
+        "objectID": "api_reference/pyturbogrid_core",
+        "href": "api_reference/pyturbogrid_core.html#ansys.turbogrid.api.pyturbogrid_core.PyTurboGrid.query_number_of_spanwise_elements",
+        "title": "pyturbogrid_core > pyturbogrid_core > query_number_of_spanwise_elements",
+        "section": "pyturbogrid_core > query_number_of_spanwise_elements",
+        "text": "query_number_of_spanwise_elements() -> int\n\nReturns the total number of elements in the spanwise direction."
+    },
+    {
+        "objectID": "api_reference/pyturbogrid_core",
+        "href": "api_reference/pyturbogrid_core.html#ansys.turbogrid.api.pyturbogrid_core.PyTurboGrid.query_valid_topology_choices",
+        "title": "pyturbogrid_core > pyturbogrid_core > query_valid_topology_choices",
+        "section": "pyturbogrid_core > query_valid_topology_choices",
+        "text": "query_valid_topology_choices() -> list\n\nReturns the permitted topology methods for the blade geometry in the current session."
+    },
+    {
+        "objectID": "api_reference/pyturbogrid_core",
+        "href": "api_reference/pyturbogrid_core.html#ansys.turbogrid.api.pyturbogrid_core.PyTurboGrid.quit",
+        "title": "pyturbogrid_core > pyturbogrid_core > quit",
+        "section": "pyturbogrid_core > quit",
+        "text": "quit()\n\nQuit the application instance."
+    },
+    {
+        "objectID": "api_reference/pyturbogrid_core",
+        "href": "api_reference/pyturbogrid_core.html#ansys.turbogrid.api.pyturbogrid_core.PyTurboGrid.read_inf",
+        "title": "pyturbogrid_core > pyturbogrid_core > read_inf",
+        "section": "pyturbogrid_core > read_inf",
+        "text": "read_inf(filename: str)\n\nRead a blade model from a BladeGen *.inf file."
+    },
+    {
+        "objectID": "api_reference/pyturbogrid_core",
+        "href": "api_reference/pyturbogrid_core.html#ansys.turbogrid.api.pyturbogrid_core.PyTurboGrid.read_message_process",
+        "title": "pyturbogrid_core > pyturbogrid_core > read_message_process",
+        "section": "pyturbogrid_core > read_message_process",
+        "text": "read_message_process: CUEEngineReadMessageService = 0\n\n"
+    },
+    {
+        "objectID": "api_reference/pyturbogrid_core",
+        "href": "api_reference/pyturbogrid_core.html#ansys.turbogrid.api.pyturbogrid_core.PyTurboGrid.read_ndf",
+        "title": "pyturbogrid_core > pyturbogrid_core > read_ndf",
+        "section": "pyturbogrid_core > read_ndf",
+        "text": "read_ndf(ndffilename: str, cadfilename: str = '', flowpath: str = '', bladerow: str = '', bladename: str = '')\n\nRead a blade model from an NDF (*.ndf) file. TurboGrid uses the details in the NDF file to generate and import a CAD file containing the blade geometry."
+    },
+    {
+        "objectID": "api_reference/pyturbogrid_core",
+        "href": "api_reference/pyturbogrid_core.html#ansys.turbogrid.api.pyturbogrid_core.PyTurboGrid.read_session",
+        "title": "pyturbogrid_core > pyturbogrid_core > read_session",
+        "section": "pyturbogrid_core > read_session",
+        "text": "read_session(filename: str)\n\nRead a session file to repeat a previous session."
+    },
+    {
+        "objectID": "api_reference/pyturbogrid_core",
+        "href": "api_reference/pyturbogrid_core.html#ansys.turbogrid.api.pyturbogrid_core.PyTurboGrid.read_state",
+        "title": "pyturbogrid_core > pyturbogrid_core > read_state",
+        "section": "pyturbogrid_core > read_state",
+        "text": "read_state(filename: str)\n\nRestore a previous state from a saved state file."
+    },
+    {
+        "objectID": "api_reference/pyturbogrid_core",
+        "href": "api_reference/pyturbogrid_core.html#ansys.turbogrid.api.pyturbogrid_core.PyTurboGrid.read_tginit",
+        "title": "pyturbogrid_core > pyturbogrid_core > read_tginit",
+        "section": "pyturbogrid_core > read_tginit",
+        "text": "read_tginit(path: str, bladerow: str = '')\n\nRead a blade row from a *.tginit file."
+    },
+    {
+        "objectID": "api_reference/pyturbogrid_core",
+        "href": "api_reference/pyturbogrid_core.html#ansys.turbogrid.api.pyturbogrid_core.PyTurboGrid.run_read_message_process",
+        "title": "pyturbogrid_core > pyturbogrid_core > run_read_message_process",
+        "section": "pyturbogrid_core > run_read_message_process",
+        "text": "run_read_message_process: bool = True\n\n"
+    },
+    {
+        "objectID": "api_reference/pyturbogrid_core",
+        "href": "api_reference/pyturbogrid_core.html#ansys.turbogrid.api.pyturbogrid_core.PyTurboGrid.run_send_message_process",
+        "title": "pyturbogrid_core > pyturbogrid_core > run_send_message_process",
+        "section": "pyturbogrid_core > run_send_message_process",
+        "text": "run_send_message_process: bool = True\n\n"
+    },
+    {
+        "objectID": "api_reference/pyturbogrid_core",
+        "href": "api_reference/pyturbogrid_core.html#ansys.turbogrid.api.pyturbogrid_core.PyTurboGrid.save_image",
+        "title": "pyturbogrid_core > pyturbogrid_core > save_image",
+        "section": "pyturbogrid_core > save_image",
+        "text": "save_image(filename: str, format: str = 'png')\n\nSave the current contents of the viewer window to a file."
+    },
+    {
+        "objectID": "api_reference/pyturbogrid_core",
+        "href": "api_reference/pyturbogrid_core.html#ansys.turbogrid.api.pyturbogrid_core.PyTurboGrid.save_mesh",
+        "title": "pyturbogrid_core > pyturbogrid_core > save_mesh",
+        "section": "pyturbogrid_core > save_mesh",
+        "text": "save_mesh(filename: str, onefile: bool, onedomain: bool = True, addsecondary=True)\n\nSave generated mesh to a file."
+    },
+    {
+        "objectID": "api_reference/pyturbogrid_core",
+        "href": "api_reference/pyturbogrid_core.html#ansys.turbogrid.api.pyturbogrid_core.PyTurboGrid.save_state",
+        "title": "pyturbogrid_core > pyturbogrid_core > save_state",
+        "section": "pyturbogrid_core > save_state",
+        "text": "save_state(filename: str)\n\nSave the current state into a file."
+    },
+    {
+        "objectID": "api_reference/pyturbogrid_core",
+        "href": "api_reference/pyturbogrid_core.html#ansys.turbogrid.api.pyturbogrid_core.PyTurboGrid.send_ccl",
+        "title": "pyturbogrid_core > pyturbogrid_core > send_ccl",
+        "section": "pyturbogrid_core > send_ccl",
+        "text": "send_ccl(ccl: str) -> bool\n\nSend the provided CCL to the application."
+    },
+    {
+        "objectID": "api_reference/pyturbogrid_core",
+        "href": "api_reference/pyturbogrid_core.html#ansys.turbogrid.api.pyturbogrid_core.PyTurboGrid.send_message_process",
+        "title": "pyturbogrid_core > pyturbogrid_core > send_message_process",
+        "section": "pyturbogrid_core > send_message_process",
+        "text": "send_message_process: CUEEngineSendMessageService = 0\n\n"
+    },
+    {
+        "objectID": "api_reference/pyturbogrid_core",
+        "href": "api_reference/pyturbogrid_core.html#ansys.turbogrid.api.pyturbogrid_core.PyTurboGrid.set_global_size_factor",
+        "title": "pyturbogrid_core > pyturbogrid_core > set_global_size_factor",
+        "section": "pyturbogrid_core > set_global_size_factor",
+        "text": "set_global_size_factor(global_size_factor: str)\n\nSet the global size factor."
+    },
+    {
+        "objectID": "api_reference/pyturbogrid_core",
+        "href": "api_reference/pyturbogrid_core.html#ansys.turbogrid.api.pyturbogrid_core.PyTurboGrid.set_inlet_hub_position",
+        "title": "pyturbogrid_core > pyturbogrid_core > set_inlet_hub_position",
+        "section": "pyturbogrid_core > set_inlet_hub_position",
+        "text": "set_inlet_hub_position(parametric_hub_location: str)\n\nSet the parametric position of the inlet line on the hub."
+    },
+    {
+        "objectID": "api_reference/pyturbogrid_core",
+        "href": "api_reference/pyturbogrid_core.html#ansys.turbogrid.api.pyturbogrid_core.PyTurboGrid.set_inlet_shroud_position",
+        "title": "pyturbogrid_core > pyturbogrid_core > set_inlet_shroud_position",
+        "section": "pyturbogrid_core > set_inlet_shroud_position",
+        "text": "set_inlet_shroud_position(parametric_shroud_location: str)\n\nSet the parametric position of the inlet line on the shroud."
+    },
+    {
+        "objectID": "api_reference/pyturbogrid_core",
+        "href": "api_reference/pyturbogrid_core.html#ansys.turbogrid.api.pyturbogrid_core.PyTurboGrid.set_obj_param",
+        "title": "pyturbogrid_core > pyturbogrid_core > set_obj_param",
+        "section": "pyturbogrid_core > set_obj_param",
+        "text": "set_obj_param(object: str, param_val_pairs: str)\n\nUpdate the value for a CCL object parameter."
+    },
+    {
+        "objectID": "api_reference/pyturbogrid_core",
+        "href": "api_reference/pyturbogrid_core.html#ansys.turbogrid.api.pyturbogrid_core.PyTurboGrid.set_outlet_hub_position",
+        "title": "pyturbogrid_core > pyturbogrid_core > set_outlet_hub_position",
+        "section": "pyturbogrid_core > set_outlet_hub_position",
+        "text": "set_outlet_hub_position(parametric_hub_location: str)\n\nSet the parametric position of the outlet line on the hub."
+    },
+    {
+        "objectID": "api_reference/pyturbogrid_core",
+        "href": "api_reference/pyturbogrid_core.html#ansys.turbogrid.api.pyturbogrid_core.PyTurboGrid.set_outlet_shroud_position",
+        "title": "pyturbogrid_core > pyturbogrid_core > set_outlet_shroud_position",
+        "section": "pyturbogrid_core > set_outlet_shroud_position",
+        "text": "set_outlet_shroud_position(parametric_shroud_location: str)\n\nSet the parametric position of the outlet line on the shroud."
+    },
+    {
+        "objectID": "api_reference/pyturbogrid_core",
+        "href": "api_reference/pyturbogrid_core.html#ansys.turbogrid.api.pyturbogrid_core.PyTurboGrid.set_topology_choice",
+        "title": "pyturbogrid_core > pyturbogrid_core > set_topology_choice",
+        "section": "pyturbogrid_core > set_topology_choice",
+        "text": "set_topology_choice(atm_topology_choice: str)\n\nSet the topology method to be used for the topology set generation process.\n\nExample\n\n>>> turbogrid.set_topology_choice(\"Single Round Round Refined\")"
+    },
+    {
+        "objectID": "api_reference/pyturbogrid_core",
+        "href": "api_reference/pyturbogrid_core.html#ansys.turbogrid.api.pyturbogrid_core.PyTurboGrid.set_topology_list",
+        "title": "pyturbogrid_core > pyturbogrid_core > set_topology_list",
+        "section": "pyturbogrid_core > set_topology_list",
+        "text": "set_topology_list(atm_topology_list: str)\n\nSet the list of topology pieces to be used for topology generation.\n\nExample\n\n>>> turbogrid.set_topology_list(\"LECircleHigh_TECircleLow\")"
+    },
+    {
+        "objectID": "api_reference/pyturbogrid_core",
+        "href": "api_reference/pyturbogrid_core.html#ansys.turbogrid.api.pyturbogrid_core.PyTurboGrid.start_session",
+        "title": "pyturbogrid_core > pyturbogrid_core > start_session",
+        "section": "pyturbogrid_core > start_session",
+        "text": "start_session(filename: str)\n\nStart recording a new session."
+    },
+    {
+        "objectID": "api_reference/pyturbogrid_core",
+        "href": "api_reference/pyturbogrid_core.html#ansys.turbogrid.api.pyturbogrid_core.PyTurboGrid.suspend",
+        "title": "pyturbogrid_core > pyturbogrid_core > suspend",
+        "section": "pyturbogrid_core > suspend",
+        "text": "suspend(object: str)\n\nSuspend a TurboGrid object."
+    },
+    {
+        "objectID": "api_reference/pyturbogrid_core",
+        "href": "api_reference/pyturbogrid_core.html#ansys.turbogrid.api.pyturbogrid_core.PyTurboGrid.unsuspend",
+        "title": "pyturbogrid_core > pyturbogrid_core > unsuspend",
+        "section": "pyturbogrid_core > unsuspend",
+        "text": "unsuspend(object: str)\n\nUnsuspend a TurboGrid object."
+    },
+    {
+        "objectID": "api_reference/pyturbogrid_core",
+        "href": "api_reference/pyturbogrid_core.html#parameters",
+        "title": "pyturbogrid_core > Parameters",
+        "section": "Parameters",
+        "text": "Name with full path for the CCL object.\nName of the parameter to get.\nParameters"
+    },
+    {
+        "objectID": "api_reference/pyturbogrid_core",
+        "href": "api_reference/pyturbogrid_core.html#returns",
+        "title": "pyturbogrid_core > Returns",
+        "section": "Returns",
+        "text": "The parameter value.\nReturns"
+    },
+    {
+        "objectID": "api_reference/pyturbogrid_core",
+        "href": "api_reference/pyturbogrid_core.html#returns",
+        "title": "pyturbogrid_core > Returns",
+        "section": "Returns",
+        "text": "The application version e.g. ‘24.1’.\nReturns"
+    },
+    {
+        "objectID": "api_reference/pyturbogrid_core",
+        "href": "api_reference/pyturbogrid_core.html#returns",
+        "title": "pyturbogrid_core > Returns",
+        "section": "Returns",
+        "text": "Average Area in base units ^ 2.\nReturns"
+    },
+    {
+        "objectID": "api_reference/pyturbogrid_core",
+        "href": "api_reference/pyturbogrid_core.html#returns",
+        "title": "pyturbogrid_core > Returns",
+        "section": "Returns",
+        "text": "Average Area in base units ^ 2.\nReturns"
+    },
+    {
+        "objectID": "api_reference/pyturbogrid_core",
+        "href": "api_reference/pyturbogrid_core.html#parameters",
+        "title": "pyturbogrid_core > Parameters",
+        "section": "Parameters",
+        "text": "Name of the domain from which to obtain the measurements.\nParameters\n\"ALL\""
+    },
+    {
+        "objectID": "api_reference/pyturbogrid_core",
+        "href": "api_reference/pyturbogrid_core.html#returns",
+        "title": "pyturbogrid_core > Returns",
+        "section": "Returns",
+        "text": "A dictionary form of the quality measurements.\nReturns"
+    },
+    {
+        "objectID": "api_reference/pyturbogrid_core",
+        "href": "api_reference/pyturbogrid_core.html#parameters",
+        "title": "pyturbogrid_core > Parameters",
+        "section": "Parameters",
+        "text": "Name of the quality measurement to query from the statistics.\nName of the domain from which to obtain the measuments.\nNumber of histogram columns to use.\nThe maximum limit for the horizontal axis.\nThe minimum limit for the horizontal axis.\nThe unit to use for the horizontal axis.\nScaling type for the horizontal axis: “linear” or “logarithmic”.\nChoice of whether to use absolute or percentage values on the vertical axis.\nUser-provided bin divisions.\nParameters\n\"ALL\"\n20\nNone\nNone\n\"\"\n\"Linear\"\nFalse\nNone"
+    },
+    {
+        "objectID": "api_reference/pyturbogrid_core",
+        "href": "api_reference/pyturbogrid_core.html#returns",
+        "title": "pyturbogrid_core > Returns",
+        "section": "Returns",
+        "text": "A dictionary form of the statistics for the requested quality measurement.\nReturns"
+    },
+    {
+        "objectID": "api_reference/pyturbogrid_core",
+        "href": "api_reference/pyturbogrid_core.html#returns",
+        "title": "pyturbogrid_core > Returns",
+        "section": "Returns",
+        "text": "Number of elements.\nReturns"
+    },
+    {
+        "objectID": "api_reference/pyturbogrid_core",
+        "href": "api_reference/pyturbogrid_core.html#returns",
+        "title": "pyturbogrid_core > Returns",
+        "section": "Returns",
+        "text": "List of topology method names.\nReturns"
+    },
+    {
+        "objectID": "api_reference/pyturbogrid_core",
+        "href": "api_reference/pyturbogrid_core.html#parameters",
+        "title": "pyturbogrid_core > Parameters",
+        "section": "Parameters",
+        "text": "Name or path for the Bladegen *.inf file.\nParameters"
+    },
+    {
+        "objectID": "api_reference/pyturbogrid_core",
+        "href": "api_reference/pyturbogrid_core.html#parameters",
+        "title": "pyturbogrid_core > Parameters",
+        "section": "Parameters",
+        "text": "Name or path for the NDF (*.ndf) file.\nName of the CAD *.x_b file to be generated.\nName of the flowpath to use.\nName of the blade row to select.\nName of the blade to load.\nParameters\n\"\"\n\"\"\n\"\"\n\"\""
+    },
+    {
+        "objectID": "api_reference/pyturbogrid_core",
+        "href": "api_reference/pyturbogrid_core.html#parameters",
+        "title": "pyturbogrid_core > Parameters",
+        "section": "Parameters",
+        "text": "Name of the session file.\nParameters"
+    },
+    {
+        "objectID": "api_reference/pyturbogrid_core",
+        "href": "api_reference/pyturbogrid_core.html#parameters",
+        "title": "pyturbogrid_core > Parameters",
+        "section": "Parameters",
+        "text": "Name of the state file.\nParameters"
+    },
+    {
+        "objectID": "api_reference/pyturbogrid_core",
+        "href": "api_reference/pyturbogrid_core.html#parameters",
+        "title": "pyturbogrid_core > Parameters",
+        "section": "Parameters",
+        "text": "Name or path for the *.tginit file.\nOptional blade row to be read, no entry corresponds to the first blade row.\nParameters"
+    },
+    {
+        "objectID": "api_reference/pyturbogrid_core",
+        "href": "api_reference/pyturbogrid_core.html#parameters",
+        "title": "pyturbogrid_core > Parameters",
+        "section": "Parameters",
+        "text": "Name of the image file to be created.\nFormat of the saved image. Valid values are:\n“png”: PNG\n“avz”: AVZ (3D)\n“glb2: GLB (3D) (Beta)\n“jpg”: JPEG\n“ppm”:PPM\n“ps”: PostScript (incomplete support)\n“eps”: Encapsulated PS (incomplete support)\nParameters\n\"png\""
+    },
+    {
+        "objectID": "api_reference/pyturbogrid_core",
+        "href": "api_reference/pyturbogrid_core.html#parameters",
+        "title": "pyturbogrid_core > Parameters",
+        "section": "Parameters",
+        "text": "Name of the mesh file to save.\nIf enabled (true), write all of the available meshes to a single mesh file.\nIf enabled (true), combine any inlet and outlet domain meshes with the passage domain, to form a single assembly.\nParameters\nTrue\nTrue"
+    },
+    {
+        "objectID": "api_reference/pyturbogrid_core",
+        "href": "api_reference/pyturbogrid_core.html#parameters",
+        "title": "pyturbogrid_core > Parameters",
+        "section": "Parameters",
+        "text": "Name of the file to save.\nParameters"
+    },
+    {
+        "objectID": "api_reference/pyturbogrid_core",
+        "href": "api_reference/pyturbogrid_core.html#parameters",
+        "title": "pyturbogrid_core > Parameters",
+        "section": "Parameters",
+        "text": "The CCL to send.\nParameters"
+    },
+    {
+        "objectID": "api_reference/pyturbogrid_core",
+        "href": "api_reference/pyturbogrid_core.html#parameters",
+        "title": "pyturbogrid_core > Parameters",
+        "section": "Parameters",
+        "text": "Value to use as size factor in string format.\nParameters"
+    },
+    {
+        "objectID": "api_reference/pyturbogrid_core",
+        "href": "api_reference/pyturbogrid_core.html#parameters",
+        "title": "pyturbogrid_core > Parameters",
+        "section": "Parameters",
+        "text": "Value to be used as parametric location in string format.\nParameters"
+    },
+    {
+        "objectID": "api_reference/pyturbogrid_core",
+        "href": "api_reference/pyturbogrid_core.html#parameters",
+        "title": "pyturbogrid_core > Parameters",
+        "section": "Parameters",
+        "text": "Value to be used as parametric location in string format.\nParameters"
+    },
+    {
+        "objectID": "api_reference/pyturbogrid_core",
+        "href": "api_reference/pyturbogrid_core.html#parameters",
+        "title": "pyturbogrid_core > Parameters",
+        "section": "Parameters",
+        "text": "Name with full path for the CCL object.\nName and value pair for the parameter to set.\nParameters"
+    },
+    {
+        "objectID": "api_reference/pyturbogrid_core",
+        "href": "api_reference/pyturbogrid_core.html#parameters",
+        "title": "pyturbogrid_core > Parameters",
+        "section": "Parameters",
+        "text": "Value to be used as parametric location in string format.\nParameters"
+    },
+    {
+        "objectID": "api_reference/pyturbogrid_core",
+        "href": "api_reference/pyturbogrid_core.html#parameters",
+        "title": "pyturbogrid_core > Parameters",
+        "section": "Parameters",
+        "text": "Value to be used as parametric location in string format.\nParameters"
+    },
+    {
+        "objectID": "api_reference/pyturbogrid_core",
+        "href": "api_reference/pyturbogrid_core.html#parameters",
+        "title": "pyturbogrid_core > Parameters",
+        "section": "Parameters",
+        "text": "Name of the topology method to be used.\nParameters"
+    },
+    {
+        "objectID": "api_reference/pyturbogrid_core",
+        "href": "api_reference/pyturbogrid_core.html#parameters",
+        "title": "pyturbogrid_core > Parameters",
+        "section": "Parameters",
+        "text": "The topology piece names concatenated using underscores.\nParameters"
+    },
+    {
+        "objectID": "api_reference/pyturbogrid_core",
+        "href": "api_reference/pyturbogrid_core.html#parameters",
+        "title": "pyturbogrid_core > Parameters",
+        "section": "Parameters",
+        "text": "Name of the session file.\nParameters"
+    },
+    {
+        "objectID": "api_reference/pyturbogrid_core",
+        "href": "api_reference/pyturbogrid_core.html#parameters",
+        "title": "pyturbogrid_core > Parameters",
+        "section": "Parameters",
+        "text": "String specifying the name and type of the object to be suspended.\nParameters"
+    },
+    {
+        "objectID": "api_reference/pyturbogrid_core",
+        "href": "api_reference/pyturbogrid_core.html#parameters",
+        "title": "pyturbogrid_core > Parameters",
+        "section": "Parameters",
+        "text": "String specifying the name and type of the object to be unsuspended.\nParameters"
+    },
+    {
+        "objectID": "api_reference/mesh_statistics",
+        "href": "api_reference/mesh_statistics.html#mesh_statistics",
+        "title": "mesh_statistics",
+        "section": "mesh_statistics",
+        "text": "Module for facilitating analysis of mesh statistics.\nClasses:\nMeshStatistics(turbogrid_instance[, domain])\nFacilitates analysis of mesh statistics for the current mesh in a running session of TurboGrid.\nBases: object\nFacilitates analysis of mesh statistics for the current mesh in a running session of\nTurboGrid.\nMethods:\n__init__(turbogrid_instance[, domain])\nInitialize the class using a connection to a running session of TurboGrid.\ncreate_histogram(variable[, domain, ...])\nCreate a histogram of mesh statistics using Matplotlib.\nget_domain_label(domain)\nGet suitable label text for a domain.\nget_mesh_statistics([variable])\nGet the basic mesh statistics from the cached mesh statistics.\nget_table_as_text()\nGet a text version of the mesh statistics table from the cached mesh statistics.\nget_table_rows()\nGet the mesh statistics table data from the cached mesh statistics.\nupdate_mesh_statistics([domain])\nRe-read the mesh statistics from TurboGrid.\nwrite_table_to_csv(file_name)\nWrite the mesh statistics table to a CSV file.\nAttributes:\ncurrent_domain\nDomain that was used for the last update of the mesh statistics.\ninterface\nInterface to a running session of TurboGrid.\nmesh_vars\nCache of the basic mesh statistics obtained by the last call to the update_mesh_statistics() method or from the initialization of the object if this method has not been called.\nInitialize the class using a connection to a running session of TurboGrid.\nCreate a histogram of mesh statistics using Matplotlib.\nDomain that was used for the last update of the mesh statistics. See the mesh_vars\nattribute.\nGet suitable label text for a domain.\nGet the basic mesh statistics from the cached mesh statistics.\nGet a text version of the mesh statistics table from the cached mesh statistics.\nGet the mesh statistics table data from the cached mesh statistics.\nInterface to a running session of TurboGrid.\nCache of the basic mesh statistics obtained by the last call to the\nupdate_mesh_statistics() method or from the initialization of\nthe object if this method has not been called. The name of the domain\nthese statistics relate to is stored as the current_domain\nattribute.\nRe-read the mesh statistics from TurboGrid.\nThis method can be used either to update the cached mesh statistics after TurboGrid\nhas remeshed or update the cached mesh statistics to use a different domain or domains.\nWrite the mesh statistics table to a CSV file.\nThe values in the mesh statistics table are obtained from the cached\nmesh statistics.\nmesh_statistics\nMeshStatistics\nobject\n__init__\ncreate_histogram\nget_domain_label\nget_mesh_statistics\nget_table_as_text\nget_table_rows\nupdate_mesh_statistics\nwrite_table_to_csv\ncurrent_domain\ninterface\nmesh_vars\nupdate_mesh_statistics()\nmesh_vars\nupdate_mesh_statistics()\ncurrent_domain"
+    },
+    {
+        "objectID": "api_reference/mesh_statistics",
+        "href": "api_reference/mesh_statistics.html#ansys.turbogrid.core.mesh_statistics.mesh_statistics.MeshStatistics",
+        "title": "mesh_statistics > mesh_statistics > MeshStatistics",
+        "section": "mesh_statistics > MeshStatistics",
+        "text": "class ansys.turbogrid.core.mesh_statistics.mesh_statistics.MeshStatistics(turbogrid_instance: PyTurboGrid, domain: str = 'ALL')\n\nBases: object\n\nFacilitates analysis of mesh statistics for the current mesh in a running session of\nTurboGrid.\n\nMethods:\n\n\n\n\n\n\n\n__init__(turbogrid_instance[, domain])\n\nInitialize the class using a connection to a running session of TurboGrid.\n\ncreate_histogram(variable[, domain, ...])\n\nCreate a histogram of mesh statistics using Matplotlib.\n\nget_domain_label(domain)\n\nGet suitable label text for a domain.\n\nget_mesh_statistics([variable])\n\nGet the basic mesh statistics from the cached mesh statistics.\n\nget_table_as_text()\n\nGet a text version of the mesh statistics table from the cached mesh statistics.\n\nget_table_rows()\n\nGet the mesh statistics table data from the cached mesh statistics.\n\nupdate_mesh_statistics([domain])\n\nRe-read the mesh statistics from TurboGrid.\n\nwrite_table_to_csv(file_name)\n\nWrite the mesh statistics table to a CSV file.\n\nAttributes:\n\n\n\n\n\n\n\ncurrent_domain\n\nDomain that was used for the last update of the mesh statistics.\n\ninterface\n\nInterface to a running session of TurboGrid.\n\nmesh_vars\n\nCache of the basic mesh statistics obtained by the last call to the update_mesh_statistics() method or from the initialization of the object if this method has not been called.\n\n\n\n__init__(turbogrid_instance: PyTurboGrid, domain: str = 'ALL')\n\nInitialize the class using a connection to a running session of TurboGrid.\n\n\n\ncreate_histogram(variable: str, domain: str = 'ALL', use_percentages: bool = True, bin_units: str = '', image_file: str = '', show: bool = True) -> None\n\nCreate a histogram of mesh statistics using Matplotlib.\n\n\n\ncurrent_domain: str = ''\n\nDomain that was used for the last update of the mesh statistics. See the mesh_vars\nattribute.\n\n\n\nget_domain_label(domain: str) -> str\n\nGet suitable label text for a domain.\n\n\n\nget_mesh_statistics(variable: str = 'ALL') -> dict\n\nGet the basic mesh statistics from the cached mesh statistics.\n\n\n\nget_table_as_text() -> str\n\nGet a text version of the mesh statistics table from the cached mesh statistics.\n\n\n\nget_table_rows() -> list\n\nGet the mesh statistics table data from the cached mesh statistics.\n\n\n\ninterface: PyTurboGrid = 0\n\nInterface to a running session of TurboGrid.\n\n\n\nmesh_vars: dict = {}\n\nCache of the basic mesh statistics obtained by the last call to the\nupdate_mesh_statistics() method or from the initialization of\nthe object if this method has not been called. The name of the domain\nthese statistics relate to is stored as the current_domain\nattribute.\n\n\n\nupdate_mesh_statistics(domain: str = 'ALL') -> None\n\nRe-read the mesh statistics from TurboGrid.\n\nThis method can be used either to update the cached mesh statistics after TurboGrid\nhas remeshed or update the cached mesh statistics to use a different domain or domains.\n\n\n\nwrite_table_to_csv(file_name: str) -> None\n\nWrite the mesh statistics table to a CSV file.\n\nThe values in the mesh statistics table are obtained from the cached\nmesh statistics."
+    },
+    {
+        "objectID": "api_reference/mesh_statistics",
+        "href": "api_reference/mesh_statistics.html#ansys.turbogrid.core.mesh_statistics.mesh_statistics.MeshStatistics.__init__",
+        "title": "mesh_statistics > mesh_statistics > __init__",
+        "section": "mesh_statistics > __init__",
+        "text": "__init__(turbogrid_instance: PyTurboGrid, domain: str = 'ALL')\n\nInitialize the class using a connection to a running session of TurboGrid."
+    },
+    {
+        "objectID": "api_reference/mesh_statistics",
+        "href": "api_reference/mesh_statistics.html#ansys.turbogrid.core.mesh_statistics.mesh_statistics.MeshStatistics.create_histogram",
+        "title": "mesh_statistics > mesh_statistics > create_histogram",
+        "section": "mesh_statistics > create_histogram",
+        "text": "create_histogram(variable: str, domain: str = 'ALL', use_percentages: bool = True, bin_units: str = '', image_file: str = '', show: bool = True) -> None\n\nCreate a histogram of mesh statistics using Matplotlib."
+    },
+    {
+        "objectID": "api_reference/mesh_statistics",
+        "href": "api_reference/mesh_statistics.html#ansys.turbogrid.core.mesh_statistics.mesh_statistics.MeshStatistics.current_domain",
+        "title": "mesh_statistics > mesh_statistics > current_domain",
+        "section": "mesh_statistics > current_domain",
+        "text": "current_domain: str = ''\n\nDomain that was used for the last update of the mesh statistics. See the mesh_vars\nattribute."
+    },
+    {
+        "objectID": "api_reference/mesh_statistics",
+        "href": "api_reference/mesh_statistics.html#ansys.turbogrid.core.mesh_statistics.mesh_statistics.MeshStatistics.get_domain_label",
+        "title": "mesh_statistics > mesh_statistics > get_domain_label",
+        "section": "mesh_statistics > get_domain_label",
+        "text": "get_domain_label(domain: str) -> str\n\nGet suitable label text for a domain."
+    },
+    {
+        "objectID": "api_reference/mesh_statistics",
+        "href": "api_reference/mesh_statistics.html#ansys.turbogrid.core.mesh_statistics.mesh_statistics.MeshStatistics.get_mesh_statistics",
+        "title": "mesh_statistics > mesh_statistics > get_mesh_statistics",
+        "section": "mesh_statistics > get_mesh_statistics",
+        "text": "get_mesh_statistics(variable: str = 'ALL') -> dict\n\nGet the basic mesh statistics from the cached mesh statistics."
+    },
+    {
+        "objectID": "api_reference/mesh_statistics",
+        "href": "api_reference/mesh_statistics.html#ansys.turbogrid.core.mesh_statistics.mesh_statistics.MeshStatistics.get_table_as_text",
+        "title": "mesh_statistics > mesh_statistics > get_table_as_text",
+        "section": "mesh_statistics > get_table_as_text",
+        "text": "get_table_as_text() -> str\n\nGet a text version of the mesh statistics table from the cached mesh statistics."
+    },
+    {
+        "objectID": "api_reference/mesh_statistics",
+        "href": "api_reference/mesh_statistics.html#ansys.turbogrid.core.mesh_statistics.mesh_statistics.MeshStatistics.get_table_rows",
+        "title": "mesh_statistics > mesh_statistics > get_table_rows",
+        "section": "mesh_statistics > get_table_rows",
+        "text": "get_table_rows() -> list\n\nGet the mesh statistics table data from the cached mesh statistics."
+    },
+    {
+        "objectID": "api_reference/mesh_statistics",
+        "href": "api_reference/mesh_statistics.html#ansys.turbogrid.core.mesh_statistics.mesh_statistics.MeshStatistics.interface",
+        "title": "mesh_statistics > mesh_statistics > interface",
+        "section": "mesh_statistics > interface",
+        "text": "interface: PyTurboGrid = 0\n\nInterface to a running session of TurboGrid."
+    },
+    {
+        "objectID": "api_reference/mesh_statistics",
+        "href": "api_reference/mesh_statistics.html#ansys.turbogrid.core.mesh_statistics.mesh_statistics.MeshStatistics.mesh_vars",
+        "title": "mesh_statistics > mesh_statistics > mesh_vars",
+        "section": "mesh_statistics > mesh_vars",
+        "text": "mesh_vars: dict = {}\n\nCache of the basic mesh statistics obtained by the last call to the\nupdate_mesh_statistics() method or from the initialization of\nthe object if this method has not been called. The name of the domain\nthese statistics relate to is stored as the current_domain\nattribute."
+    },
+    {
+        "objectID": "api_reference/mesh_statistics",
+        "href": "api_reference/mesh_statistics.html#ansys.turbogrid.core.mesh_statistics.mesh_statistics.MeshStatistics.update_mesh_statistics",
+        "title": "mesh_statistics > mesh_statistics > update_mesh_statistics",
+        "section": "mesh_statistics > update_mesh_statistics",
+        "text": "update_mesh_statistics(domain: str = 'ALL') -> None\n\nRe-read the mesh statistics from TurboGrid.\n\nThis method can be used either to update the cached mesh statistics after TurboGrid\nhas remeshed or update the cached mesh statistics to use a different domain or domains."
+    },
+    {
+        "objectID": "api_reference/mesh_statistics",
+        "href": "api_reference/mesh_statistics.html#ansys.turbogrid.core.mesh_statistics.mesh_statistics.MeshStatistics.write_table_to_csv",
+        "title": "mesh_statistics > mesh_statistics > write_table_to_csv",
+        "section": "mesh_statistics > write_table_to_csv",
+        "text": "write_table_to_csv(file_name: str) -> None\n\nWrite the mesh statistics table to a CSV file.\n\nThe values in the mesh statistics table are obtained from the cached\nmesh statistics."
+    },
+    {
+        "objectID": "api_reference/mesh_statistics",
+        "href": "api_reference/mesh_statistics.html#parameters",
+        "title": "mesh_statistics > Parameters",
+        "section": "Parameters",
+        "text": "Running session of TurboGrid.\nName of the domain to get the initial statistics from. The default is \"ALL\",\nin which case statistics are read for all domains.\nParameters\n\"ALL\"\n\"ALL\""
+    },
+    {
+        "objectID": "api_reference/mesh_statistics",
+        "href": "api_reference/mesh_statistics.html#parameters",
+        "title": "mesh_statistics > Parameters",
+        "section": "Parameters",
+        "text": "Mesh statistics variable to use for the histogram.\nDomain name to get statistics for. The default is \"ALL\", in which\ncase statistics for all domains are read. If a specific domain name\nis supplied, statistics are read for only this domain. Cached mesh\nstatistics are not used or affected.\nWhether to display the percentage values of the bin counts for\nthe histogram. The default is False, in which case the actual bin\ncounts are shown.\nUnits for the mesh statistics values (x-axis labels). The default is\n\"\", in which case the current TurboGrid units are used.\nName and extension for the image file to write the histogram to. The\ndefault is \"\", in which case no image file is written. The format\nis determined by the file extension (such as .png) given in the\nfile name. Available formats are those supported by Matplotlib,\nincluding \".png\", \".pdf\", and \".svg\".\nWhether to display the image on the screen. If False, the image is not\ndisplayed on the screen, which is only useful if the image is\nbeing written to a file.\nParameters\n\"ALL\"\n\"ALL\"\nFalse\nFalse\n\"\"\n\"\"\n\"\"\n\"\"\n.png\n\".png\"\n\".pdf\"\n\".svg\"\nFalse"
+    },
+    {
+        "objectID": "api_reference/mesh_statistics",
+        "href": "api_reference/mesh_statistics.html#parameters",
+        "title": "mesh_statistics > Parameters",
+        "section": "Parameters",
+        "text": "Name of the domain to generate the label from.\nParameters"
+    },
+    {
+        "objectID": "api_reference/mesh_statistics",
+        "href": "api_reference/mesh_statistics.html#returns",
+        "title": "mesh_statistics > Returns",
+        "section": "Returns",
+        "text": "\"All Domains\" is returned if \"ALL\" is the value\nspecified for the domain parameter or \"Domain: <name>\"\nis returned if the name of a single domain is specified.\nReturns\n\"All Domains\"\n\"ALL\"\ndomain\n\"Domain: <name>\""
+    },
+    {
+        "objectID": "api_reference/mesh_statistics",
+        "href": "api_reference/mesh_statistics.html#parameters",
+        "title": "mesh_statistics > Parameters",
+        "section": "Parameters",
+        "text": "Mesh statistics variable to get statistics for. The default is\n\"ALL\", in which case a dictionary of all variables is returned.\nParameters\n\"ALL\"\n\"ALL\""
+    },
+    {
+        "objectID": "api_reference/mesh_statistics",
+        "href": "api_reference/mesh_statistics.html#returns",
+        "title": "mesh_statistics > Returns",
+        "section": "Returns",
+        "text": "If a single variable is specified for the variable parameter, a\ndictionary of the current mesh statistics values for the selected variable\nis returned. Otherwise, if the default value of \"ALL\" is used for the\nvariable parameter, a dictionary of dictionaries (one per variable) is\nreturned.\nReturns\nvariable\n\"ALL\"\nvariable"
+    },
+    {
+        "objectID": "api_reference/mesh_statistics",
+        "href": "api_reference/mesh_statistics.html#returns",
+        "title": "mesh_statistics > Returns",
+        "section": "Returns",
+        "text": "Mesh statistics table in a text version.\nReturns"
+    },
+    {
+        "objectID": "api_reference/mesh_statistics",
+        "href": "api_reference/mesh_statistics.html#returns",
+        "title": "mesh_statistics > Returns",
+        "section": "Returns",
+        "text": "List of row data. Each list item represents one table row. The list\nitem contains a list of the cell contents for each cell in the row.\nReturns"
+    },
+    {
+        "objectID": "api_reference/mesh_statistics",
+        "href": "api_reference/mesh_statistics.html#parameters",
+        "title": "mesh_statistics > Parameters",
+        "section": "Parameters",
+        "text": "Name of the domain to get the statistics from. The default is \"ALL\", in which\ncase statistics are read for all domains.\nParameters\n\"ALL\"\n\"ALL\""
+    },
+    {
+        "objectID": "api_reference/mesh_statistics",
+        "href": "api_reference/mesh_statistics.html#parameters",
+        "title": "mesh_statistics > Parameters",
+        "section": "Parameters",
+        "text": "Name of the file to write the mesh statistics table to.\nParameters"
+    },
+    {
+        "objectID": "api_reference/index",
+        "href": "api_reference/index.html#api-reference",
+        "title": "API reference",
+        "section": "API reference",
+        "text": "This section provides descriptions of the modules, classes, functions,\nand methods in the PyTurboGrid API.\nAPI reference"
+    },
+    {
+        "objectID": "examples/mbr_sweep_example",
+        "href": "examples/mbr_sweep_example.html#multi-blade-row-meshing-example",
+        "title": "Multi blade row meshing example",
+        "section": "Multi blade row meshing example",
+        "text": "This basic example shows how to set up a multi blade row meshing instance and execute it in parallel.\nMulti blade row meshing example"
+    },
+    {
+        "objectID": "examples/mbr_sweep_example",
+        "href": "examples/mbr_sweep_example.html#perform-required-imports",
+        "title": "Multi blade row meshing example > Perform required imports",
+        "section": "Perform required imports",
+        "text": "Perform the required imports. It is assumed that the ansys-turbogrid-core\npackage has been installed.\nPerform required imports\nansys-turbogrid-core"
+    },
+    {
+        "objectID": "examples/mbr_sweep_example",
+        "href": "examples/mbr_sweep_example.html#create-a-multi_blade_row-and-initialize-it",
+        "title": "Multi blade row meshing example > Create a multi_blade_row and initialize it",
+        "section": "Create a multi_blade_row and initialize it",
+        "text": "Use the Concepts NREC sample provided.\nCreate a multi_blade_row and initialize it"
+    },
+    {
+        "objectID": "examples/mbr_sweep_example",
+        "href": "examples/mbr_sweep_example.html#set-the-sizing-strategy-for-the-machine",
+        "title": "Multi blade row meshing example > Set the sizing strategy for the machine",
+        "section": "Set the sizing strategy for the machine",
+        "text": "If this is omitted, the defaults for TurboGrid will be used.\nSet the sizing strategy for the machine"
+    },
+    {
+        "objectID": "examples/mbr_sweep_example",
+        "href": "examples/mbr_sweep_example.html#sweep-a-parameter",
+        "title": "Multi blade row meshing example > Sweep a parameter",
+        "section": "Sweep a parameter",
+        "text": "In this case, increase the global size factor, and measure the (base) layer face areas, and the element counts.\nDownload Jupyter notebook: mbr_sweep_example.ipynb\nDownload Python source code: mbr_sweep_example.py\nDownload zipped: mbr_sweep_example.zip\nGallery generated by Sphinx-Gallery\nSweep a parameter\nDownload Jupyter notebook: mbr_sweep_example.ipynb\nDownload Python source code: mbr_sweep_example.py\nDownload zipped: mbr_sweep_example.zip"
+    },
+    {
+        "objectID": "examples/multi_blade_row_batch_example",
+        "href": "examples/multi_blade_row_batch_example.html#multi-blade-row-meshing-example",
+        "title": "Multi blade row meshing example",
+        "section": "Multi blade row meshing example",
+        "text": "This basic example shows how to set up a multi blade row meshing instance and execute it in parallel.\nMulti blade row meshing example"
+    },
+    {
+        "objectID": "examples/multi_blade_row_batch_example",
+        "href": "examples/multi_blade_row_batch_example.html#perform-required-imports",
+        "title": "Multi blade row meshing example > Perform required imports",
+        "section": "Perform required imports",
+        "text": "Perform the required imports. It is assumed that the ansys-turbogrid-core\npackage has been installed.\nPerform required imports\nansys-turbogrid-core"
+    },
+    {
+        "objectID": "examples/multi_blade_row_batch_example",
+        "href": "examples/multi_blade_row_batch_example.html#create-and-use-a-multibladerow-instance",
+        "title": "Multi blade row meshing example > Create and use a MultiBladeRow instance",
+        "section": "Create and use a MultiBladeRow instance",
+        "text": "Create a MultiBladeRow instance, set it up for a multi blade row case and execute.\nDownload Jupyter notebook: multi_blade_row_batch_example.ipynb\nDownload Python source code: multi_blade_row_batch_example.py\nDownload zipped: multi_blade_row_batch_example.zip\nGallery generated by Sphinx-Gallery\nCreate and use a MultiBladeRow instance\nDownload Jupyter notebook: multi_blade_row_batch_example.ipynb\nDownload Python source code: multi_blade_row_batch_example.py\nDownload zipped: multi_blade_row_batch_example.zip"
+    },
+    {
+        "objectID": "contributing",
+        "href": "contributing.html#contribute",
+        "title": "Contribute",
+        "section": "Contribute",
+        "text": "Overall guidance on contributing to a PyAnsys repository appears in the\nContributing topic\nin the PyAnsys Developer’s Guide. Ensure that you are thoroughly familiar\nwith this guide before attempting to contribute to PyTurboGrid.\nThe following contribution information is specific to PyTurboGrid.\nContribute"
+    },
+    {
+        "objectID": "contributing",
+        "href": "contributing.html#clone-the-repository",
+        "title": "Contribute > Clone the repository",
+        "section": "Clone the repository",
+        "text": "To clone the PyTurboGrid repository and install the latest PyTurboGrid release\nin development mode, run these commands:\nClone the repository"
+    },
+    {
+        "objectID": "contributing",
+        "href": "contributing.html#post-issues",
+        "title": "Contribute > Post issues",
+        "section": "Post issues",
+        "text": "Use the PyTurboGrid Issues page\nto submit questions, report bugs, and request new features. When possible, use\nthese issue templates:\nBug, problem, error: For filing a bug report\nDocumentation error: For requesting modifications to the documentation\nAdding an example: For proposing a new example\nNew feature: For requesting enhancements to the code\nIf your issue does not fit into one of these template categories, you can click\nthe link for opening a blank issue.\nTo reach the project support team, email pyansys.core@ansys.com.\nPost issues"
+    },
+    {
+        "objectID": "contributing",
+        "href": "contributing.html#view-documentation",
+        "title": "Contribute > View documentation",
+        "section": "View documentation",
+        "text": "Documentation for the latest stable release of PyTurboGrid is hosted at\nPyTurboGrid documentation.\nIn the upper right corner of the documentation’s title bar, there is an option\nfor switching from viewing the documentation for the latest stable release\nto viewing the documentation for the development version or previously\nreleased versions.\nView documentation"
+    },
+    {
+        "objectID": "contributing",
+        "href": "contributing.html#adhere-to-code-style",
+        "title": "Contribute > Adhere to code style",
+        "section": "Adhere to code style",
+        "text": "PyTurboGrid follows the PEP8 standard as outlined in\nPEP 8 in\nthe PyAnsys Developer’s Guide and implements style checking using\npre-commit.\nTo ensure your code meets minimum code styling standards, run these\ncommands:\nYou can also install this as a pre-commit hook by running this command:\nThis way, it is not possible for you to push code that fails the style checks:\nAdhere to code style"
+    },
+    {
+        "objectID": "examples/sg_execution_times",
+        "href": "examples/sg_execution_times.html#computation-times",
+        "title": "Computation times",
+        "section": "Computation times",
+        "text": "00:00.000 total execution time for 5 files from examples:\nExample\nTime\nMem (MB)\nsphx_glr_examples_basic_read_inf_rotor37.py (basic_read_inf_rotor37.py)\n00:00.000\n0.0\nsphx_glr_examples_mbr_from_tginit_example.py (mbr_from_tginit_example.py)\n00:00.000\n0.0\nsphx_glr_examples_mbr_sweep_example.py (mbr_sweep_example.py)\n00:00.000\n0.0\nsphx_glr_examples_mesh_statistics_report.py (mesh_statistics_report.py)\n00:00.000\n0.0\nsphx_glr_examples_multi_blade_row_batch_example.py (multi_blade_row_batch_example.py)\n00:00.000\n0.0\nComputation times\nbasic_read_inf_rotor37.py\nmbr_from_tginit_example.py\nmbr_sweep_example.py\nmesh_statistics_report.py\nmulti_blade_row_batch_example.py"
+    },
+    {
+        "objectID": "sg_execution_times",
+        "href": "sg_execution_times.html#computation-times",
+        "title": "Computation times",
+        "section": "Computation times",
+        "text": "00:00.000 total execution time for 5 files from all galleries:\nExample\nTime\nMem (MB)\nsphx_glr_examples_basic_read_inf_rotor37.py (../../examples/basic_read_inf_rotor37.py)\n00:00.000\n0.0\nsphx_glr_examples_mbr_from_tginit_example.py (../../examples/mbr_from_tginit_example.py)\n00:00.000\n0.0\nsphx_glr_examples_mbr_sweep_example.py (../../examples/mbr_sweep_example.py)\n00:00.000\n0.0\nsphx_glr_examples_mesh_statistics_report.py (../../examples/mesh_statistics_report.py)\n00:00.000\n0.0\nsphx_glr_examples_multi_blade_row_batch_example.py (../../examples/multi_blade_row_batch_example.py)\n00:00.000\n0.0\nComputation times\n../../examples/basic_read_inf_rotor37.py\n../../examples/mbr_from_tginit_example.py\n../../examples/mbr_sweep_example.py\n../../examples/mesh_statistics_report.py\n../../examples/multi_blade_row_batch_example.py"
+    }
+]
