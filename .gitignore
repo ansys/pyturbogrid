@@ -171,7 +171,6 @@ TurboGridLog*.txt
 .vscode
 
 
-tests/mbr/5_stage_hannover/*.*
 tests/mbr/DTCG50Compressor/*.*
 tests/ndf/hannover_compressor.ndf
 tests/ndf/turb_axial_4stage_geom.ndf
