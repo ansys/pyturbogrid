@@ -65,10 +65,10 @@ jobs:
       - name: Pull TurboGrid Linux Image
         run: |
           docker network ls
-          docker pull ghcr.io/ansys/ansys-api-turbogrid/tglin_reduced_ndf:251    
+          docker pull ghcr.io/ansys/ansys-api-turbogrid/tglin_reduced_ndf:252    
 
       - name: Save Docker image to a file
-        run: docker save -o image.tar ghcr.io/ansys/ansys-api-turbogrid/tglin_reduced_ndf:251  
+        run: docker save -o image.tar ghcr.io/ansys/ansys-api-turbogrid/tglin_reduced_ndf:252  
   
       - name: Cache Docker image file
         uses: actions/cache@v4
@@ -83,7 +83,7 @@ jobs:
     needs: [prereqs]
     env:
       ANSYSLMD_LICENSE_FILE: 1055@${{ secrets.LICENSE_SERVER }}
-      PYTURBOGRID_DOC_VERSION: 251
+      PYTURBOGRID_DOC_VERSION: 252
       PYTURBOGRID_DOC_ENGINE_CONNECTION: 6000    
     steps:
       - name: Restore Cached Docker image file
@@ -176,7 +176,7 @@ jobs:
           pip install pytest-cov
           pip install fabric
           pip install .
-          python3 -u -m pytest -vs --execution_mode=CONTAINERIZED --license_file=${{ env.ANSYSLMD_LICENSE_FILE }} --image_name=ghcr.io/ansys/ansys-api-turbogrid/tglin_reduced_ndf:251 --cfxtg_command_name=cfxtgpynoviewer --cfx_version=251 --ssh_key_filename=./tg_container_key --local_cfxtg_path="/" --container_env_dict='{"CUE_DEBUG_PY_COMMS":"1"}'
+          python3 -u -m pytest -vs --execution_mode=CONTAINERIZED --license_file=${{ env.ANSYSLMD_LICENSE_FILE }} --image_name=ghcr.io/ansys/ansys-api-turbogrid/tglin_reduced_ndf:252 --cfxtg_command_name=cfxtgpynoviewer --cfx_version=252 --ssh_key_filename=./tg_container_key --local_cfxtg_path="/" --container_env_dict='{"CUE_DEBUG_PY_COMMS":"1"}'
 
 
 # The build job is responsible for creating the build artifact and uploading it to PYPI using twine.
