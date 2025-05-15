@@ -71,7 +71,7 @@ def test_turbogrid_exe_paths():
         else:
             exe_suffix = ""
 
-        assert str(latest_path) == str(Path(r"/myansys2/v251/TurboGrid/bin/cfxtg")) + exe_suffix
+        assert str(latest_path) == str(Path(r"/myansys2/v252/TurboGrid/bin/cfxtg")) + exe_suffix
         assert str(version_path) == str(Path(r"/myansys/v232/TurboGrid/bin/cfxtg")) + exe_suffix
         assert str(pyturbogrid_env_path) == str(Path(r"/TGRoot/bin/cfxtg")) + exe_suffix
         assert str(specified_path) == str(Path(r"/MyPath/MyExe.exe"))

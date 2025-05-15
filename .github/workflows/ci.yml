@@ -74,7 +74,7 @@ jobs:
         uses: actions/cache@v4
         with:
           path: image.tar
-          key: myimage-${{ github.sha }}
+          key: myimage-${{ hashFiles('**/poetry.lock') }}
           restore-keys: myimage-
 
   docs-build:
@@ -90,7 +90,7 @@ jobs:
         uses: actions/cache@v4
         with:
           path: image.tar
-          key: myimage-${{ github.sha }}
+          key: myimage-${{ hashFiles('**/poetry.lock') }}
           restore-keys: myimage-
 
       - name: Load Docker image from file
@@ -145,7 +145,7 @@ jobs:
         uses: actions/cache@v4
         with:
           path: image.tar
-          key: myimage-${{ github.sha }}
+          key: myimage-${{ hashFiles('**/poetry.lock') }}
           restore-keys: myimage-
 
       - name: Load Docker image from file
