@@ -157,6 +157,8 @@ class multi_blade_row:
 
     def __del__(self):
         """This method will quit all TG instances."""
+        # debug printout for here and for container helpers
+        # print("__del__")
         if self.tg_worker_instances:
             with concurrent.futures.ThreadPoolExecutor(
                 max_workers=len(self.tg_worker_instances)
@@ -167,9 +169,12 @@ class multi_blade_row:
                 ]
                 concurrent.futures.wait(futures)
         if self.pyturbogrid_saas:
+            # print("pyturbogrid_saas.quit()")
             self.pyturbogrid_saas.quit()
             if self.pyturbogrid_saas_execution_control:
+                # print("del self.pyturbogrid_saas_execution_control")
                 del self.pyturbogrid_saas_execution_control
+        # print("pyturbogrid_saas.quit()")
 
     def get_blade_rows_from_ndf(self, ndf_path: str) -> dict:
         return ndf_parser.NDFParser(ndf_path).get_blade_row_blades()
@@ -894,6 +899,7 @@ class multi_blade_row:
                 file_list.append(os.path.join(base_dir, contents["Shroud Data File"]))
                 file_list.append(os.path.join(base_dir, contents["Profile Data File"]))
                 # print(f"transfer files to container {file_list}")
+                # print(f"Directory listing of {base_dir} {os.listdir(base_dir)}")
                 container_helpers.transfer_files_to_container(
                     container,
                     "",
