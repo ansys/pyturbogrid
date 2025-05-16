@@ -114,7 +114,9 @@ class deployed_tg_container:
             subprocess.run(
                 f"{self.prepend_command} docker container rm -fv {self.container_name}", shell=True
             )
-        print(f"######### All done {container_name} from {image_name} on {socket_port} #########")
+        print(
+            f"######### All done {self.container_name} from {self.image_name} on {self.socket_port} #########"
+        )
 
 
 class remote_tg_instance:
