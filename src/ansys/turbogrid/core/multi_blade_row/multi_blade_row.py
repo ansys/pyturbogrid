@@ -893,8 +893,8 @@ class multi_blade_row:
                 file_list.append(os.path.join(base_dir, contents["Hub Data File"]))
                 file_list.append(os.path.join(base_dir, contents["Shroud Data File"]))
                 file_list.append(os.path.join(base_dir, contents["Profile Data File"]))
-                print(f"transfer files to container {file_list}")
-                print(f"Directory listing of {base_dir} {os.listdir(base_dir)}")
+                # print(f"transfer files to container {file_list}")
+                # print(f"Directory listing of {base_dir} {os.listdir(base_dir)}")
                 container_helpers.transfer_files_to_container(
                     container,
                     "",
