@@ -157,7 +157,7 @@ class multi_blade_row:
 
     def __del__(self):
         """This method will quit all TG instances."""
-        # debug printout for here and for continer helpers
+        # debug printout for here and for container helpers
         print("__del__")
         if self.tg_worker_instances:
             with concurrent.futures.ThreadPoolExecutor(
