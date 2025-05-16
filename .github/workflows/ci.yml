@@ -147,21 +147,6 @@ jobs:
         with:
           library-name: ${{ env.LIBRARY_NAME }}-artifacts-${{ matrix.os }}-${{ matrix.python-version }}
           python-version: ${{ env.MAIN_PYTHON_VERSION }}      
-      # - uses: ansys/actions/build-wheelhouse@v8
-      #   with:
-      #     library-name: ${{ env.LIBRARY_NAME }}
-      #     operating-system: ${{ matrix.os }}
-      #     python-version: ${{ matrix.python-version }}        
-
-      # - name: Restore Cached Docker image file
-      #   uses: actions/cache@v4
-      #   with:
-      #     path: image.tar
-      #     key: myimage-${{ hashFiles('**/poetry.lock') }}
-      #     restore-keys: myimage-
-
-      # - name: Load Docker image from file
-      #   run: docker load -i image.tar
 
       - name: Login to GitHub Container Registry
         uses: docker/login-action@v3
@@ -177,11 +162,6 @@ jobs:
 
       - name: Create Key
         run: base64 -d <<< ${{ secrets.CONTAINER_ACCESS_KEY }} > tg_container_key
-        # uses: mobiledevops/secret-to-file-action@v1
-        # with:
-        #   base64-encoded-secret: ${{ secrets.CONTAINER_ACCESS_KEY }}
-        #   filename: "tg_container_key"
-        #   working-directory: "." 
 
       - name: Check if file exists
         id: check_file
@@ -200,6 +180,7 @@ jobs:
           pip install pytest-cov
           pip install fabric
           pip install .
+          ls -R
           python3 -u -m pytest -vs --execution_mode=CONTAINERIZED --license_file=${{ env.ANSYSLMD_LICENSE_FILE }} --image_name=ghcr.io/ansys/ansys-api-turbogrid/tglin_reduced_ndf:252 --cfxtg_command_name=cfxtgpynoviewer --cfx_version=252 --ssh_key_filename=./tg_container_key --local_cfxtg_path="/" --container_env_dict='{"CUE_DEBUG_PY_COMMS":"1"}'
 
 
