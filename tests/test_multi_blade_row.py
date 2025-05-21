@@ -125,6 +125,7 @@ def test_multi_blade_row_tgmachine(pytestconfig):
 
     machine.init_from_tgmachine(
         tgmachine_path=f"{install_path}/tests/mbr/5_stage_hannover/5_stage_hannover.TGMachine",
+        # disable_lma=True,
     )
     machine.disable_lma()
     print(f"Blade Rows: {machine.get_blade_row_names()}")

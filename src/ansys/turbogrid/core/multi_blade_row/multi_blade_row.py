@@ -333,6 +333,7 @@ class multi_blade_row:
         self,
         tgmachine_path: str,
         tg_log_level: PyTurboGrid.TurboGridLogLevel = PyTurboGrid.TurboGridLogLevel.INFO,
+        disable_lma: bool = False,
     ):
         """
         Initialize the MBR representation with a TGMachine file.
@@ -376,6 +377,7 @@ class multi_blade_row:
                 tg_log_level,
                 os.path.split(tgmachine_path)[0],
                 self.neighbor_dict,
+                disable_lma,
             )
             futures = [
                 executor.submit(job, key, val) for key, val in self.tg_worker_instances.items()
@@ -853,6 +855,7 @@ class multi_blade_row:
         tg_log_level,
         base_dir,
         neighbor_dict: dict[str, Optional[str]],
+        disable_lma: bool,
         tg_worker_name,
         tg_worker_instance,
     ):
@@ -920,7 +923,11 @@ class multi_blade_row:
                     file_list,
                 )
                 # print(f"files transferred")
-
+            if disable_lma:
+                tg_worker_instance.pytg.set_obj_param(
+                    "/GEOMETRY/MACHINE DATA",
+                    f"Turbo Transform Mesh Type = Block-structured",
+                )
             tg_worker_instance.pytg.read_inf(
                 filename=(
                     tg_worker_name
@@ -929,6 +936,7 @@ class multi_blade_row:
                     else inf_filename
                 )
             )
+            # tg_worker_instance.pytg.unsuspend(object="/GEOMETRY")
             # If we want to use adjacent profiles to determine the hub/shroud limits for each blade row case,
             # send the profile names and opening mode.
             # In container mode, transfer the relevant profile as well.
@@ -1025,7 +1033,7 @@ class multi_blade_row:
         :meta private:
         """
         tg_worker_instance.pytg.set_obj_param(
-            "/MACHINE DATA", f"Turbo Transform Mesh Type = Block-structured"
+            "/GEOMETRY/MACHINE DATA", f"Turbo Transform Mesh Type = Block-structured"
         )
         tg_worker_instance.pytg.wait_engine_ready()
 
