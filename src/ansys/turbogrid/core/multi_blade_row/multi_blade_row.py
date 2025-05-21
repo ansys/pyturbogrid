@@ -1020,13 +1020,14 @@ class multi_blade_row:
         """
         tg_worker_instance.pytg.quit()
 
-    def __disable_lma__(self, tg_worker_instance):
+    def __disable_lma__(self, tg_worker_instance: single_blade_row):
         """
         :meta private:
         """
         tg_worker_instance.pytg.set_obj_param(
             "/MACHINE DATA", f"Turbo Transform Mesh Type = Block-structured"
         )
+        tg_worker_instance.pytg.wait_engine_ready()
 
     def __write_boundary_polys__(
         self, result_list: list, list_lock: threading.Lock, tg_worker_instance
