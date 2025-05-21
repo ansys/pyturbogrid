@@ -126,7 +126,11 @@ def test_multi_blade_row_tgmachine(pytestconfig):
     machine.init_from_tgmachine(
         tgmachine_path=f"{install_path}/tests/mbr/5_stage_hannover/5_stage_hannover.TGMachine",
     )
+    machine.disable_lma()
     print(f"Blade Rows: {machine.get_blade_row_names()}")
     print(f"Average Face Area: {machine.get_average_base_face_areas()}")
     print(f"Mesh Stats: {machine.get_mesh_statistics()}")
-    assert all(value != 0.0 for key, value in machine.get_average_base_face_areas())
+    assert all(
+        br_face_area != 0.0
+        for br_name, br_face_area in machine.get_average_base_face_areas().items()
+    )

@@ -449,6 +449,20 @@ class multi_blade_row:
         self.tg_worker_instances[blade_row_name].pytg.set_global_size_factor(size_factor)
         # print("  after vcount ", self.get_mesh_statistics()[blade_row_name]["Vertices"]["Count"])
 
+    # Advanced use only
+    def disable_lma(self):
+        """
+        Sets the Turbo Transform type to block-structured (workaround for LMA issues. Advanced use only.)
+        """
+        with concurrent.futures.ThreadPoolExecutor(
+            max_workers=len(self.tg_worker_instances)
+        ) as executor:
+            futures = [
+                executor.submit(self.__disable_lma__, val)
+                for key, val in self.tg_worker_instances.items()
+            ]
+            concurrent.futures.wait(futures)
+
     def set_number_of_blade_sets(self, blade_row_name: str, number_of_blade_sets: int):
         """
         Set the number of blade sets for blade_row_name.
@@ -1005,6 +1019,14 @@ class multi_blade_row:
         :meta private:
         """
         tg_worker_instance.pytg.quit()
+
+    def __disable_lma__(self, tg_worker_instance):
+        """
+        :meta private:
+        """
+        tg_worker_instance.pytg.set_obj_param(
+            "/MACHINE DATA", f"Turbo Transform Mesh Type = Block-structured"
+        )
 
     def __write_boundary_polys__(
         self, result_list: list, list_lock: threading.Lock, tg_worker_instance
