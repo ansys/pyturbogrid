@@ -157,6 +157,8 @@ class multi_blade_row:
 
     def __del__(self):
         """This method will quit all TG instances."""
+        # debug printout for here and for container helpers
+        # print("__del__")
         if self.tg_worker_instances:
             with concurrent.futures.ThreadPoolExecutor(
                 max_workers=len(self.tg_worker_instances)
@@ -167,9 +169,12 @@ class multi_blade_row:
                 ]
                 concurrent.futures.wait(futures)
         if self.pyturbogrid_saas:
+            # print("pyturbogrid_saas.quit()")
             self.pyturbogrid_saas.quit()
             if self.pyturbogrid_saas_execution_control:
+                # print("del self.pyturbogrid_saas_execution_control")
                 del self.pyturbogrid_saas_execution_control
+        # print("pyturbogrid_saas.quit()")
 
     def get_blade_rows_from_ndf(self, ndf_path: str) -> dict:
         return ndf_parser.NDFParser(ndf_path).get_blade_row_blades()
@@ -328,6 +333,7 @@ class multi_blade_row:
         self,
         tgmachine_path: str,
         tg_log_level: PyTurboGrid.TurboGridLogLevel = PyTurboGrid.TurboGridLogLevel.INFO,
+        disable_lma: bool = False,
     ):
         """
         Initialize the MBR representation with a TGMachine file.
@@ -371,6 +377,7 @@ class multi_blade_row:
                 tg_log_level,
                 os.path.split(tgmachine_path)[0],
                 self.neighbor_dict,
+                disable_lma,
             )
             futures = [
                 executor.submit(job, key, val) for key, val in self.tg_worker_instances.items()
@@ -443,6 +450,20 @@ class multi_blade_row:
         # print("  before vcount ", self.get_mesh_statistics()[blade_row_name]["Vertices"]["Count"])
         self.tg_worker_instances[blade_row_name].pytg.set_global_size_factor(size_factor)
         # print("  after vcount ", self.get_mesh_statistics()[blade_row_name]["Vertices"]["Count"])
+
+    # Advanced use only
+    def disable_lma(self):
+        """
+        Sets the Turbo Transform type to block-structured (workaround for LMA issues. Advanced use only.)
+        """
+        with concurrent.futures.ThreadPoolExecutor(
+            max_workers=len(self.tg_worker_instances)
+        ) as executor:
+            futures = [
+                executor.submit(self.__disable_lma__, val)
+                for key, val in self.tg_worker_instances.items()
+            ]
+            concurrent.futures.wait(futures)
 
     def set_number_of_blade_sets(self, blade_row_name: str, number_of_blade_sets: int):
         """
@@ -834,6 +855,7 @@ class multi_blade_row:
         tg_log_level,
         base_dir,
         neighbor_dict: dict[str, Optional[str]],
+        disable_lma: bool,
         tg_worker_name,
         tg_worker_instance,
     ):
@@ -894,13 +916,18 @@ class multi_blade_row:
                 file_list.append(os.path.join(base_dir, contents["Shroud Data File"]))
                 file_list.append(os.path.join(base_dir, contents["Profile Data File"]))
                 # print(f"transfer files to container {file_list}")
+                # print(f"Directory listing of {base_dir} {os.listdir(base_dir)}")
                 container_helpers.transfer_files_to_container(
                     container,
                     "",
                     file_list,
                 )
                 # print(f"files transferred")
-
+            if disable_lma:
+                tg_worker_instance.pytg.set_obj_param(
+                    "/GEOMETRY/MACHINE DATA",
+                    f"Turbo Transform Mesh Type = Block-structured",
+                )
             tg_worker_instance.pytg.read_inf(
                 filename=(
                     tg_worker_name
@@ -909,6 +936,7 @@ class multi_blade_row:
                     else inf_filename
                 )
             )
+            # tg_worker_instance.pytg.unsuspend(object="/GEOMETRY")
             # If we want to use adjacent profiles to determine the hub/shroud limits for each blade row case,
             # send the profile names and opening mode.
             # In container mode, transfer the relevant profile as well.
@@ -999,6 +1027,15 @@ class multi_blade_row:
         :meta private:
         """
         tg_worker_instance.pytg.quit()
+
+    def __disable_lma__(self, tg_worker_instance: single_blade_row):
+        """
+        :meta private:
+        """
+        tg_worker_instance.pytg.set_obj_param(
+            "/GEOMETRY/MACHINE DATA", f"Turbo Transform Mesh Type = Block-structured"
+        )
+        tg_worker_instance.pytg.wait_engine_ready()
 
     def __write_boundary_polys__(
         self, result_list: list, list_lock: threading.Lock, tg_worker_instance

@@ -77,14 +77,20 @@ def test_multi_blade_row_basic(pytestconfig):
     # blade_rows = machine.get_blade_row_names()
     print(f"Average Face Area Before: {machine.get_average_base_face_areas()}")
     before_canonical = {"bladerow1": 0.007804461, "bladerow2": 0.004956871}
-    assert machine.get_average_base_face_areas() == before_canonical
+    before_canonical_252_container = {"bladerow1": 0.007804869, "bladerow2": 0.004956871}
+    assert (
+        machine.get_average_base_face_areas() == before_canonical
+        or machine.get_average_base_face_areas() == before_canonical_252_container
+    )
     machine.set_machine_sizing_strategy(MachineSizingStrategy.MIN_FACE_AREA)
     print(f"Average Face Area After: {machine.get_average_base_face_areas()}")
     after_canonical = {"bladerow1": 0.005001607, "bladerow2": 0.004956871}
     after_canonical_2 = {"bladerow1": 0.005001606, "bladerow2": 0.004956871}
+    after_canonical_252_container = {"bladerow1": 0.005001862, "bladerow2": 0.004956871}
     assert (
         machine.get_average_base_face_areas() == after_canonical
         or machine.get_average_base_face_areas() == after_canonical_2
+        or machine.get_average_base_face_areas() == after_canonical_252_container
     )
 
 
@@ -119,8 +125,13 @@ def test_multi_blade_row_tgmachine(pytestconfig):
 
     machine.init_from_tgmachine(
         tgmachine_path=f"{install_path}/tests/mbr/5_stage_hannover/5_stage_hannover.TGMachine",
+        # disable_lma=True,
     )
-    # print(f"Blade Rows: {machine.get_blade_row_names()}")
-    # print(f"Average Face Area: {machine.get_average_base_face_areas()}")
-    # print(f"Mesh Stats: {machine.get_mesh_statistics()}")
-    assert all(value != 0.0 for value in machine.get_average_base_face_areas())
+    machine.disable_lma()
+    print(f"Blade Rows: {machine.get_blade_row_names()}")
+    print(f"Average Face Area: {machine.get_average_base_face_areas()}")
+    print(f"Mesh Stats: {machine.get_mesh_statistics()}")
+    assert all(
+        br_face_area != 0.0
+        for br_name, br_face_area in machine.get_average_base_face_areas().items()
+    )
