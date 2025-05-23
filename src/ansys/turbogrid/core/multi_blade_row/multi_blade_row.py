@@ -1,4 +1,4 @@
-# Copyright (C) 2023 - 2024 ANSYS, Inc. and/or its affiliates.
+# Copyright (C) 2023 - 2025 ANSYS, Inc. and/or its affiliates.
 # SPDX-FileCopyrightText: 2023 ANSYS, Inc. All rights reserved
 # SPDX-License-Identifier: MIT
 #
@@ -401,14 +401,22 @@ class multi_blade_row:
             ]
             concurrent.futures.wait(futures)
 
-    def init_from_tgmachine(self, tgmachine_path: str, tg_log_level):
+    def init_from_tgmachine(
+        self,
+        tgmachine_path: str,
+        tg_log_level: PyTurboGrid.TurboGridLogLevel = PyTurboGrid.TurboGridLogLevel.INFO,
+    ):
         """
         Initialize the MBR representation with a TGMachine file.
         Still under development
         """
         # print(f"init_from_tgmachine tgmachine_path = {tgmachine_path}")
-        tgmachine_file = open(tgmachine_path, "r")
-        machine_info = json.load(tgmachine_file)
+        with open(tgmachine_path, "r") as f:
+            lines = f.readlines()
+
+        json_lines = [line for line in lines if not line.lstrip().startswith("#")]
+        machine_info = json.loads("".join(json_lines))
+
         n_rows: int = machine_info["Number of Blade Rows"]
         interface_method: str = machine_info["Interface Method"]
         # print(f"   n_rows = {n_rows}")
@@ -1011,17 +1019,89 @@ class multi_blade_row:
         :meta private:
         """
         try:
+            tg_port = None
+            if (
+                self.turbogrid_location_type
+                == PyTurboGrid.TurboGridLocationType.TURBOGRID_RUNNING_CONTAINER
+            ):
+                tg_worker_instance.tg_execution_control = launch_turbogrid_container(
+                    self.tg_container_launch_settings["cfxtg_command_name"],
+                    self.tg_container_launch_settings["image_name"],
+                    self.tg_container_launch_settings["container_name"],
+                    self.tg_container_launch_settings["cfx_version"],
+                    self.tg_container_launch_settings["license_file"],
+                    self.tg_container_launch_settings["keep_stopped_containers"],
+                    self.tg_container_launch_settings["container_env_dict"],
+                )
+                tg_port = tg_worker_instance.tg_execution_control.socket_port
+                # print("tg_port", tg_port)
+
+            # tg_worker_instance.pytg = launch_turbogrid(
+            #     log_level=tg_log_level,
+            #     log_filename_suffix=f"_{tg_worker_name}",
+            #     additional_kw_args=self.tg_kw_args,
+            # )
+            inf_filename = os.path.join(base_dir, tg_worker_name)
             tg_worker_instance.pytg = launch_turbogrid(
                 log_level=tg_log_level,
-                log_filename_suffix=f"_{tg_worker_name}",
+                log_filename_suffix=f"_inf_{tg_worker_name}",
                 additional_kw_args=self.tg_kw_args,
+                turbogrid_path=self.turbogrid_path,
+                turbogrid_location_type=self.turbogrid_location_type,
+                port=tg_port,
             )
             tg_worker_instance.pytg.block_each_message = True
-            tg_worker_instance.pytg.read_inf(filename=os.path.join(base_dir, tg_worker_name))
+            if (
+                self.turbogrid_location_type
+                == PyTurboGrid.TurboGridLocationType.TURBOGRID_RUNNING_CONTAINER
+            ):
+                # print(
+                #     f"get_container_connection {tg_worker_instance.tg_execution_control.ftp_port} {self.tg_container_launch_settings['ssh_key_filename']}"
+                # )
+                container = container_helpers.get_container_connection(
+                    tg_worker_instance.tg_execution_control.ftp_port,
+                    self.tg_container_launch_settings["ssh_key_filename"],
+                )
+
+                # Read the INF file to get a list of all the curve files to transfer
+                from ansys.turbogrid.core.inf_parser.inf_parser import INFParser
+
+                contents = INFParser.get_inf_contents(inf_filename)
+                file_list = [inf_filename]
+                file_list.append(os.path.join(base_dir, contents["Hub Data File"]))
+                file_list.append(os.path.join(base_dir, contents["Shroud Data File"]))
+                file_list.append(os.path.join(base_dir, contents["Profile Data File"]))
+                # print(f"transfer files to container {file_list}")
+                container_helpers.transfer_files_to_container(
+                    container,
+                    "",
+                    file_list,
+                )
+                # print(f"files transferred")
+
+            tg_worker_instance.pytg.read_inf(
+                filename=(
+                    tg_worker_name
+                    if self.turbogrid_location_type
+                    == PyTurboGrid.TurboGridLocationType.TURBOGRID_RUNNING_CONTAINER
+                    else inf_filename
+                )
+            )
+            # If we want to use adjacent profiles to determine the hub/shroud limits for each blade row case,
+            # send the profile names and opening mode.
+            # In container mode, transfer the relevant profile as well.
             if neighbor_dict[tg_worker_name][0]:
+                if (
+                    self.turbogrid_location_type
+                    == PyTurboGrid.TurboGridLocationType.TURBOGRID_RUNNING_CONTAINER
+                ):
+                    container_helpers.transfer_file_to_container(
+                        container, os.path.join(base_dir, neighbor_dict[tg_worker_name][0])
+                    )
+
                 tg_worker_instance.pytg.set_obj_param(
                     object="/GEOMETRY/INLET",
-                    param_val_pairs=f"Opening Mode = Adjacent blade, Input Filename = {os.path.join(base_dir, neighbor_dict[tg_worker_name][0])}",
+                    param_val_pairs=f"Opening Mode = Adjacent blade, Input Filename = {neighbor_dict[tg_worker_name][0] if self.turbogrid_location_type == PyTurboGrid.TurboGridLocationType.TURBOGRID_RUNNING_CONTAINER else os.path.join(base_dir, neighbor_dict[tg_worker_name][0])}",
                 )
                 tg_worker_instance.pytg.set_obj_param(
                     object="/MESH DATA",
@@ -1032,9 +1112,16 @@ class multi_blade_row:
                     object="/GEOMETRY/INLET", param_val_pairs=f"Opening Mode = Fully extend"
                 )
             if neighbor_dict[tg_worker_name][1]:
+                if (
+                    self.turbogrid_location_type
+                    == PyTurboGrid.TurboGridLocationType.TURBOGRID_RUNNING_CONTAINER
+                ):
+                    container_helpers.transfer_file_to_container(
+                        container, os.path.join(base_dir, neighbor_dict[tg_worker_name][1])
+                    )
                 tg_worker_instance.pytg.set_obj_param(
                     object="/GEOMETRY/OUTLET",
-                    param_val_pairs=f"Opening Mode = Adjacent blade, Input Filename = {os.path.join(base_dir, neighbor_dict[tg_worker_name][1])}",
+                    param_val_pairs=f"Opening Mode = Adjacent blade, Input Filename = {neighbor_dict[tg_worker_name][1] if self.turbogrid_location_type == PyTurboGrid.TurboGridLocationType.TURBOGRID_RUNNING_CONTAINER else os.path.join(base_dir, neighbor_dict[tg_worker_name][1])}",
                 )
                 tg_worker_instance.pytg.set_obj_param(
                     object="/MESH DATA",

@@ -1,4 +1,4 @@
-# Copyright (C) 2023 - 2024 ANSYS, Inc. and/or its affiliates.
+# Copyright (C) 2023 - 2025 ANSYS, Inc. and/or its affiliates.
 # SPDX-License-Identifier: MIT
 #
 #
@@ -71,9 +71,8 @@ class container_helpers:
         container_connection: Connection, local_folder_path: str, local_filenames: list
     ):
         for filename in local_filenames:
-            container_helpers.transfer_file_to_container(
-                container_connection, f"{local_folder_path}/{filename}"
-            )
+            filepath = filename if not local_folder_path else f"{local_folder_path}/{filename}"
+            container_helpers.transfer_file_to_container(container_connection, filepath)
 
     @staticmethod
     def transfer_file_from_container(

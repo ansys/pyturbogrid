@@ -19,3 +19,20 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
+
+
+class INFParser:
+    @staticmethod
+    def get_inf_contents(filename: str) -> dict[str, any]:
+        inf_contents: dict = {}
+        with open(filename, mode="r", encoding="utf-8") as file:
+            lines = file.readlines()
+            for line in lines:
+                # '!' is the comment marker for an inf file
+                if line.startswith("!"):
+                    continue
+                # An INF file will have information formatted like "Number of Blade Sets: 36"
+                if ":" in line:
+                    split = line.split(":")
+                    inf_contents[split[0]] = split[1].strip()
+        return inf_contents

@@ -1,4 +1,5 @@
 # Copyright (C) 2023 - 2025 ANSYS, Inc. and/or its affiliates.
+# SPDX-FileCopyrightText: 2023 ANSYS, Inc. All rights reserved
 # SPDX-License-Identifier: MIT
 #
 #
@@ -19,3 +20,22 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
+
+import pathlib
+
+from ansys.turbogrid.core.inf_parser.inf_parser import INFParser
+
+install_path = pathlib.PurePath(__file__).parent.parent.as_posix()
+
+
+def test_inf_parser(pytestconfig):
+    inf_path = f"{install_path}/tests/rotor37/BladeGen.inf"
+    contents = INFParser.get_inf_contents(inf_path)
+    assert contents == {
+        "Axis of Rotation": "Z",
+        "Number of Blade Sets": "36",
+        "Geometry Units": "CM",
+        "Hub Data File": "hub.curve",
+        "Shroud Data File": "shroud.curve",
+        "Profile Data File": "profile.curve",
+    }

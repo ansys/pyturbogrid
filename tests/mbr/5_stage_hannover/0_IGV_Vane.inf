@@ -1,0 +1,10 @@
+! By courtesy of University of Hannover
+! https://gitlab.uni-hannover.de/tfd_compressor_group/tfd-4ac_opentestcase
+! https://creativecommons.org/licenses/by/4.0/
+!======  CFX-BladeGen Export  ========
+Axis of Rotation: Z
+Number of Blade Sets: 26
+Geometry Units: MM
+Hub Data File: hub.crv
+Shroud Data File: shroud.crv
+Profile Data File: 0_IGV_Vane.crv
