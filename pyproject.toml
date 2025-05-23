@@ -39,8 +39,8 @@ matplotlib = ">=3.5.1"
 importlib-metadata = ">=4.0"
 fabric = ">=3.2.2"
 Jinja2 = ">=3.1.2"
-ansys-turbogrid-api = ">=0.4.6"
-# ansys-turbogrid-api = { path = "../ansys-api-turbogrid/", develop = true } # Uncomment this if you have access to a local repo
+# ansys-turbogrid-api = ">=0.4.6"
+ansys-turbogrid-api = { path = "../ansys-api-turbogrid/", develop = true } # Uncomment this if you have access to a local repo
 toml = "0.10.2"                                                            # This should be picked up from ansys-turbogrid-api once its lock file is updated
 pyvista = ">=0.43.8,<0.45.0"
 pyyaml = "^6.0.2"
@@ -96,9 +96,15 @@ skip = "poetry.lock"
 
 [tool.coverage.run]
 source = ["ansys.turbogrid.core"]
+branch = true
+parallel = true
+concurrency = ["multiprocessing"]
+# When running with xdist, these errors may pop up.
+# Running in single-process shows no issues.
+disable_warnings = ["module-not-measured", "no-data-collected"]
 
 [tool.coverage.report]
-show_missing = true
+# show_missing = true
 
 [tool.pytest.ini_options]
 minversion = "7.1"

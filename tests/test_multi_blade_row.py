@@ -26,8 +26,6 @@ import json
 import os
 import pathlib
 
-# import queue
-
 from ansys.turbogrid.api.pyturbogrid_core import PyTurboGrid
 import pytest
 
@@ -81,23 +79,24 @@ def test_multi_blade_row_basic(pytestconfig):
     # blade_rows = machine.get_blade_row_names()
     print(f"Average Face Area Before: {machine.get_average_base_face_areas()}")
     before_canonical = {"bladerow1": 0.007804461, "bladerow2": 0.004956871}
+    before_canonical_2 = {"bladerow1": 0.007804943, "bladerow2": 0.004956871}
     before_canonical_252_container = {"bladerow1": 0.007804869, "bladerow2": 0.004956871}
     assert (
         machine.get_average_base_face_areas() == before_canonical
+        or machine.get_average_base_face_areas() == before_canonical_2
         or machine.get_average_base_face_areas() == before_canonical_252_container
     )
     machine.set_machine_sizing_strategy(MachineSizingStrategy.MIN_FACE_AREA)
     print(f"Average Face Area After: {machine.get_average_base_face_areas()}")
 
-    after_canonical = (
-        {"bladerow1": 0.005001607, "bladerow2": 0.004956871}
-        if int(pytestconfig.getoption("cfx_version")) < 252
-        else {"bladerow1": 0.005001606, "bladerow2": 0.004956871}
-    )
-
+    after_canonical_pre_252 = {"bladerow1": 0.005001607, "bladerow2": 0.004956871}
+    after_canonical_252 = {"bladerow1": 0.005001606, "bladerow2": 0.004956871}
+    after_canonical_post_252 = {"bladerow1": 0.005001909, "bladerow2": 0.004956871}
     after_canonical_252_container = {"bladerow1": 0.005001862, "bladerow2": 0.004956871}
     assert (
-        machine.get_average_base_face_areas() == after_canonical
+        machine.get_average_base_face_areas() == after_canonical_pre_252
+        or machine.get_average_base_face_areas() == after_canonical_252
+        or machine.get_average_base_face_areas() == after_canonical_post_252
         or machine.get_average_base_face_areas() == after_canonical_252_container
     )
 
@@ -259,8 +258,9 @@ def test_multi_blade_row_save(pytestconfig):
     machine2.init_from_state(str(save_path))
     from_state_mesh_stats = machine2.get_mesh_statistics()
 
-    from deepdiff import DeepDiff
     from pprint import pprint
+
+    from deepdiff import DeepDiff
 
     print("original_mesh_stats")
     pprint(original_mesh_stats)

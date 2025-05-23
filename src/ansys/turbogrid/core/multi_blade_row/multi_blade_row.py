@@ -185,6 +185,56 @@ class multi_blade_row:
             if self.pyturbogrid_saas_execution_control:
                 # print("del self.pyturbogrid_saas_execution_control")
                 del self.pyturbogrid_saas_execution_control
+        self.pyturbogrid_saas = None
+
+    def save_state(self) -> dict[str, any]:
+        print("save_state", self.init_style)
+        match self.init_style:
+            case InitStyle.TGInit:
+                # Save all the TG states
+                print("saving...")
+                file_dict = self.save_states("mbr_")
+                print("file_dict", file_dict)
+                return {
+                    "TGInit Path": self.tginit_path,
+                    "Blade Rows": self.all_blade_row_keys,
+                    "Sizing Strategy": self.current_machine_sizing_strategy,
+                    "Base Size Factors": self.base_gsf,
+                    "File Dict": file_dict,
+                }
+            case _:
+                raise Exception(f"Unable to save with init style {self.init_style}")
+
+    def init_from_state(
+        self,
+        file_name: str,
+        tg_log_level: PyTurboGrid.TurboGridLogLevel = PyTurboGrid.TurboGridLogLevel.INFO,
+    ):
+        import json
+
+        state_dict = json.load(open(file_name))
+        print(state_dict)
+
+        self.all_blade_row_keys = state_dict["Blade Rows"]
+
+        self.tg_worker_instances = {key: single_blade_row() for key in self.all_blade_row_keys}
+        self.base_gsf = state_dict["Base Size Factors"]
+        with concurrent.futures.ThreadPoolExecutor(
+            max_workers=len(self.tg_worker_instances)
+        ) as executor:
+            job = partial(
+                self.__launch_instances_state__,
+                tg_log_level,
+                state_dict["File Dict"],
+            )
+            futures = [
+                executor.submit(job, key, val) for key, val in self.tg_worker_instances.items()
+            ]
+            concurrent.futures.wait(futures)
+
+        # pprint.pprint(timings)
+        self.init_style = InitStyle.TGInit
+        self.tginit_path = state_dict["TGInit Path"]
 
     def get_blade_rows_from_ndf(self, ndf_path: str) -> dict:
         return ndf_parser.NDFParser(ndf_path).get_blade_row_blades()
