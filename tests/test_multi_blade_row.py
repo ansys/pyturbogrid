@@ -87,14 +87,10 @@ def test_multi_blade_row_basic(pytestconfig):
 
     after_canonical = (
         {"bladerow1": 0.005001607, "bladerow2": 0.004956871}
-    after_canonical_2 = {"bladerow1": 0.005001606, "bladerow2": 0.004956871}
         if int(pytestconfig.getoption("cfx_version")) < 252
         else {"bladerow1": 0.005001606, "bladerow2": 0.004956871}
     )
-    assert (
-        machine.get_average_base_face_areas() == after_canonical
-        or machine.get_average_base_face_areas() == after_canonical_2
-    )
+    assert machine.get_average_base_face_areas() == after_canonical
 
 
 def test_multi_blade_row_tgmachine(pytestconfig):
