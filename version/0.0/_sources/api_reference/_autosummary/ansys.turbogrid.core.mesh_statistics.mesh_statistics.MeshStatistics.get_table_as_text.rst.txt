@@ -1,0 +1,6 @@
+get\_table\_as\_text
+====================
+
+.. currentmodule:: ansys.turbogrid.core.mesh_statistics.mesh_statistics
+
+.. automethod:: MeshStatistics.get_table_as_text
