@@ -25,8 +25,8 @@ from enum import IntEnum
 import os
 from typing import Optional
 
-import pytest
 from ansys.turbogrid.api import pyturbogrid_core
+import pytest
 
 from ansys.turbogrid.core.launcher.deploy_tg_container import (
     deployed_tg_container,
