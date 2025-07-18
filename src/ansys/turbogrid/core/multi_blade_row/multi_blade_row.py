@@ -986,7 +986,7 @@ class multi_blade_row:
                     container,
                     tginit_path,
                     [
-                        self.tginit_file_name + ".tginit",
+                        tginit_file_name + ".tginit",
                         tginit_file_name + ".x_b",
                     ],
                 )
