@@ -214,9 +214,11 @@ def test_multi_blade_row_sfp(pytestconfig):
     # p.show(None)
 
 
-# Skip this test in containerized mode because a generalized way of managing the file transfer will need to be found.
-@pytest.mark.skipif(pytest.execution_mode == TestExecutionMode.CONTAINERIZED)
 def test_multi_blade_row_save(pytestconfig):
+    # Skip this test in containerized mode because a generalized way of managing the file transfer will need to be found.
+    if pytest.execution_mode == TestExecutionMode.CONTAINERIZED:
+        pytest.skip()
+
     machine = MBR(
         turbogrid_location_type=PyTurboGrid.TurboGridLocationType.TURBOGRID_INSTALL,
         turbogrid_path=pytestconfig.getoption("local_cfxtg_path"),
