@@ -181,7 +181,7 @@ def test_multi_blade_row_sfp(pytestconfig):
 
     machine.init_from_tginit(
         tginit_path=tginit_path,
-        blade_rows_to_mesh=machine.get_blade_row_names_from_tginit(tginit_path),
+        blade_rows_to_mesh=None,
         tg_log_level=PyTurboGrid.TurboGridLogLevel[pytestconfig.getoption("client_log_level")],
     )
 
@@ -227,7 +227,7 @@ def test_multi_blade_row_save(pytestconfig):
 
     machine.init_from_tginit(
         tginit_path=tginit_path,
-        blade_rows_to_mesh=machine.get_blade_row_names_from_tginit(tginit_path),
+        blade_rows_to_mesh=None,
         tg_log_level=PyTurboGrid.TurboGridLogLevel[pytestconfig.getoption("client_log_level")],
     )
 

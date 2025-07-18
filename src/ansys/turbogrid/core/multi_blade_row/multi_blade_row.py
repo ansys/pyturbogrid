@@ -260,16 +260,32 @@ class multi_blade_row:
         blade_rows_to_mesh: list[str] = None,
     ):
         # import pprint
+        tginit_name = os.path.basename(tginit_path)
+        tginit_base_path = PurePath(tginit_path).parent.as_posix()
+        tginit_file_name, self.tginit_file_extension = os.path.splitext(tginit_name)
+        print(f"self.turbogrid_location_type {self.turbogrid_location_type}")
+        if (
+            self.turbogrid_location_type
+            == PyTurboGrid.TurboGridLocationType.TURBOGRID_RUNNING_CONTAINER
+        ):
 
-        # self.all_blade_row_keys is not yet implemented at this point
-        # TG should have a query to get this list instead of relying on the NDF file
-        # it will throw
+            container = container_helpers.get_container_connection(
+                self.pyturbogrid_saas_execution_control.ftp_port,
+                self.tg_container_launch_settings["ssh_key_filename"],
+            )
+            print(f"transfer files to container {tginit_path}")
+            container_helpers.transfer_file_to_container(container, tginit_path)
+
         selected_brs = (
             blade_rows_to_mesh
             if blade_rows_to_mesh
-            else self.get_blade_row_names_from_tginit(tginit_path)
+            else self.get_blade_row_names_from_tginit(
+                tginit_name
+                if self.turbogrid_location_type
+                == PyTurboGrid.TurboGridLocationType.TURBOGRID_RUNNING_CONTAINER
+                else tginit_path
+            )
         )
-        # self.all_blade_rows = ndf_parser.NDFParser(ndf_path).get_blade_row_blades()
         self.all_blade_row_keys = selected_brs
 
         timings = {}
@@ -1001,7 +1017,10 @@ class multi_blade_row:
             )
             t4 = time.time()
             tg_worker_instance.pytg.read_tginit(
-                path=tginit_file_path, bladerow=tg_worker_name, autoregions=True, includemesh=False
+                path=tginit_file_name + ".tginit",
+                bladerow=tg_worker_name,
+                autoregions=True,
+                includemesh=False,
             )
             t5 = time.time()
             # tg_worker_instance.pytg.set_obj_param(
