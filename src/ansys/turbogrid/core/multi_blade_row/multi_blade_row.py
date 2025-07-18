@@ -273,7 +273,6 @@ class multi_blade_row:
         self.all_blade_row_keys = selected_brs
 
         timings = {}
-
         self.tg_worker_instances = {key: single_blade_row() for key in selected_brs}
         self.base_gsf = {key: 1.0 for key in selected_brs}
         with concurrent.futures.ThreadPoolExecutor(
@@ -985,10 +984,10 @@ class multi_blade_row:
                 # print(f"transfer files to container {tginit_file_name}")
                 container_helpers.transfer_files_to_container(
                     container,
-                    self.ndf_base_path,
+                    tginit_path,
                     [
                         self.tginit_file_name + ".tginit",
-                        tginit_path + "/" + tginit_file_name + ".x_b",
+                        tginit_file_name + ".x_b",
                     ],
                 )
                 # print(f"files transferred")
