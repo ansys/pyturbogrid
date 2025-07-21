@@ -216,6 +216,7 @@ def test_multi_blade_row_sfp(pytestconfig):
 
 def test_multi_blade_row_save(pytestconfig):
     # Skip this test in containerized mode because a generalized way of managing the file transfer will need to be found.
+    pytest.execution_mode = TestExecutionMode[pytestconfig.getoption("execution_mode")]
     if pytest.execution_mode == TestExecutionMode.CONTAINERIZED:
         pytest.skip()
 

@@ -1017,7 +1017,12 @@ class multi_blade_row:
             )
             t4 = time.time()
             tg_worker_instance.pytg.read_tginit(
-                path=tginit_file_name + ".tginit",
+                path=(
+                    tginit_file_path
+                    if self.turbogrid_location_type
+                    == PyTurboGrid.TurboGridLocationType.TURBOGRID_INSTALL
+                    else tginit_file_name
+                ),
                 bladerow=tg_worker_name,
                 autoregions=True,
                 includemesh=False,
