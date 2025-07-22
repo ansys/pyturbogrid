@@ -65,6 +65,7 @@ class container_helpers:
             remote="/",
             local=local_filepath,
         )
+        print(f"... Transferred {local_filepath}")
 
     @staticmethod
     def transfer_files_to_container(

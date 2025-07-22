@@ -176,3 +176,11 @@ tests/ndf/hannover_compressor.ndf
 tests/ndf/turb_axial_4stage_geom.ndf
 tests/ndf/AxiFan-01A-MultiRow.ndf
 examples/ndf_results/*.*
+IGVHubCavity.def
+mbr_process_IGV.def
+mbr_process_Main.def
+ShrCavity.def
+AutoSaveState.tst
+mbr_IGV.tst
+mbr_Main.tst
+yaml_dump.yaml
