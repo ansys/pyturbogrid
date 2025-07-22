@@ -122,10 +122,11 @@ jobs:
         os: [windows-latest]
         python-version: ['3.10', '3.11', '3.12']
     steps:
-      - uses: ansys/actions/build-library@v9
+      - uses: ansys/actions/build-library@v10
         with:
           library-name: ${{ env.LIBRARY_NAME }}-artifacts-${{ matrix.os }}-${{ matrix.python-version }}
-          python-version: ${{ env.MAIN_PYTHON_VERSION }}      
+          python-version: ${{ env.MAIN_PYTHON_VERSION }}
+          use-uv: false
       # - uses: ansys/actions/build-wheelhouse@v8
       #   with:
       #     library-name: ${{ env.LIBRARY_NAME }}
@@ -147,6 +148,7 @@ jobs:
         with:
           library-name: ${{ env.LIBRARY_NAME }}-artifacts-${{ matrix.os }}-${{ matrix.python-version }}
           python-version: ${{ env.MAIN_PYTHON_VERSION }}      
+          use-uv: false
 
       - name: Login to GitHub Container Registry
         uses: docker/login-action@v3
