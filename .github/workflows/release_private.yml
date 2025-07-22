@@ -19,7 +19,7 @@ jobs:
         runs-on: ubuntu-latest
         steps:
         - name: "Build library source and wheel artifacts"
-          uses: ansys/actions/build-library@v9
+          uses: ansys/actions/build-library@v10
           with:
               library-name: ${{ env.LIBRARY_NAME }}
               python-version: ${{ env.MAIN_PYTHON_VERSION }}
@@ -30,7 +30,7 @@ jobs:
         needs: [build-library]
         steps:
             - name: "Release to the private PyPI repository"
-              uses: ansys/actions/release-pypi-private@v9
+              uses: ansys/actions/release-pypi-private@v10
               with:
                   library-name: ${{ env.LIBRARY_NAME }}
                   twine-username: "__token__"
