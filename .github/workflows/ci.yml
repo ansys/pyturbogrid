@@ -122,15 +122,11 @@ jobs:
         os: [windows-latest]
         python-version: ['3.10', '3.11', '3.12']
     steps:
-      - uses: ansys/actions/build-library@v10
+      - uses: ansys/actions/build-wheelhouse@v10
         with:
-          library-name: ${{ env.LIBRARY_NAME }}-artifacts-${{ matrix.os }}-${{ matrix.python-version }}
-          python-version: ${{ env.MAIN_PYTHON_VERSION }}      
-      # - uses: ansys/actions/build-wheelhouse@v8
-      #   with:
-      #     library-name: ${{ env.LIBRARY_NAME }}
-      #     operating-system: ${{ matrix.os }}
-      #     python-version: ${{ matrix.python-version }}
+          library-name: ${{ env.LIBRARY_NAME }}
+          operating-system: ${{ matrix.os }}
+          python-version: ${{ matrix.python-version }}
 
 
   smoke-tests:
@@ -143,10 +139,11 @@ jobs:
         os: [ubuntu-latest]
         python-version: ['3.10', '3.11', '3.12']
     steps:
-      - uses: ansys/actions/build-library@v10
+      - uses: ansys/actions/build-wheelhouse@v10
         with:
-          library-name: ${{ env.LIBRARY_NAME }}-artifacts-${{ matrix.os }}-${{ matrix.python-version }}
-          python-version: ${{ env.MAIN_PYTHON_VERSION }}      
+          library-name: ${{ env.LIBRARY_NAME }}
+          operating-system: ${{ matrix.os }}
+          python-version: ${{ matrix.python-version }}
 
       - name: Login to GitHub Container Registry
         uses: docker/login-action@v3

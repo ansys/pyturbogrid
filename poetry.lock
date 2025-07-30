@@ -1360,36 +1360,36 @@ test = ["nbval", "pytest", "pytest-cov"]
 
 [[package]]
 name = "ipykernel"
-version = "6.29.5"
+version = "6.30.0"
 description = "IPython Kernel for Jupyter"
 optional = false
-python-versions = ">=3.8"
+python-versions = ">=3.9"
 files = [
-    {file = "ipykernel-6.29.5-py3-none-any.whl", hash = "sha256:afdb66ba5aa354b09b91379bac28ae4afebbb30e8b39510c9690afb7a10421b5"},
-    {file = "ipykernel-6.29.5.tar.gz", hash = "sha256:f093a22c4a40f8828f8e330a9c297cb93dcab13bd9678ded6de8e5cf81c56215"},
+    {file = "ipykernel-6.30.0-py3-none-any.whl", hash = "sha256:fd2936e55c4a1c2ee8b1e5fa6a372b8eecc0ab1338750dee76f48fa5cca1301e"},
+    {file = "ipykernel-6.30.0.tar.gz", hash = "sha256:b7b808ddb2d261aae2df3a26ff3ff810046e6de3dfbc6f7de8c98ea0a6cb632c"},
 ]
 
 [package.dependencies]
-appnope = {version = "*", markers = "platform_system == \"Darwin\""}
+appnope = {version = ">=0.1.2", markers = "platform_system == \"Darwin\""}
 comm = ">=0.1.1"
 debugpy = ">=1.6.5"
 ipython = ">=7.23.1"
-jupyter-client = ">=6.1.12"
+jupyter-client = ">=8.0.0"
 jupyter-core = ">=4.12,<5.0.dev0 || >=5.1.dev0"
 matplotlib-inline = ">=0.1"
-nest-asyncio = "*"
-packaging = "*"
-psutil = "*"
-pyzmq = ">=24"
-tornado = ">=6.1"
+nest-asyncio = ">=1.4"
+packaging = ">=22"
+psutil = ">=5.7"
+pyzmq = ">=25"
+tornado = ">=6.2"
 traitlets = ">=5.4.0"
 
 [package.extras]
-cov = ["coverage[toml]", "curio", "matplotlib", "pytest-cov", "trio"]
-docs = ["myst-parser", "pydata-sphinx-theme", "sphinx", "sphinx-autodoc-typehints", "sphinxcontrib-github-alt", "sphinxcontrib-spelling", "trio"]
+cov = ["coverage[toml]", "matplotlib", "pytest-cov", "trio"]
+docs = ["intersphinx-registry", "myst-parser", "pydata-sphinx-theme", "sphinx", "sphinx-autodoc-typehints", "sphinxcontrib-github-alt", "sphinxcontrib-spelling", "trio"]
 pyqt5 = ["pyqt5"]
 pyside6 = ["pyside6"]
-test = ["flaky", "ipyparallel", "pre-commit", "pytest (>=7.0)", "pytest-asyncio (>=0.23.5)", "pytest-cov", "pytest-timeout"]
+test = ["flaky", "ipyparallel", "pre-commit", "pytest (>=7.0,<9)", "pytest-asyncio (>=0.23.5)", "pytest-cov", "pytest-timeout"]
 
 [[package]]
 name = "ipython"
@@ -1555,13 +1555,13 @@ files = [
 
 [[package]]
 name = "jsonschema"
-version = "4.24.0"
+version = "4.25.0"
 description = "An implementation of JSON Schema validation for Python"
 optional = false
 python-versions = ">=3.9"
 files = [
-    {file = "jsonschema-4.24.0-py3-none-any.whl", hash = "sha256:a462455f19f5faf404a7902952b6f0e3ce868f3ee09a359b05eca6673bd8412d"},
-    {file = "jsonschema-4.24.0.tar.gz", hash = "sha256:0b4e8069eb12aedfa881333004bccaec24ecef5a8a6a4b6df142b2cc9599d196"},
+    {file = "jsonschema-4.25.0-py3-none-any.whl", hash = "sha256:24c2e8da302de79c8b9382fee3e76b355e44d2a4364bb207159ce10b517bd716"},
+    {file = "jsonschema-4.25.0.tar.gz", hash = "sha256:e63acf5c11762c0e6672ffb61482bdf57f0876684d8d249c0fe2d730d48bc55f"},
 ]
 
 [package.dependencies]
@@ -1574,13 +1574,14 @@ jsonschema-specifications = ">=2023.03.6"
 referencing = ">=0.28.4"
 rfc3339-validator = {version = "*", optional = true, markers = "extra == \"format-nongpl\""}
 rfc3986-validator = {version = ">0.1.0", optional = true, markers = "extra == \"format-nongpl\""}
+rfc3987-syntax = {version = ">=1.1.0", optional = true, markers = "extra == \"format-nongpl\""}
 rpds-py = ">=0.7.1"
 uri-template = {version = "*", optional = true, markers = "extra == \"format-nongpl\""}
 webcolors = {version = ">=24.6.0", optional = true, markers = "extra == \"format-nongpl\""}
 
 [package.extras]
 format = ["fqdn", "idna", "isoduration", "jsonpointer (>1.13)", "rfc3339-validator", "rfc3987", "uri-template", "webcolors (>=1.11)"]
-format-nongpl = ["fqdn", "idna", "isoduration", "jsonpointer (>1.13)", "rfc3339-validator", "rfc3986-validator (>0.1.0)", "uri-template", "webcolors (>=24.6.0)"]
+format-nongpl = ["fqdn", "idna", "isoduration", "jsonpointer (>1.13)", "rfc3339-validator", "rfc3986-validator (>0.1.0)", "rfc3987-syntax (>=1.1.0)", "uri-template", "webcolors (>=24.6.0)"]
 
 [[package]]
 name = "jsonschema-specifications"
@@ -1666,17 +1667,17 @@ test = ["click", "pre-commit", "pytest (>=7.0)", "pytest-asyncio (>=0.19.0)", "p
 
 [[package]]
 name = "jupyter-lsp"
-version = "2.2.5"
+version = "2.2.6"
 description = "Multi-Language Server WebSocket proxy for Jupyter Notebook/Lab server"
 optional = false
 python-versions = ">=3.8"
 files = [
-    {file = "jupyter-lsp-2.2.5.tar.gz", hash = "sha256:793147a05ad446f809fd53ef1cd19a9f5256fd0a2d6b7ce943a982cb4f545001"},
-    {file = "jupyter_lsp-2.2.5-py3-none-any.whl", hash = "sha256:45fbddbd505f3fbfb0b6cb2f1bc5e15e83ab7c79cd6e89416b248cb3c00c11da"},
+    {file = "jupyter_lsp-2.2.6-py3-none-any.whl", hash = "sha256:283783752bf0b459ee7fa88effa72104d87dd343b82d5c06cf113ef755b15b6d"},
+    {file = "jupyter_lsp-2.2.6.tar.gz", hash = "sha256:0566bd9bb04fd9e6774a937ed01522b555ba78be37bebef787c8ab22de4c0361"},
 ]
 
 [package.dependencies]
-jupyter-server = ">=1.1.2"
+jupyter_server = ">=1.1.2"
 
 [[package]]
 name = "jupyter-server"
@@ -1758,13 +1759,13 @@ test = ["bash-kernel", "pytest"]
 
 [[package]]
 name = "jupyterlab"
-version = "4.4.4"
+version = "4.4.5"
 description = "JupyterLab computational environment"
 optional = false
 python-versions = ">=3.9"
 files = [
-    {file = "jupyterlab-4.4.4-py3-none-any.whl", hash = "sha256:711611e4f59851152eb93316c3547c3ec6291f16bb455f1f4fa380d25637e0dd"},
-    {file = "jupyterlab-4.4.4.tar.gz", hash = "sha256:163fee1ef702e0a057f75d2eed3ed1da8a986d59eb002cbeb6f0c2779e6cd153"},
+    {file = "jupyterlab-4.4.5-py3-none-any.whl", hash = "sha256:e76244cceb2d1fb4a99341f3edc866f2a13a9e14c50368d730d75d8017be0863"},
+    {file = "jupyterlab-4.4.5.tar.gz", hash = "sha256:0bd6c18e6a3c3d91388af6540afa3d0bb0b2e76287a7b88ddf20ab41b336e595"},
 ]
 
 [package.dependencies]
@@ -1954,6 +1955,23 @@ files = [
     {file = "kiwisolver-1.4.8-pp310-pypy310_pp73-win_amd64.whl", hash = "sha256:65ea09a5a3faadd59c2ce96dc7bf0f364986a315949dc6374f04396b0d60e09b"},
     {file = "kiwisolver-1.4.8.tar.gz", hash = "sha256:23d5f023bdc8c7e54eb65f03ca5d5bb25b601eac4d7f1a042888a1f45237987e"},
 ]
+
+[[package]]
+name = "lark"
+version = "1.2.2"
+description = "a modern parsing library"
+optional = false
+python-versions = ">=3.8"
+files = [
+    {file = "lark-1.2.2-py3-none-any.whl", hash = "sha256:c2276486b02f0f1b90be155f2c8ba4a8e194d42775786db622faccd652d8e80c"},
+    {file = "lark-1.2.2.tar.gz", hash = "sha256:ca807d0162cd16cef15a8feecb862d7319e7a09bdb13aef927968e45040fed80"},
+]
+
+[package.extras]
+atomic-cache = ["atomicwrites"]
+interegular = ["interegular (>=0.3.1,<0.4.0)"]
+nearley = ["js2py"]
+regex = ["regex"]
 
 [[package]]
 name = "linkify-it-py"
@@ -2201,13 +2219,13 @@ typing-extensions = {version = "*", markers = "python_version < \"3.11\""}
 
 [[package]]
 name = "narwhals"
-version = "1.47.0"
+version = "1.48.0"
 description = "Extremely lightweight compatibility layer between dataframe libraries"
 optional = false
 python-versions = ">=3.9"
 files = [
-    {file = "narwhals-1.47.0-py3-none-any.whl", hash = "sha256:8b4ead8866046829de24058d1079e776806bd4aab7d38f55f17c58ce4c0994d2"},
-    {file = "narwhals-1.47.0.tar.gz", hash = "sha256:38238882f3ab2bbc8e7121bc9be951a8a58f1a810bdb14aa2b18792bafac01f8"},
+    {file = "narwhals-1.48.0-py3-none-any.whl", hash = "sha256:2bbddc3adeed0c5b15ead8fe61f1d5e459f00c1d2fa60921e52a0f9bdc06077d"},
+    {file = "narwhals-1.48.0.tar.gz", hash = "sha256:7243b456cbdb60edb148731a8f9b203f473a373a249ad66c699362508730e63f"},
 ]
 
 [package.extras]
@@ -2590,13 +2608,13 @@ files = [
 
 [[package]]
 name = "panel"
-version = "1.7.4"
+version = "1.7.5"
 description = "The powerful data exploration & web app framework for Python."
 optional = false
 python-versions = ">=3.10"
 files = [
-    {file = "panel-1.7.4-py3-none-any.whl", hash = "sha256:7679a5550d25efd780bb884727e4d7c798fec967d7583e5efdf034dce5e30d4f"},
-    {file = "panel-1.7.4.tar.gz", hash = "sha256:a9b0d8faf0b4391454cc8370d2acc21c26f780376100aece30e778f53cd06f76"},
+    {file = "panel-1.7.5-py3-none-any.whl", hash = "sha256:1c3b4a335d56d5aa0cf5d6e1c3684a297e24a62cf99345c5e9eb8552837b97c3"},
+    {file = "panel-1.7.5.tar.gz", hash = "sha256:8bf5041174593fdb0e8c46bef3ade334ae7e97ef64f52c8955a1d7c62b5db18d"},
 ]
 
 [package.dependencies]
@@ -3424,6 +3442,23 @@ files = [
     {file = "rfc3986_validator-0.1.1-py2.py3-none-any.whl", hash = "sha256:2f235c432ef459970b4306369336b9d5dbdda31b510ca1e327636e01f528bfa9"},
     {file = "rfc3986_validator-0.1.1.tar.gz", hash = "sha256:3d44bde7921b3b9ec3ae4e3adca370438eccebc676456449b145d533b240d055"},
 ]
+
+[[package]]
+name = "rfc3987-syntax"
+version = "1.1.0"
+description = "Helper functions to syntactically validate strings according to RFC 3987."
+optional = false
+python-versions = ">=3.9"
+files = [
+    {file = "rfc3987_syntax-1.1.0-py3-none-any.whl", hash = "sha256:6c3d97604e4c5ce9f714898e05401a0445a641cfa276432b0a648c80856f6a3f"},
+    {file = "rfc3987_syntax-1.1.0.tar.gz", hash = "sha256:717a62cbf33cffdd16dfa3a497d81ce48a660ea691b1ddd7be710c22f00b4a0d"},
+]
+
+[package.dependencies]
+lark = ">=1.2.2"
+
+[package.extras]
+testing = ["pytest (>=8.3.5)"]
 
 [[package]]
 name = "rpds-py"
