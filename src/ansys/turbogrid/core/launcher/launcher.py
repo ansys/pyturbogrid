@@ -46,6 +46,7 @@ class TurboGridVersion(Enum):
     """Provide an enumeration over supported TurboGrid versions."""
 
     # Versions must be listed here with the most recent first
+    version_26R1 = "26.1.0"
     version_25R2 = "25.2.0"
     version_25R1 = "25.1.0"
     version_24R2 = "24.2.0"
