@@ -29,7 +29,7 @@ Multi-blade STAC example
 This  example shows how to set up a multi blade row meshing instance using a TGMachine file. It is  based on the
 STAC machine, a case provided by the Institute of Thermal Turbomachinery and Machinery Laboratory at the University of Stuttgart.
 
-For the details see the paper on the STAC Machine: https://doi.org/10.1177/0957650919833207
+For the details see the paper on the STAC Machine: https://www.itsm.uni-stuttgart.de/en/research/test-cases/STAC/,  DOI: 10.1177/0957650919833207
 """
 
 
