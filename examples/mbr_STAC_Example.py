@@ -31,6 +31,16 @@ from ansys.turbogrid.core.multi_blade_row.multi_blade_row import multi_blade_row
 # For the details see the paper on the STAC Machine: https://doi.org/10.1177/0957650919833207
 ############################################################################################################################################################
 
+"""
+.. mbr_STAC_Example:
+
+Multi blade STAC Example
+-------------------------------
+This  example shows how to set up a multi blade row meshing instance using a TGMachine file. It is  based on the
+STAC machine, a case provided by the Institute of Thermal Turbomachinery and Machinery Laboratory at the University of Stuttgart.
+
+For the details see the paper on the STAC Machine: https://doi.org/10.1177/0957650919833207
+"""
 
 install_path = pathlib.PurePath(__file__).parent.parent.as_posix()
 
