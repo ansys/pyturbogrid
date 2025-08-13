@@ -26,9 +26,9 @@ from ansys.turbogrid.core.multi_blade_row.multi_blade_row import MachineSizingSt
 from ansys.turbogrid.core.multi_blade_row.multi_blade_row import multi_blade_row as MBR
 
 ############################################################################################################################################################
-# STAC Example - This is example is based on the STAC machine. This case is provided by the Institute of Thermal 
-# Turbomachinery and Machinery Laboratory at the University of Stuttgart. 
-# For the details see the paper on the STAC Machine: https://doi.org/10.1177/0957650919833207 
+# STAC Example - This is example is based on the STAC machine. This case is provided by the Institute of Thermal
+# Turbomachinery and Machinery Laboratory at the University of Stuttgart.
+# For the details see the paper on the STAC Machine: https://doi.org/10.1177/0957650919833207
 ############################################################################################################################################################
 
 
@@ -50,12 +50,13 @@ print(f"path =  {tg_machine_path}")
 mbr.init_from_tgmachine(tgmachine_path=tg_machine_path)
 
 #################################################################################
-# SETTING SPECIFIC PARAMETERS  
+# SETTING SPECIFIC PARAMETERS
 # To set specific parameters for the individual blade rows, the pyturbogrid instance of the row can be accessed via the mbr.tg_worker_instances dictionary
 # To do so the set_obj_param function is used with the keywords from the command editor in TurboGrid
 # Example: "Number Of Outlet Elements = 5" in MESH DATA -->  set_obj_param(object='/MESH DATA',param_val_pairs='Number Of Outlet Elements = 5')
 
 # Setting constant spanwise elements
+
 
 def setting_spanwise_elements(
     turbogrid_instance, number_of_spanwise_elemenst, num_const_elements_spanwise
