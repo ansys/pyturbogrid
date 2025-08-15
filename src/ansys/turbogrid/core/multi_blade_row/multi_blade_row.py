@@ -120,6 +120,7 @@ class multi_blade_row:
         turbogrid_path: str = None,
         tg_kw_args={},
         log_prefix: str = "",
+        log_level=PyTurboGrid.TurboGridLogLevel.INFO,
     ):
         """
         Initialize the MBR object
@@ -155,7 +156,7 @@ class multi_blade_row:
             self.pyturbogrid_saas_port = self.pyturbogrid_saas_execution_control.socket_port
 
         self.pyturbogrid_saas = launch_turbogrid(
-            log_level=PyTurboGrid.TurboGridLogLevel.INFO,
+            log_level=log_level,
             log_filename_suffix=self.log_prefix + "_saas",
             turbogrid_path=self.turbogrid_path,
             turbogrid_location_type=self.turbogrid_location_type,
@@ -170,7 +171,9 @@ class multi_blade_row:
     def quit(self):
         """This method will quit all TG instances."""
         # debug printout for here and for container helpers
-        # print("__del__")
+        # print(
+        #     f"multi_blade_row quit self.tg_worker_instances {self.tg_worker_instances} self.pyturbogrid_saas {self.pyturbogrid_saas}"
+        # )
         if self.tg_worker_instances:
             with concurrent.futures.ThreadPoolExecutor(
                 max_workers=len(self.tg_worker_instances)
