@@ -28,7 +28,6 @@
 # or multiple rows in parallel.
 """Module for working on a multi blade row turbomachinery case using PyTurboGrid instances in parallel."""
 
-import ast
 import concurrent.futures
 from enum import IntEnum
 from functools import partial
@@ -74,6 +73,12 @@ class MachineSizingStrategy(IntEnum):
     MIN_FACE_AREA = 1
 
 
+class InitStyle(IntEnum):
+    NO_INIT = 0
+    TGInit = 1
+    CAD = 2
+
+
 class multi_blade_row:
     """This class spawns multiple TG instances and can initialize and control an entire blade row at once."""
 
@@ -105,6 +110,8 @@ class multi_blade_row:
     cached_blade_mesh_surfaces_stats: dict = None
     cached_blade_mesh_surfaces: list[any] = None
 
+    log_prefix: str
+
     # Consider passing in the filename (whether ndf or tginit) as initializing as raii
     def __init__(
         self,
@@ -112,6 +119,8 @@ class multi_blade_row:
         tg_container_launch_settings: dict[str, str] = {},
         turbogrid_path: str = None,
         tg_kw_args={},
+        log_prefix: str = "",
+        log_level=PyTurboGrid.TurboGridLogLevel.INFO,
     ):
         """
         Initialize the MBR object
@@ -130,7 +139,7 @@ class multi_blade_row:
         self.tg_container_launch_settings = tg_container_launch_settings
         self.turbogrid_path = turbogrid_path
         self.tg_kw_args = tg_kw_args
-
+        self.log_prefix = log_prefix
         if (
             self.turbogrid_location_type
             == PyTurboGrid.TurboGridLocationType.TURBOGRID_RUNNING_CONTAINER
@@ -147,16 +156,24 @@ class multi_blade_row:
             self.pyturbogrid_saas_port = self.pyturbogrid_saas_execution_control.socket_port
 
         self.pyturbogrid_saas = launch_turbogrid(
-            log_level=PyTurboGrid.TurboGridLogLevel.INFO,
-            log_filename_suffix="_saas",
+            log_level=log_level,
+            log_filename_suffix=self.log_prefix + "_saas",
             turbogrid_path=self.turbogrid_path,
             turbogrid_location_type=self.turbogrid_location_type,
             port=self.pyturbogrid_saas_port,
             additional_kw_args=self.tg_kw_args,
         )
+        self.init_style = InitStyle.NO_INIT
 
     def __del__(self):
+        self.quit()
+
+    def quit(self):
         """This method will quit all TG instances."""
+        # debug printout for here and for container helpers
+        # print(
+        #     f"multi_blade_row quit self.tg_worker_instances {self.tg_worker_instances} self.pyturbogrid_saas {self.pyturbogrid_saas}"
+        # )
         if self.tg_worker_instances:
             with concurrent.futures.ThreadPoolExecutor(
                 max_workers=len(self.tg_worker_instances)
@@ -166,18 +183,72 @@ class multi_blade_row:
                     for key, val in self.tg_worker_instances.items()
                 ]
                 concurrent.futures.wait(futures)
+        self.tg_worker_instances = None
         if self.pyturbogrid_saas:
+            # print("pyturbogrid_saas.quit()")
             self.pyturbogrid_saas.quit()
             if self.pyturbogrid_saas_execution_control:
+                # print("del self.pyturbogrid_saas_execution_control")
                 del self.pyturbogrid_saas_execution_control
+        self.pyturbogrid_saas = None
+
+    def save_state(self) -> dict[str, any]:
+        print("save_state", self.init_style)
+        match self.init_style:
+            case InitStyle.TGInit:
+                # Save all the TG states
+                print("saving...")
+                file_dict = self.save_states("mbr_")
+                print("file_dict", file_dict)
+                return {
+                    "TGInit Path": self.tginit_path,
+                    "Blade Rows": self.all_blade_row_keys,
+                    "Sizing Strategy": self.current_machine_sizing_strategy,
+                    "Base Size Factors": self.base_gsf,
+                    "File Dict": file_dict,
+                }
+            case _:
+                raise Exception(f"Unable to save with init style {self.init_style}")
+
+    def init_from_state(
+        self,
+        file_name: str,
+        tg_log_level: PyTurboGrid.TurboGridLogLevel = PyTurboGrid.TurboGridLogLevel.INFO,
+    ):
+        import json
+
+        state_dict = json.load(open(file_name))
+        print(state_dict)
+
+        self.all_blade_row_keys = state_dict["Blade Rows"]
+
+        self.tg_worker_instances = {key: single_blade_row() for key in self.all_blade_row_keys}
+        self.base_gsf = state_dict["Base Size Factors"]
+        with concurrent.futures.ThreadPoolExecutor(
+            max_workers=len(self.tg_worker_instances)
+        ) as executor:
+            job = partial(
+                self.__launch_instances_state__,
+                tg_log_level,
+                state_dict["File Dict"],
+            )
+            futures = [
+                executor.submit(job, key, val) for key, val in self.tg_worker_instances.items()
+            ]
+            concurrent.futures.wait(futures)
+
+        # pprint.pprint(timings)
+        self.init_style = InitStyle.TGInit
+        self.tginit_path = state_dict["TGInit Path"]
 
     def get_blade_rows_from_ndf(self, ndf_path: str) -> dict:
         return ndf_parser.NDFParser(ndf_path).get_blade_row_blades()
 
     def get_blade_row_names_from_tginit(self, tginit_path: str) -> list[str]:
-        return ast.literal_eval(
-            self.pyturbogrid_saas.perform_query(f"Get TGInit Blade Rows, path={tginit_path}")
-        )
+        return self.pyturbogrid_saas.getTGInitContents(tginit_path)["blade rows"]
+
+    def get_secondary_flow_paths_from_tginit(self, tginit_path: str) -> list[str]:
+        return self.pyturbogrid_saas.getTGInitContents(tginit_path)["secondary flow paths"]
 
     # Returns the TGInit full path
     # TODO: Path should be returned from engine, or passed to engine.
@@ -194,28 +265,55 @@ class multi_blade_row:
         blade_rows_to_mesh: list[str] = None,
     ):
         # import pprint
+        tginit_name = os.path.basename(tginit_path)
+        tginit_base_path = PurePath(tginit_path).parent.as_posix()
+        tginit_file_name, self.tginit_file_extension = os.path.splitext(tginit_name)
+        print(f"self.turbogrid_location_type {self.turbogrid_location_type}")
+        if (
+            self.turbogrid_location_type
+            == PyTurboGrid.TurboGridLocationType.TURBOGRID_RUNNING_CONTAINER
+        ):
 
-        # self.all_blade_row_keys is not yet implemented at this point
-        # TG should have a query to get this list instead of relying on the NDF file
-        # it will throw
-        selected_brs = blade_rows_to_mesh if blade_rows_to_mesh else self.all_blade_row_keys
-        # self.all_blade_rows = ndf_parser.NDFParser(ndf_path).get_blade_row_blades()
+            container = container_helpers.get_container_connection(
+                self.pyturbogrid_saas_execution_control.ftp_port,
+                self.tg_container_launch_settings["ssh_key_filename"],
+            )
+            print(f"transfer files to container {tginit_path}")
+            container_helpers.transfer_file_to_container(container, tginit_path)
+
+        selected_brs = (
+            blade_rows_to_mesh
+            if blade_rows_to_mesh
+            else self.get_blade_row_names_from_tginit(
+                tginit_name
+                if self.turbogrid_location_type
+                == PyTurboGrid.TurboGridLocationType.TURBOGRID_RUNNING_CONTAINER
+                else tginit_path
+            )
+        )
         self.all_blade_row_keys = selected_brs
 
         timings = {}
-
         self.tg_worker_instances = {key: single_blade_row() for key in selected_brs}
         self.base_gsf = {key: 1.0 for key in selected_brs}
         with concurrent.futures.ThreadPoolExecutor(
             max_workers=len(self.tg_worker_instances)
         ) as executor:
-            job = partial(self.__launch_instances_tginit__, tginit_path, tg_log_level, timings)
+            job = partial(
+                self.__launch_instances_tginit__,
+                tginit_path,
+                tg_log_level,
+                self.log_prefix,
+                timings,
+            )
             futures = [
                 executor.submit(job, key, val) for key, val in self.tg_worker_instances.items()
             ]
             concurrent.futures.wait(futures)
 
         # pprint.pprint(timings)
+        self.init_style = InitStyle.TGInit
+        self.tginit_path = tginit_path
 
     def init_from_ndf(
         self,
@@ -324,14 +422,23 @@ class multi_blade_row:
             ]
             concurrent.futures.wait(futures)
 
-    def init_from_tgmachine(self, tgmachine_path: str, tg_log_level):
+    def init_from_tgmachine(
+        self,
+        tgmachine_path: str,
+        tg_log_level: PyTurboGrid.TurboGridLogLevel = PyTurboGrid.TurboGridLogLevel.INFO,
+        disable_lma: bool = False,
+    ):
         """
         Initialize the MBR representation with a TGMachine file.
         Still under development
         """
         # print(f"init_from_tgmachine tgmachine_path = {tgmachine_path}")
-        tgmachine_file = open(tgmachine_path, "r")
-        machine_info = json.load(tgmachine_file)
+        with open(tgmachine_path, "r") as f:
+            lines = f.readlines()
+
+        json_lines = [line for line in lines if not line.lstrip().startswith("#")]
+        machine_info = json.loads("".join(json_lines))
+
         n_rows: int = machine_info["Number of Blade Rows"]
         interface_method: str = machine_info["Interface Method"]
         # print(f"   n_rows = {n_rows}")
@@ -363,6 +470,7 @@ class multi_blade_row:
                 tg_log_level,
                 os.path.split(tgmachine_path)[0],
                 self.neighbor_dict,
+                disable_lma,
             )
             futures = [
                 executor.submit(job, key, val) for key, val in self.tg_worker_instances.items()
@@ -436,6 +544,20 @@ class multi_blade_row:
         self.tg_worker_instances[blade_row_name].pytg.set_global_size_factor(size_factor)
         # print("  after vcount ", self.get_mesh_statistics()[blade_row_name]["Vertices"]["Count"])
 
+    # Advanced use only
+    def disable_lma(self):
+        """
+        Sets the Turbo Transform type to block-structured (workaround for LMA issues. Advanced use only.)
+        """
+        with concurrent.futures.ThreadPoolExecutor(
+            max_workers=len(self.tg_worker_instances)
+        ) as executor:
+            futures = [
+                executor.submit(self.__disable_lma__, val)
+                for key, val in self.tg_worker_instances.items()
+            ]
+            concurrent.futures.wait(futures)
+
     def set_number_of_blade_sets(self, blade_row_name: str, number_of_blade_sets: int):
         """
         Set the number of blade sets for blade_row_name.
@@ -449,6 +571,30 @@ class multi_blade_row:
             param_val_pairs=f"Bladeset Count = {number_of_blade_sets}",
         )
 
+    def set_inlet_outlet_parametric_positions(self, blade_row_name: str, inlet_hs=[], outlet_hs=[]):
+        """
+        Set the position of the inlet/outlet blocks within the blade row mesh for blade_row_name.
+        """
+        if blade_row_name not in self.tg_worker_instances:
+            raise Exception(
+                f"No blade row with name {blade_row_name}. Available names: {self.all_blade_row_keys}"
+            )
+        self.tg_worker_instances[blade_row_name].pytg.suspend(object="/TOPOLOGY SET")
+        if len(inlet_hs):
+            self.tg_worker_instances[blade_row_name].pytg.set_obj_param(
+                object="/GEOMETRY/INLET",
+                param_val_pairs=f"Parametric Hub Location = {inlet_hs[0]}, Parametric Shroud Location = {inlet_hs[1]}",
+            )
+        if len(outlet_hs):
+            self.tg_worker_instances[blade_row_name].pytg.set_obj_param(
+                object="/GEOMETRY/OUTLET",
+                param_val_pairs=f"Parametric Hub Location = {outlet_hs[0]}, Parametric Shroud Location = {outlet_hs[1]}",
+            )
+        self.tg_worker_instances[blade_row_name].pytg.unsuspend(object="/TOPOLOGY SET")
+
+        # Parametric Hub Location = 0.5
+        # Parametric Shroud Location = 0.5
+
     def set_machine_sizing_strategy(self, strategy: MachineSizingStrategy):
         """
         Set the automatic machine sizing strategy for this machine.
@@ -458,7 +604,8 @@ class multi_blade_row:
 
         if self.current_machine_sizing_strategy == strategy:
             return False
-
+        else:
+            self.current_machine_sizing_strategy = strategy
         # When 3.9 is dropped, we can use match/case
         if strategy == MachineSizingStrategy.NONE:
             self.set_machine_base_size_factors({key: 1.0 for key in self.all_blade_row_keys})
@@ -483,8 +630,9 @@ class multi_blade_row:
         # Check sizes here!
         if self.base_gsf == size_factors:
             return False
+        else:
+            self.base_gsf = size_factors
 
-        self.base_gsf = size_factors
         with concurrent.futures.ThreadPoolExecutor(
             max_workers=len(self.tg_worker_instances)
         ) as executor:
@@ -504,6 +652,8 @@ class multi_blade_row:
 
         if size_factor == self.current_size_factor:
             return False
+        else:
+            self.current_size_factor = size_factor
 
         with concurrent.futures.ThreadPoolExecutor(
             max_workers=len(self.tg_worker_instances)
@@ -548,6 +698,24 @@ class multi_blade_row:
                 for key, val in self.tg_worker_instances.items()
             ]
             concurrent.futures.wait(futures)
+
+    # Returns a dictionary of tg_worker_name : file name
+    def save_states(self, optional_prefix: str = None) -> dict[str, str]:
+        """
+        Write out the .tst files representing each TG instance.
+
+        """
+        # print(f"save_meshes")
+
+        with concurrent.futures.ThreadPoolExecutor(
+            max_workers=len(self.tg_worker_instances)
+        ) as executor:
+            futures = [
+                executor.submit(self.__save_state__, key, val, optional_prefix)
+                for key, val in self.tg_worker_instances.items()
+            ]
+            done, not_done = concurrent.futures.wait(futures)
+            return {future.result()[0]: future.result()[1] for future in done}
 
     def get_mesh_statistics(self) -> dict[str, any]:
         """
@@ -621,6 +789,9 @@ class multi_blade_row:
             threadsafe_queue: queue.Queue = queue.Queue()
             for item in self.cached_blade_mesh_surfaces:
                 threadsafe_queue.put(item)
+            for sfp in self.cached_sfp_mesh_surfaces:
+                for surface in self.cached_sfp_mesh_surfaces[sfp]:
+                    threadsafe_queue.put(surface)
             return threadsafe_queue
 
         # print("Mesh statistics have changed, regenerating...")
@@ -639,6 +810,15 @@ class multi_blade_row:
         self.cached_blade_mesh_surfaces_stats = mesh_stats
         for item in result_list:
             threadsafe_queue.put(item)
+        print(f"number of passage meshes: {len(result_list)}")
+        # Add theta mesh surfaces
+        self.cached_sfp_mesh_surfaces = {}
+        sfps = self.get_available_secondary_flow_path_meshes()
+        for sfp in sfps:
+            self.cached_sfp_mesh_surfaces[sfp] = self.pyturbogrid_saas.getThetaMesh(sfp)
+            print(f"number of sfp meshes for {sfp}: {len(self.cached_sfp_mesh_surfaces[sfp])}")
+            for surface in self.cached_sfp_mesh_surfaces[sfp]:
+                threadsafe_queue.put(surface)
 
         return threadsafe_queue
 
@@ -659,6 +839,41 @@ class multi_blade_row:
             self.cached_tginit_filename = tginit_path
 
         return deepcopy(self.cached_tginit_geometry)
+
+    # For now, assumes that the cad path is the TGInit path but with x_b.
+    # The cad path will need to be filled in by TG, who knows how to find it properly.
+    # This method will generate the secondary flowpath mesh within the SaaS node,
+    # and try to fit opening regions in the individual worker nodes' upstream/downstream blocks where it makes sense.
+    def add_secondary_flow_path_from_tginit(
+        self,
+        sfp_name: str,
+        tginit_path: str,
+    ):
+
+        tginit_contents = self.pyturbogrid_saas.getTGInitContents(tginit_path=tginit_path)
+
+        if sfp_name not in tginit_contents["secondary flow paths"]:
+            raise (f"Secondary Flow Path {sfp_name} is not in the TGInit file {tginit_path}")
+
+        sfp_family_types = tginit_contents["secondary flow paths"][sfp_name]
+
+        base, ext = os.path.splitext(tginit_path)
+        cad_path = base + ".x_b"
+
+        self.pyturbogrid_saas.generateThetaMesh(
+            name=sfp_name,
+            axis=tginit_contents["axis"],
+            units=tginit_contents["units"],
+            cad_path=cad_path,
+            wall_families=sfp_family_types["wall families"],
+            hubinterfacefamilies=sfp_family_types["hub families"],
+            shroudinterfacefamilies=sfp_family_types["shroud families"],
+            hubcurvefamily=tginit_contents["hub family"],
+            shroudcurvefamily=tginit_contents["shroud family"],
+        )
+
+    def get_available_secondary_flow_path_meshes(self):
+        return self.pyturbogrid_saas.getAvailableThetaMeshes()
 
     def __launch_instances__(self, ndf_file_name, tg_log_level, tg_worker_name, tg_worker_instance):
         """
@@ -730,7 +945,13 @@ class multi_blade_row:
             print(f"{tg_worker_instance} traceback: {traceback.extract_tb(e.__traceback__)}")
 
     def __launch_instances_tginit__(
-        self, tginit_file_path, tg_log_level, timings, tg_worker_name, tg_worker_instance
+        self,
+        tginit_file_path,
+        tg_log_level,
+        log_prefix,
+        timings,
+        tg_worker_name,
+        tg_worker_instance,
     ):
         """
         :meta private:
@@ -761,7 +982,7 @@ class multi_blade_row:
             t1 = time.time()
             tg_worker_instance.pytg = launch_turbogrid(
                 log_level=tg_log_level,
-                log_filename_suffix=f"_{tginit_file_name}_{tg_worker_name}",
+                log_filename_suffix=f"{log_prefix}_{tginit_file_name}_{tg_worker_name}",
                 additional_kw_args=self.tg_kw_args,
                 turbogrid_path=self.turbogrid_path,
                 turbogrid_location_type=self.turbogrid_location_type,
@@ -784,23 +1005,33 @@ class multi_blade_row:
                 # print(f"transfer files to container {tginit_file_name}")
                 container_helpers.transfer_files_to_container(
                     container,
-                    self.ndf_base_path,
+                    tginit_path,
                     [
-                        self.tginit_file_name + ".tginit",
-                        tginit_path + "/" + tginit_file_name + ".x_b",
+                        tginit_file_name + ".tginit",
+                        tginit_file_name + ".x_b",
                     ],
                 )
                 # print(f"files transferred")
 
             t3 = time.time()
             tg_worker_instance.pytg.set_obj_param(
-                object="/GEOMETRY/INLET", param_val_pairs="Opening Mode = Fully extend"
+                object="/GEOMETRY/INLET", param_val_pairs="Opening Mode = Parametric"
             )
             tg_worker_instance.pytg.set_obj_param(
-                object="/GEOMETRY/OUTLET", param_val_pairs="Opening Mode = Fully extend"
+                object="/GEOMETRY/OUTLET", param_val_pairs="Opening Mode = Parametric"
             )
             t4 = time.time()
-            tg_worker_instance.pytg.read_tginit(path=tginit_file_path, bladerow=tg_worker_name)
+            tg_worker_instance.pytg.read_tginit(
+                path=(
+                    tginit_file_path
+                    if self.turbogrid_location_type
+                    == PyTurboGrid.TurboGridLocationType.TURBOGRID_INSTALL
+                    else tginit_file_name
+                ),
+                bladerow=tg_worker_name,
+                autoregions=True,
+                includemesh=False,
+            )
             t5 = time.time()
             # tg_worker_instance.pytg.set_obj_param(
             #     object="/TOPOLOGY SET", param_val_pairs="ATM Stop After Main Layers=True"
@@ -826,6 +1057,7 @@ class multi_blade_row:
         tg_log_level,
         base_dir,
         neighbor_dict: dict[str, Optional[str]],
+        disable_lma: bool,
         tg_worker_name,
         tg_worker_instance,
     ):
@@ -833,17 +1065,95 @@ class multi_blade_row:
         :meta private:
         """
         try:
+            tg_port = None
+            if (
+                self.turbogrid_location_type
+                == PyTurboGrid.TurboGridLocationType.TURBOGRID_RUNNING_CONTAINER
+            ):
+                tg_worker_instance.tg_execution_control = launch_turbogrid_container(
+                    self.tg_container_launch_settings["cfxtg_command_name"],
+                    self.tg_container_launch_settings["image_name"],
+                    self.tg_container_launch_settings["container_name"],
+                    self.tg_container_launch_settings["cfx_version"],
+                    self.tg_container_launch_settings["license_file"],
+                    self.tg_container_launch_settings["keep_stopped_containers"],
+                    self.tg_container_launch_settings["container_env_dict"],
+                )
+                tg_port = tg_worker_instance.tg_execution_control.socket_port
+                # print("tg_port", tg_port)
+
+            # tg_worker_instance.pytg = launch_turbogrid(
+            #     log_level=tg_log_level,
+            #     log_filename_suffix=f"_{tg_worker_name}",
+            #     additional_kw_args=self.tg_kw_args,
+            # )
+            inf_filename = os.path.join(base_dir, tg_worker_name)
             tg_worker_instance.pytg = launch_turbogrid(
                 log_level=tg_log_level,
-                log_filename_suffix=f"_{tg_worker_name}",
+                log_filename_suffix=f"_inf_{tg_worker_name}",
                 additional_kw_args=self.tg_kw_args,
+                turbogrid_path=self.turbogrid_path,
+                turbogrid_location_type=self.turbogrid_location_type,
+                port=tg_port,
             )
             tg_worker_instance.pytg.block_each_message = True
-            tg_worker_instance.pytg.read_inf(filename=os.path.join(base_dir, tg_worker_name))
+            if (
+                self.turbogrid_location_type
+                == PyTurboGrid.TurboGridLocationType.TURBOGRID_RUNNING_CONTAINER
+            ):
+                # print(
+                #     f"get_container_connection {tg_worker_instance.tg_execution_control.ftp_port} {self.tg_container_launch_settings['ssh_key_filename']}"
+                # )
+                container = container_helpers.get_container_connection(
+                    tg_worker_instance.tg_execution_control.ftp_port,
+                    self.tg_container_launch_settings["ssh_key_filename"],
+                )
+
+                # Read the INF file to get a list of all the curve files to transfer
+                from ansys.turbogrid.core.inf_parser.inf_parser import INFParser
+
+                contents = INFParser.get_inf_contents(inf_filename)
+                file_list = [inf_filename]
+                file_list.append(os.path.join(base_dir, contents["Hub Data File"]))
+                file_list.append(os.path.join(base_dir, contents["Shroud Data File"]))
+                file_list.append(os.path.join(base_dir, contents["Profile Data File"]))
+                # print(f"transfer files to container {file_list}")
+                # print(f"Directory listing of {base_dir} {os.listdir(base_dir)}")
+                container_helpers.transfer_files_to_container(
+                    container,
+                    "",
+                    file_list,
+                )
+                # print(f"files transferred")
+            if disable_lma:
+                tg_worker_instance.pytg.set_obj_param(
+                    "/GEOMETRY/MACHINE DATA",
+                    f"Turbo Transform Mesh Type = Block-structured",
+                )
+            tg_worker_instance.pytg.read_inf(
+                filename=(
+                    tg_worker_name
+                    if self.turbogrid_location_type
+                    == PyTurboGrid.TurboGridLocationType.TURBOGRID_RUNNING_CONTAINER
+                    else inf_filename
+                )
+            )
+            # tg_worker_instance.pytg.unsuspend(object="/GEOMETRY")
+            # If we want to use adjacent profiles to determine the hub/shroud limits for each blade row case,
+            # send the profile names and opening mode.
+            # In container mode, transfer the relevant profile as well.
             if neighbor_dict[tg_worker_name][0]:
+                if (
+                    self.turbogrid_location_type
+                    == PyTurboGrid.TurboGridLocationType.TURBOGRID_RUNNING_CONTAINER
+                ):
+                    container_helpers.transfer_file_to_container(
+                        container, os.path.join(base_dir, neighbor_dict[tg_worker_name][0])
+                    )
+
                 tg_worker_instance.pytg.set_obj_param(
                     object="/GEOMETRY/INLET",
-                    param_val_pairs=f"Opening Mode = Adjacent blade, Input Filename = {os.path.join(base_dir, neighbor_dict[tg_worker_name][0])}",
+                    param_val_pairs=f"Opening Mode = Adjacent blade, Input Filename = {neighbor_dict[tg_worker_name][0] if self.turbogrid_location_type == PyTurboGrid.TurboGridLocationType.TURBOGRID_RUNNING_CONTAINER else os.path.join(base_dir, neighbor_dict[tg_worker_name][0])}",
                 )
                 tg_worker_instance.pytg.set_obj_param(
                     object="/MESH DATA",
@@ -854,9 +1164,16 @@ class multi_blade_row:
                     object="/GEOMETRY/INLET", param_val_pairs=f"Opening Mode = Fully extend"
                 )
             if neighbor_dict[tg_worker_name][1]:
+                if (
+                    self.turbogrid_location_type
+                    == PyTurboGrid.TurboGridLocationType.TURBOGRID_RUNNING_CONTAINER
+                ):
+                    container_helpers.transfer_file_to_container(
+                        container, os.path.join(base_dir, neighbor_dict[tg_worker_name][1])
+                    )
                 tg_worker_instance.pytg.set_obj_param(
                     object="/GEOMETRY/OUTLET",
-                    param_val_pairs=f"Opening Mode = Adjacent blade, Input Filename = {os.path.join(base_dir, neighbor_dict[tg_worker_name][1])}",
+                    param_val_pairs=f"Opening Mode = Adjacent blade, Input Filename = {neighbor_dict[tg_worker_name][1] if self.turbogrid_location_type == PyTurboGrid.TurboGridLocationType.TURBOGRID_RUNNING_CONTAINER else os.path.join(base_dir, neighbor_dict[tg_worker_name][1])}",
                 )
                 tg_worker_instance.pytg.set_obj_param(
                     object="/MESH DATA",
@@ -870,6 +1187,30 @@ class multi_blade_row:
         except Exception as e:
             print(f"{tg_worker_instance} exception on __launch_instances_inf__: {e}")
 
+    def __launch_instances_state__(
+        self,
+        tg_log_level,
+        state_path_name_list,
+        tg_worker_name,
+        tg_worker_instance,
+    ):
+        """
+        :meta private:
+        """
+        try:
+            tg_worker_instance.pytg = launch_turbogrid(
+                log_level=tg_log_level,
+                log_filename_suffix=f"_{tg_worker_name}",
+                additional_kw_args=self.tg_kw_args,
+            )
+            tg_worker_instance.pytg.block_each_message = True
+            tg_worker_instance.pytg.read_state(filename=state_path_name_list[tg_worker_name])
+            tg_worker_instance.pytg.unsuspend(object="/TOPOLOGY SET")
+        except Exception as e:
+            print(f"{tg_worker_instance} exception on __launch_instances_inf__: {e}")
+            print(f"{tg_worker_instance} traceback: {traceback.extract_tb(e.__traceback__)}")
+
+    # Sets this TG's sf to self.base_gsf[tg_worker_name] * size_factor
     def __set_gsf__(self, size_factor, tg_worker_name, tg_worker_instance):
         """
         :meta private:
@@ -907,11 +1248,31 @@ class multi_blade_row:
             file_name = optional_prefix + file_name
         tg_worker_instance.pytg.save_mesh(file_name)
 
+    # Returns (worker name, file name)
+    def __save_state__(self, tg_worker_name, tg_worker_instance, optional_prefix: str = None):
+        """
+        :meta private:
+        """
+        file_name: str = tg_worker_name + ".tst"
+        if optional_prefix:
+            file_name = optional_prefix + file_name
+        tg_worker_instance.pytg.save_state(filename=file_name)
+        return tg_worker_name, file_name
+
     def __quit__(self, tg_worker_instance):
         """
         :meta private:
         """
         tg_worker_instance.pytg.quit()
+
+    def __disable_lma__(self, tg_worker_instance: single_blade_row):
+        """
+        :meta private:
+        """
+        tg_worker_instance.pytg.set_obj_param(
+            "/GEOMETRY/MACHINE DATA", f"Turbo Transform Mesh Type = Block-structured"
+        )
+        tg_worker_instance.pytg.wait_engine_ready()
 
     def __write_boundary_polys__(
         self, result_list: list, list_lock: threading.Lock, tg_worker_instance
