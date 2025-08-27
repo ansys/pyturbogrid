@@ -74,6 +74,9 @@ html_context = {
     "github_repo": "pyturbogrid",
     "github_version": "main",
     "doc_path": "doc/source",
+    "pyansys_tags": [
+        "Fluids"
+    ]
 }
 
 html_theme_options = {
