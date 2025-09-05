@@ -334,6 +334,9 @@ class multi_blade_row:
             ]
             concurrent.futures.wait(futures)
 
+        self.init_style = InitStyle.TGInit
+        self.tginit_path = tginit_path
+
     def init_from_tginit(
         self,
         tginit_path: str,
