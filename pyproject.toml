@@ -4,7 +4,7 @@ build-backend = "poetry.core.masonry.api"
 
 [tool.poetry]
 name = "ansys-turbogrid-core"
-version = "0.5.0"
+version = "0.5.1"
 description = "A python wrapper for Ansys TurboGrid"
 readme = "README.rst"
 license = "MIT"
