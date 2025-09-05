@@ -89,19 +89,21 @@ doc = ["Pillow (>=9.0)", "PyGitHub (==2.7.0)", "PyYAML (==6.0.2)", "jupytext (==
 
 [[package]]
 name = "ansys-turbogrid-api"
-version = "0.5.0"
+version = "0.5.1"
 description = ""
 optional = false
 python-versions = ">=3.8"
 files = [
-    {file = "ansys_turbogrid_api-0.5.0-py310-none-any.whl", hash = "sha256:72dc85bfe4c579dd8f718ce6f8895e81f7e9986a18d468484ea5a78e921f8698"},
-    {file = "ansys_turbogrid_api-0.5.0-py311-none-any.whl", hash = "sha256:648497200eba4aa339f18c13453b5c621356d595f1fa330c18191a01f335d5d6"},
-    {file = "ansys_turbogrid_api-0.5.0-py312-none-any.whl", hash = "sha256:fd661672e93c2ad01be29eadeed10c03b170eef4876511f7ed22c776f917abf0"},
-    {file = "ansys_turbogrid_api-0.5.0-py313-none-any.whl", hash = "sha256:0bd83f7b502d19d99c23cae4605ddd239d6d96f5998607127a9edbb3dc0a4cc1"},
+    {file = "ansys_turbogrid_api-0.5.1-py310-none-any.whl", hash = "sha256:cfdb4d12089988a18c17d3fa3e42dffb444c81b6762eadff86dd633ec188c1bb"},
+    {file = "ansys_turbogrid_api-0.5.1-py311-none-any.whl", hash = "sha256:265bf5c9b8595b81770f369539cd5725cb41478bba4a5cd098b019f68bf1e5b3"},
+    {file = "ansys_turbogrid_api-0.5.1-py312-none-any.whl", hash = "sha256:b6a29327c44fc695c01e7fa1e3049257a232644316b63b1bcb93735e7dfaf352"},
+    {file = "ansys_turbogrid_api-0.5.1-py313-none-any.whl", hash = "sha256:76f4b3b592269d9a04413da8e2f20623e7b8f0d9352a52f6ca8f68c721c4f198"},
 ]
 
 [package.dependencies]
 ansys-platform-instancemanagement = ">=1.0,<2.0"
+pyvista = "0.46.0"
+toml = "0.10.2"
 
 [[package]]
 name = "anyio"
@@ -2976,6 +2978,27 @@ dev = ["pre-commit", "tox"]
 testing = ["coverage", "pytest", "pytest-benchmark"]
 
 [[package]]
+name = "pooch"
+version = "1.8.2"
+description = "A friend to fetch your data files"
+optional = false
+python-versions = ">=3.7"
+files = [
+    {file = "pooch-1.8.2-py3-none-any.whl", hash = "sha256:3529a57096f7198778a5ceefd5ac3ef0e4d06a6ddaf9fc2d609b806f25302c47"},
+    {file = "pooch-1.8.2.tar.gz", hash = "sha256:76561f0de68a01da4df6af38e9955c4c9d1a5c90da73f7e40276a5728ec83d10"},
+]
+
+[package.dependencies]
+packaging = ">=20.0"
+platformdirs = ">=2.5.0"
+requests = ">=2.19.0"
+
+[package.extras]
+progress = ["tqdm (>=4.41.0,<5.0.0)"]
+sftp = ["paramiko (>=2.7.0)"]
+xxhash = ["xxhash (>=1.4.3)"]
+
+[[package]]
 name = "prometheus-client"
 version = "0.22.1"
 description = "Python client for the Prometheus monitoring system."
@@ -3261,6 +3284,32 @@ files = [
     {file = "pytz-2025.2-py2.py3-none-any.whl", hash = "sha256:5ddf76296dd8c44c26eb8f4b6f35488f3ccbf6fbbd7adee0b7262d43f0ec2f00"},
     {file = "pytz-2025.2.tar.gz", hash = "sha256:360b9e3dbb49a209c21ad61809c7fb453643e048b38924c765813546746e81c3"},
 ]
+
+[[package]]
+name = "pyvista"
+version = "0.46.0"
+description = "Easier Pythonic interface to VTK"
+optional = false
+python-versions = ">=3.9"
+files = [
+    {file = "pyvista-0.46.0-py3-none-any.whl", hash = "sha256:32b7e3ebf4d70e89aead52d46a24abbbd1e48564cf524f2f91efe5fa302b3f0f"},
+    {file = "pyvista-0.46.0.tar.gz", hash = "sha256:521ea90b05e2339b3271983054924b9091350a7d5545fc88980dd2b79895dafc"},
+]
+
+[package.dependencies]
+matplotlib = ">=3.0.1"
+numpy = ">=1.21.0"
+pillow = "*"
+pooch = "*"
+scooby = ">=0.5.1"
+typing-extensions = "*"
+vtk = "<9.4.0 || >9.4.0,<9.4.1 || >9.4.1,<9.6.0"
+
+[package.extras]
+all = ["pyvista[colormaps,io,jupyter]"]
+colormaps = ["cmcrameri", "cmocean", "colorcet"]
+io = ["imageio", "meshio (>=5.2)"]
+jupyter = ["ipywidgets", "jupyter-server-proxy", "nest_asyncio", "trame (>=2.5.2)", "trame-client (>=2.12.7)", "trame-server (>=2.11.7)", "trame-vtk (>=2.5.8)", "trame-vuetify (>=2.3.1)"]
 
 [[package]]
 name = "pyviz-comms"
@@ -3736,6 +3785,20 @@ files = [
 ]
 
 [[package]]
+name = "scooby"
+version = "0.10.1"
+description = "A Great Dane turned Python environment detective"
+optional = false
+python-versions = ">=3.8"
+files = [
+    {file = "scooby-0.10.1-py3-none-any.whl", hash = "sha256:c099a0b4b013f949436bdd4e2a6e9b4f8aba8211e2a65dc1d2d3b9317ef8d4c1"},
+    {file = "scooby-0.10.1.tar.gz", hash = "sha256:2ea147670cbf7cad42600c9990f2289f7b3c02c0769b0cc02a73e59d11c8f885"},
+]
+
+[package.extras]
+cpu = ["mkl", "psutil"]
+
+[[package]]
 name = "send2trash"
 version = "1.8.3"
 description = "Send file to trash natively under Mac OS X, Windows and Linux"
@@ -4083,6 +4146,17 @@ doc = ["sphinx", "sphinx_rtd_theme"]
 test = ["pytest", "ruff"]
 
 [[package]]
+name = "toml"
+version = "0.10.2"
+description = "Python Library for Tom's Obvious, Minimal Language"
+optional = false
+python-versions = ">=2.6, !=3.0.*, !=3.1.*, !=3.2.*"
+files = [
+    {file = "toml-0.10.2-py2.py3-none-any.whl", hash = "sha256:806143ae5bfb6a3c6e736a764057db0e6a0e05e338b5630894a5f779cabb4f9b"},
+    {file = "toml-0.10.2.tar.gz", hash = "sha256:b3bda1d108d5dd99f4a20d24d9c348e91c4db7ab1b749200bded2f839ccbe68f"},
+]
+
+[[package]]
 name = "tomli"
 version = "2.2.1"
 description = "A lil' TOML parser"
@@ -4257,6 +4331,51 @@ brotli = ["brotli (>=1.0.9)", "brotlicffi (>=0.8.0)"]
 h2 = ["h2 (>=4,<5)"]
 socks = ["pysocks (>=1.5.6,!=1.5.7,<2.0)"]
 zstd = ["zstandard (>=0.18.0)"]
+
+[[package]]
+name = "vtk"
+version = "9.5.1"
+description = "VTK is an open-source toolkit for 3D computer graphics, image processing, and visualization"
+optional = false
+python-versions = "*"
+files = [
+    {file = "vtk-9.5.1-cp310-cp310-macosx_10_10_x86_64.whl", hash = "sha256:ecf25f28740357e5f7b3bb67cf1a90e95693c8f3c975209a38df4984f65eaf3e"},
+    {file = "vtk-9.5.1-cp310-cp310-macosx_11_0_arm64.whl", hash = "sha256:463a72092c38f515d4593a576ed35b8215a181f8fe11912a8f66626aa6475334"},
+    {file = "vtk-9.5.1-cp310-cp310-manylinux2014_x86_64.manylinux_2_17_x86_64.whl", hash = "sha256:8880ca4c409515cfd2e0119e2a98b7caad66f6b733388270054f296f9b31cabb"},
+    {file = "vtk-9.5.1-cp310-cp310-manylinux_2_28_aarch64.whl", hash = "sha256:ec200519578f67812d51f045cfb51a2d0e47bd2823f4177b0a063754282eebd0"},
+    {file = "vtk-9.5.1-cp310-cp310-win_amd64.whl", hash = "sha256:27a12b8e1b7e7f768c84118135254710ebe9fbbd1c1dfe9bbf98faedde5e8bfb"},
+    {file = "vtk-9.5.1-cp311-cp311-macosx_10_10_x86_64.whl", hash = "sha256:7490d56908c3094acf36a567b6e36f8340efe1299f408128c2e4718ef44f04e4"},
+    {file = "vtk-9.5.1-cp311-cp311-macosx_11_0_arm64.whl", hash = "sha256:b268dcb1d283fd0ebb068e77bc8bb6579c0b20f670be611ad2864dd2a5007a0b"},
+    {file = "vtk-9.5.1-cp311-cp311-manylinux2014_x86_64.manylinux_2_17_x86_64.whl", hash = "sha256:71d5e52d46f5b1406fb7687682e924d41bbd0f3db62464df8e205d64cea7e6ea"},
+    {file = "vtk-9.5.1-cp311-cp311-manylinux_2_28_aarch64.whl", hash = "sha256:9e7cc3aa0f6b2408fb4f44c58ea1babf904d86aa6c7bba0a93a7f23b21851c4c"},
+    {file = "vtk-9.5.1-cp311-cp311-win_amd64.whl", hash = "sha256:318adbf4952dc4aae33eca0ec3259225896e9e57d396d23f1dcae0e789257781"},
+    {file = "vtk-9.5.1-cp312-cp312-macosx_10_10_x86_64.whl", hash = "sha256:a93163941180dc8e512b884ae117d48df673fa267fe6ab584a3d8a16e5ea122a"},
+    {file = "vtk-9.5.1-cp312-cp312-macosx_11_0_arm64.whl", hash = "sha256:cd302f0774522652dbf1543566dff11b7be102c8ced8af843f6aa258a556e407"},
+    {file = "vtk-9.5.1-cp312-cp312-manylinux2014_x86_64.manylinux_2_17_x86_64.whl", hash = "sha256:00ccffa427c9ee217534900cdf1653f4283d6267c73e426f63a8449f96bedbfb"},
+    {file = "vtk-9.5.1-cp312-cp312-manylinux_2_28_aarch64.whl", hash = "sha256:502a75d4eedfd421ba6e3b6197fefc43adc4fe50d20e4a202c4122f5c9d75cf6"},
+    {file = "vtk-9.5.1-cp312-cp312-win_amd64.whl", hash = "sha256:2e63f1b364cdae9fc9841401d21e1c72f5b05ccc00fdd98930864eb27bb29ef0"},
+    {file = "vtk-9.5.1-cp313-cp313-macosx_10_10_x86_64.whl", hash = "sha256:bc84f8aca925be7f8277ad0aa3a40a44c55bb4e6b6ad3b4b96757a8e68457ca0"},
+    {file = "vtk-9.5.1-cp313-cp313-macosx_11_0_arm64.whl", hash = "sha256:0c61f418e515364fb83ae0743571784771ce26e8d24e62150d956ef1a2b5e588"},
+    {file = "vtk-9.5.1-cp313-cp313-manylinux2014_x86_64.manylinux_2_17_x86_64.whl", hash = "sha256:40b8a0b4e409f2af5de824b8aaa747951d78f4cc4fc11a5ebc13b64ed77ff4f0"},
+    {file = "vtk-9.5.1-cp313-cp313-manylinux_2_28_aarch64.whl", hash = "sha256:ef8fff2924923e4223cf02bd63e5e0cab5e5cd54702c0ad6eb93ac6ae603244e"},
+    {file = "vtk-9.5.1-cp313-cp313-win_amd64.whl", hash = "sha256:e080409228e63510ab7a6b110281cb374166c823ccc4b2e3a78a4b1cd1f4887d"},
+    {file = "vtk-9.5.1-cp38-cp38-macosx_10_10_x86_64.whl", hash = "sha256:1cccb6fe09a51315c84bd02ed86cf531d142a90f8b2a4c2b1acf4b5c8e7b8326"},
+    {file = "vtk-9.5.1-cp38-cp38-manylinux2014_x86_64.manylinux_2_17_x86_64.whl", hash = "sha256:24301315d800e67ac336bc24faff164b92a2f55b7937abeb8515767620fed4ae"},
+    {file = "vtk-9.5.1-cp38-cp38-manylinux_2_28_aarch64.whl", hash = "sha256:c3545c8bfd05eab962aafb484aaaa6da3403d312013b71ec338b52f76384857b"},
+    {file = "vtk-9.5.1-cp38-cp38-win_amd64.whl", hash = "sha256:928dd0375c396e16ed79de2b7f6a73293fcb5a2535d0295589a50fcffef50512"},
+    {file = "vtk-9.5.1-cp39-cp39-macosx_10_10_x86_64.whl", hash = "sha256:954b079b1fa08e0c0bc5b09ead66fad5e8da8cabb8724676333a8a0d2bbe02ab"},
+    {file = "vtk-9.5.1-cp39-cp39-macosx_11_0_arm64.whl", hash = "sha256:8b063a94052e769c0f24290a47a994f8c25060e40968b24121a90eb44f9296a7"},
+    {file = "vtk-9.5.1-cp39-cp39-manylinux2014_x86_64.manylinux_2_17_x86_64.whl", hash = "sha256:d2754f1c0772d9980ca428eb0790b2023d08cd939f4e0ac618e865480ac04392"},
+    {file = "vtk-9.5.1-cp39-cp39-manylinux_2_28_aarch64.whl", hash = "sha256:49a8b8a7672e7da9ba9f8d41abee85007f76584ab4345ac336563551a9bfdaad"},
+    {file = "vtk-9.5.1-cp39-cp39-win_amd64.whl", hash = "sha256:16fd9a0c4c140e7072d78a3faa98226c2a402c3e28a54486d4f34bbe220a481a"},
+]
+
+[package.dependencies]
+matplotlib = ">=2.0.0"
+
+[package.extras]
+numpy = ["numpy (>=1.9)"]
+web = ["wslink (>=1.0.4)"]
 
 [[package]]
 name = "wcwidth"
@@ -4444,4 +4563,4 @@ type = ["pytest-mypy"]
 [metadata]
 lock-version = "2.0"
 python-versions = ">=3.10,<4.0"
-content-hash = "660455cb5dda8802e809235df676551c9d337153ffb233538377bd7aeb6b0a45"
+content-hash = "e241e0547d38b302a26ae77ff21a530d32e6888c600458b86e65ef9141f4fe9d"
