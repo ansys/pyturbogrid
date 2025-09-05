@@ -4,7 +4,7 @@ build-backend = "poetry.core.masonry.api"
 
 [tool.poetry]
 name = "ansys-turbogrid-core"
-version = "0.4.6"
+version = "0.4.7"
 description = "A python wrapper for Ansys TurboGrid"
 readme = "README.rst"
 license = "MIT"
@@ -39,7 +39,7 @@ matplotlib = ">=3.5.1"
 importlib-metadata = ">=4.0"
 fabric = ">=3.2.2"
 Jinja2 = ">=3.1.2"
-ansys-turbogrid-api = ">=0.4.7"
+ansys-turbogrid-api = ">=0.5.1"
 # ansys-turbogrid-api = { path = "../ansys-api-turbogrid/", develop = true } # Uncomment this if you have access to a local repo
 pyyaml = "^6.0.2"
 deepdiff = "^8.4.2"
