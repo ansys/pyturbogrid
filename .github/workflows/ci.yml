@@ -111,6 +111,8 @@ jobs:
       - uses: ansys/actions/doc-build@v10
         with:
           python-version: ${{ env.MAIN_PYTHON_VERSION }}
+          group-dependencies-name: "doc"
+          optional-dependencies-name: ""                
   
   wheelhouse:
     name: "Build wheelhouse for ${{ matrix.os }} and Python ${{ matrix.python-version }}"
