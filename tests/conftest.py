@@ -28,7 +28,6 @@ from typing import Optional
 from ansys.turbogrid.api import pyturbogrid_core
 import pytest
 
-from ansys.turbogrid.core.launcher.container_helpers import get_open_port
 from ansys.turbogrid.core.launcher.deploy_tg_container import (
     deployed_tg_container,
     remote_tg_instance,
@@ -202,6 +201,8 @@ def get_enum_value_from_env(
 # run before the method definition.
 @pytest.fixture
 def pyturbogrid(pytestconfig, request) -> pyturbogrid_core.PyTurboGrid:
+    from ansys.turbogrid.core.launcher.container_helpers import get_open_port
+
     pytest.socket_port = get_open_port()
 
     pytest.turbogrid_log_level = pyturbogrid_core.PyTurboGrid.TurboGridLogLevel[

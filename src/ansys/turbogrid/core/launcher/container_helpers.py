@@ -65,15 +65,15 @@ class container_helpers:
             remote="/",
             local=local_filepath,
         )
+        print(f"... Transferred {local_filepath}")
 
     @staticmethod
     def transfer_files_to_container(
         container_connection: Connection, local_folder_path: str, local_filenames: list
     ):
         for filename in local_filenames:
-            container_helpers.transfer_file_to_container(
-                container_connection, f"{local_folder_path}/{filename}"
-            )
+            filepath = filename if not local_folder_path else f"{local_folder_path}/{filename}"
+            container_helpers.transfer_file_to_container(container_connection, filepath)
 
     @staticmethod
     def transfer_file_from_container(
