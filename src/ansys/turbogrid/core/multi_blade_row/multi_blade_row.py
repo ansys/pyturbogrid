@@ -717,7 +717,7 @@ class multi_blade_row:
             for name, br in self.tg_worker_instances.items()
         }
         t1 = time.time()
-        print(f"get_inlet_outlet_parametric_positions profiling: {t1-t0:.2f} seconds")
+        # print(f"get_inlet_outlet_parametric_positions profiling: {t1-t0:.2f} seconds")
         return positions
 
     def set_inlet_outlet_parametric_positions(self, blade_row_name: str, inlet_hs=[], outlet_hs=[]):
