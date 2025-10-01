@@ -321,8 +321,15 @@ class multi_blade_row:
         tg_log_level: PyTurboGrid.TurboGridLogLevel = PyTurboGrid.TurboGridLogLevel.INFO,
     ):
         timings = {}
+        # There currently is a bug with TurboGrid on Linux, coming from WorkBench,
+        # when converting .x_b to .tin, which must happen. When this occurs in parallel,
+        # workbench often throws an error and the application behaves unpredictably.
+        # In that scenario, do __read_tginit__ in serial (max of 1 worker)
+        import platform
+
+        is_linux = platform.system() == "Linux"
         with concurrent.futures.ThreadPoolExecutor(
-            max_workers=len(self.tg_worker_instances)
+            max_workers=1 if is_linux else len(self.tg_worker_instances)
         ) as executor:
             job = partial(
                 self.__read_tginit__,
@@ -375,8 +382,15 @@ class multi_blade_row:
         timings = {}
         self.tg_worker_instances = {key: single_blade_row() for key in selected_brs}
         self.base_gsf = {key: 1.0 for key in selected_brs}
+        # There currently is a bug with TurboGrid on Linux, coming from WorkBench,
+        # when converting .x_b to .tin, which must happen. When this occurs in parallel,
+        # workbench often throws an error and the application behaves unpredictably.
+        # In that scenario, do __read_tginit__ in serial (max of 1 worker)
+        import platform
+
+        is_linux = platform.system() == "Linux"
         with concurrent.futures.ThreadPoolExecutor(
-            max_workers=len(self.tg_worker_instances)
+            max_workers=1 if is_linux else len(self.tg_worker_instances)
         ) as executor:
             job = partial(
                 self.__launch_instances_tginit__,
@@ -492,8 +506,15 @@ class multi_blade_row:
 
         self.tg_worker_instances = {key: single_blade_row() for key in self.all_blade_row_keys}
         self.base_gsf = {key: 1.0 for key in self.all_blade_row_keys}
+        # There currently is a bug with TurboGrid on Linux, coming from WorkBench,
+        # when converting .x_b to .tin, which must happen. When this occurs in parallel,
+        # workbench often throws an error and the application behaves unpredictably.
+        # In that scenario, do __read_tginit__ in serial (max of 1 worker)
+        import platform
+
+        is_linux = platform.system() == "Linux"
         with concurrent.futures.ThreadPoolExecutor(
-            max_workers=len(self.tg_worker_instances)
+            max_workers=1 if is_linux else len(self.tg_worker_instances)
         ) as executor:
             job = partial(self.__launch_instances__, self.ndf_file_name, tg_log_level)
             futures = [
