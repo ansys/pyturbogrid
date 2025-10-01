@@ -1,0 +1,867 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <meta property="og:site_name" content="PyAnsys" />
+    <title>Mesh statistics report &#8212; PyTurboGrid 0.4.7 documentation</title>
+  
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../_static/styles/theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=8f2a1f02" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/ansys-sphinx-theme.css?v=ce7f2556" />
+    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery.css?v=d2d258e8" />
+    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-binder.css?v=f4aeca0c" />
+    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-dataframe.css?v=2082cf3c" />
+    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-rendered-html.css?v=1277b6f3" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/ansys-sphinx-theme.css?v=ce7f2556" />
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.23/css/jquery.dataTables.min.css" />
+    <link rel="stylesheet" type="text/css" href="https://www.nerdfonts.com/assets/css/webfont.css" />
+  
+  <!-- So that users can add custom icons -->
+  <script src="../_static/scripts/fontawesome.js?digest=8878045cc6db502f8baf"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
+
+
+  <!-- Include desired assets -->
+  <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+  
+
+  
+    <link href="../_static/css/breadcrumbs.css" rel="stylesheet" />
+  
+    <script src="../_static/documentation_options.js?v=fc14bbdd"></script>
+    <script src="../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="https://cdn.datatables.net/1.10.23/js/jquery.dataTables.min.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'examples/mesh_statistics_report';</script>
+    <script>
+        DOCUMENTATION_OPTIONS.theme_version = '0.16.1';
+        DOCUMENTATION_OPTIONS.theme_switcher_json_url = 'https://turbogrid.docs.pyansys.com/versions.json';
+        DOCUMENTATION_OPTIONS.theme_switcher_version_match = '0.4';
+        DOCUMENTATION_OPTIONS.show_version_warning_banner =
+            false;
+        </script>
+    <link rel="icon" href="../_static/ansys-favicon.png"/>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Multi blade row meshing example" href="multi_blade_row_batch_example.html" />
+    <link rel="prev" title="Multi blade row meshing example" href="mbr_sweep_example.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="0.4.7" />
+  <link rel="canonical" href="https://turbogrid.docs.pyansys.com/version/stable/examples/mesh_statistics_report.html" />
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class="col-lg-3 navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../index.html">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="../_static/pyansys_logo_transparent_black.png" class="logo__image only-light" alt="PyTurboGrid 0.4.7 documentation - Home"/>
+    <img src="../_static/pyansys_logo_transparent_white.png" class="logo__image only-dark pst-js-only" alt="PyTurboGrid 0.4.7 documentation - Home"/>
+  
+  
+</a></div>
+    
+  </div>
+  
+  <div class="col-lg-9 navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../getting_started/index.html">
+    Getting started
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../api_reference/index.html">
+    API reference
+  </a>
+</li>
+
+
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="index.html">
+    Examples
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../contributing.html">
+    Contribute
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+      
+        <div class="navbar-item">
+<div class="search-bar pst-js-only" id="search-bar">
+  <form class="bd-search d-flex align-items-center" action="../search.html" method="get">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <input type="search" class="form-control" name="q" placeholder="Search the docs ..."
+      aria-label="Search the docs ..." autocomplete="off" autocorrect="off"
+      autocapitalize="off" spellcheck="false" />
+    <span class="search-button__kbd-shortcut">
+      <kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd>
+    </span>
+  </form>
+  <div id="static-search-results" class="static-search-results" style="display:none;" tabindex="0"></div>
+</div></div>
+      
+        <div class="navbar-item">
+<div class="version-switcher__container dropdown pst-js-only">
+  <button id="pst-version-switcher-button-2"
+    type="button"
+    class="version-switcher__button btn btn-sm dropdown-toggle"
+    data-bs-toggle="dropdown"
+    aria-haspopup="listbox"
+    aria-controls="pst-version-switcher-list-2"
+    aria-label="Version switcher list"
+  >
+    Choose version  <!-- this text may get changed later by javascript -->
+    <span class="caret"></span>
+  </button>
+  <div id="pst-version-switcher-list-2"
+    class="version-switcher__menu dropdown-menu list-group-flush py-0"
+    role="listbox" aria-labelledby="pst-version-switcher-button-2">
+    <!-- dropdown will be populated by javascript on page load -->
+  </div>
+</div></div>
+      
+        <div class="navbar-item">
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button></div>
+      
+        <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/ansys/pyturbogrid" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-square-github fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">GitHub</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/ansys/pyturbogrid/blob/main/CONTRIBUTING.md" title="Contribute" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa fa-wrench fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">Contribute</span></a>
+        </li>
+</ul></div>
+      
+    </div>
+    
+  </div>
+  
+  
+
+  
+    <button class="pst-navbar-icon sidebar-toggle secondary-toggle" aria-label="On this page">
+      <span class="fa-solid fa-outdent"></span>
+    </button>
+  
+</div>
+
+    </header>
+  
+  
+    <div id="announcement_msg"></div>
+<script>
+  fetch("announcement.html")
+    .then((response) => {
+      if (!response.ok) {
+        throw new Error(`HTTP error: ${response.status}`);
+      }
+      return response.text();
+    })
+    .then(
+      (text) => (document.getElementById("announcement_msg").innerHTML = text),
+    )
+    .catch((error) => console.error(`Fetch problem: ${error.message}`));
+</script>
+  
+
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          
+          
+            <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../getting_started/index.html">
+    Getting started
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../api_reference/index.html">
+    API reference
+  </a>
+</li>
+
+
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="index.html">
+    Examples
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../contributing.html">
+    Contribute
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+          
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item">
+<div class="search-bar pst-js-only" id="search-bar">
+  <form class="bd-search d-flex align-items-center" action="../search.html" method="get">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <input type="search" class="form-control" name="q" placeholder="Search the docs ..."
+      aria-label="Search the docs ..." autocomplete="off" autocorrect="off"
+      autocapitalize="off" spellcheck="false" />
+    <span class="search-button__kbd-shortcut">
+      <kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd>
+    </span>
+  </form>
+  <div id="static-search-results" class="static-search-results" style="display:none;" tabindex="0"></div>
+</div></div>
+        
+          <div class="navbar-item">
+<div class="version-switcher__container dropdown pst-js-only">
+  <button id="pst-version-switcher-button-3"
+    type="button"
+    class="version-switcher__button btn btn-sm dropdown-toggle"
+    data-bs-toggle="dropdown"
+    aria-haspopup="listbox"
+    aria-controls="pst-version-switcher-list-3"
+    aria-label="Version switcher list"
+  >
+    Choose version  <!-- this text may get changed later by javascript -->
+    <span class="caret"></span>
+  </button>
+  <div id="pst-version-switcher-list-3"
+    class="version-switcher__menu dropdown-menu list-group-flush py-0"
+    role="listbox" aria-labelledby="pst-version-switcher-button-3">
+    <!-- dropdown will be populated by javascript on page load -->
+  </div>
+</div></div>
+        
+          <div class="navbar-item">
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button></div>
+        
+          <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/ansys/pyturbogrid" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-square-github fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">GitHub</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/ansys/pyturbogrid/blob/main/CONTRIBUTING.md" title="Contribute" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa fa-wrench fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">Contribute</span></a>
+        </li>
+</ul></div>
+        
+      </div>
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+<nav class="bd-docs-nav bd-links"
+     aria-label="Section Navigation">
+  <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
+  <div class="bd-toc-item navbar-nav"><ul class="current nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="basic_read_inf_rotor37.html">Basic mesh generation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mbr_from_tginit_example.html">Multi blade row meshing example</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mbr_sweep_example.html">Multi blade row meshing example</a></li>
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">Mesh statistics report</a></li>
+<li class="toctree-l1"><a class="reference internal" href="multi_blade_row_batch_example.html">Multi blade row meshing example</a></li>
+</ul>
+</div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+<nav aria-label="Breadcrumb">
+  <ul class="bd-breadcrumbs">
+         
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="https://docs.pyansys.com/" class="nav-link">PyAnsys</a>
+    </li>
+     
+    <li class="breadcrumb-item">
+      <a
+        href="../index.html"
+        class="nav-link"
+        aria-label="Home"
+      >
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+     
+    <li class="breadcrumb-item">
+      <a href="index.html" class="nav-link">Examples</a>
+    </li>
+      
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">Mesh statistics report</span></li>
+    
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <div class="sphx-glr-download-link-note admonition note">
+<p class="admonition-title">Note</p>
+<p><a class="reference internal" href="#sphx-glr-download-examples-mesh-statistics-report-py"><span class="std std-ref">Go to the end</span></a>
+to download the full example code.</p>
+</div>
+<section class="sphx-glr-example-title" id="mesh-statistics-report">
+<span id="sphx-glr-examples-mesh-statistics-report-py"></span><span id="id1"></span><h1>Mesh statistics report<a class="headerlink" href="#mesh-statistics-report" title="Link to this heading">#</a></h1>
+<p>To generate a mesh statistics report, you use the <code class="docutils literal notranslate"><span class="pre">mesh_statistics</span></code> module
+and CCL (CFX command language) queries. This example shows how to generate
+a mesh statistics report for the blade model in the <a class="reference internal" href="basic_read_inf_rotor37.html#read-inf-rotor37"><span class="std std-ref">Basic mesh generation</span></a>
+example.</p>
+<p><a class="reference external" href="https://jinja.palletsprojects.com/en/3.1.x/">Jinja</a> is used to generate
+this report in HTML format, starting from the <code class="docutils literal notranslate"><span class="pre">report_template.html</span></code> file.</p>
+<section id="report-for-rotor37">
+<h2>Report for rotor37<a class="headerlink" href="#report-for-rotor37" title="Link to this heading">#</a></h2>
+<a class="reference internal image-reference" href="../_images/rotor37_with_histogram.png"><img alt="Report for rotor37." class="align-center" src="../_images/rotor37_with_histogram.png" style="width: 400px;" />
+</a>
+</section>
+<section id="perform-required-imports">
+<h2>Perform required imports<a class="headerlink" href="#perform-required-imports" title="Link to this heading">#</a></h2>
+<p>Note: This example requires the jinja2 module to be installed before python is executed:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ python -m pip install Jinja2
+</pre></div>
+</div>
+<p>Perform the required imports.</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">collections</span><span class="w"> </span><span class="kn">import</span> <span class="n">OrderedDict</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">datetime</span><span class="w"> </span><span class="kn">import</span> <span class="n">date</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">os.path</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">ospath</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">ansys.turbogrid.api.CCL.ccl_object_db</span><span class="w"> </span><span class="kn">import</span> <span class="n">CCLObjectDB</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">jinja2</span><span class="w"> </span><span class="kn">import</span> <span class="n">Environment</span><span class="p">,</span> <span class="n">FileSystemLoader</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">ansys.turbogrid.core.launcher.launcher</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_turbogrid_exe_path</span><span class="p">,</span> <span class="n">launch_turbogrid</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">ansys.turbogrid.core.mesh_statistics</span><span class="w"> </span><span class="kn">import</span> <span class="n">mesh_statistics</span>
+</pre></div>
+</div>
+</section>
+<section id="set-up-a-turbogrid-session">
+<h2>Set up a TurboGrid session<a class="headerlink" href="#set-up-a-turbogrid-session" title="Link to this heading">#</a></h2>
+<p>Set up a TurboGrid session with a basic case and mesh, similar to the
+<a class="reference internal" href="basic_read_inf_rotor37.html#read-inf-rotor37"><span class="std std-ref">Basic mesh generation</span></a> example.</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">turbogrid</span> <span class="o">=</span> <span class="n">launch_turbogrid</span><span class="p">()</span>
+<span class="n">exec_path</span> <span class="o">=</span> <span class="n">get_turbogrid_exe_path</span><span class="p">()</span>
+<span class="n">turbogrid_install_location</span> <span class="o">=</span> <span class="s2">&quot;/&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">exec_path</span><span class="o">.</span><span class="n">parts</span><span class="p">[:</span><span class="o">-</span><span class="mi">2</span><span class="p">])</span>
+<span class="n">turbogrid_install_location</span> <span class="o">=</span> <span class="n">turbogrid_install_location</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\\</span><span class="s2">&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span>
+<span class="n">examples_path_str</span> <span class="o">=</span> <span class="n">turbogrid_install_location</span> <span class="o">+</span> <span class="s2">&quot;/examples&quot;</span>
+<span class="k">if</span> <span class="ow">not</span> <span class="n">ospath</span><span class="o">.</span><span class="n">isdir</span><span class="p">(</span><span class="n">examples_path_str</span><span class="p">):</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;examples folder not found in the TurboGrid installation&quot;</span><span class="p">)</span>
+    <span class="n">exit</span><span class="p">()</span>
+<span class="n">turbogrid</span><span class="o">.</span><span class="n">read_inf</span><span class="p">(</span><span class="n">examples_path_str</span> <span class="o">+</span> <span class="s2">&quot;/rotor37/BladeGen.inf&quot;</span><span class="p">)</span>
+<span class="n">turbogrid</span><span class="o">.</span><span class="n">unsuspend</span><span class="p">(</span><span class="nb">object</span><span class="o">=</span><span class="s2">&quot;/TOPOLOGY SET&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="determine-domains">
+<h2>Determine domains<a class="headerlink" href="#determine-domains" title="Link to this heading">#</a></h2>
+<p>Determine which domains are available by querying the CCL (CFX command
+language).</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">ALL_DOMAINS</span> <span class="o">=</span> <span class="s2">&quot;ALL&quot;</span>
+<span class="n">ccl_db</span> <span class="o">=</span> <span class="n">CCLObjectDB</span><span class="p">(</span><span class="n">turbogrid</span><span class="p">)</span>
+<span class="n">domain_list</span> <span class="o">=</span> <span class="p">[</span><span class="n">obj</span><span class="o">.</span><span class="n">get_name</span><span class="p">()</span> <span class="k">for</span> <span class="n">obj</span> <span class="ow">in</span> <span class="n">ccl_db</span><span class="o">.</span><span class="n">get_objects_by_type</span><span class="p">(</span><span class="s2">&quot;DOMAIN&quot;</span><span class="p">)]</span>
+<span class="n">domain_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ALL_DOMAINS</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="set-up-case-details">
+<h2>Set up case details<a class="headerlink" href="#set-up-case-details" title="Link to this heading">#</a></h2>
+<p>Set up the information to show under “Case Details” in the report.</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">case_info</span> <span class="o">=</span> <span class="n">OrderedDict</span><span class="p">()</span>
+<span class="n">case_info</span><span class="p">[</span><span class="s2">&quot;Case Name&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;rotor37&quot;</span>
+<span class="n">case_info</span><span class="p">[</span><span class="s2">&quot;Number of Bladesets&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">ccl_db</span><span class="o">.</span><span class="n">get_object_by_path</span><span class="p">(</span><span class="s2">&quot;/GEOMETRY/MACHINE DATA&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span>
+    <span class="s2">&quot;Bladeset Count&quot;</span>
+<span class="p">)</span>
+<span class="n">case_info</span><span class="p">[</span><span class="s2">&quot;Report Date&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">date</span><span class="o">.</span><span class="n">today</span><span class="p">()</span>
+</pre></div>
+</div>
+</section>
+<section id="create-meshstatistics-object">
+<h2>Create <code class="docutils literal notranslate"><span class="pre">MeshStatistics</span></code> object<a class="headerlink" href="#create-meshstatistics-object" title="Link to this heading">#</a></h2>
+<p>Create the <code class="docutils literal notranslate"><span class="pre">MeshStatistics</span></code> object for obtaining the mesh statistics.</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">ms</span> <span class="o">=</span> <span class="n">mesh_statistics</span><span class="o">.</span><span class="n">MeshStatistics</span><span class="p">(</span><span class="n">turbogrid</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="calculate-and-store-mesh-statistics">
+<h2>Calculate and store mesh statistics<a class="headerlink" href="#calculate-and-store-mesh-statistics" title="Link to this heading">#</a></h2>
+<p>Calculate and store the basic mesh statistics for each domain separately and
+for all domains.</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">domain_count</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+<span class="k">for</span> <span class="n">domain</span> <span class="ow">in</span> <span class="n">domain_list</span><span class="p">:</span>
+    <span class="n">ms</span><span class="o">.</span><span class="n">update_mesh_statistics</span><span class="p">(</span><span class="n">domain</span><span class="p">)</span>
+    <span class="n">domain_count</span><span class="p">[</span><span class="n">ms</span><span class="o">.</span><span class="n">get_domain_label</span><span class="p">(</span><span class="n">domain</span><span class="p">)]</span> <span class="o">=</span> <span class="n">ms</span><span class="o">.</span><span class="n">get_mesh_statistics</span><span class="p">()</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+</pre></div>
+</div>
+</section>
+<section id="check-loaded-mesh-statistics">
+<h2>Check loaded mesh statistics<a class="headerlink" href="#check-loaded-mesh-statistics" title="Link to this heading">#</a></h2>
+<p>Check the currently loaded mesh statistics to ensure that they are for all
+domains.</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">ms</span><span class="o">.</span><span class="n">update_mesh_statistics</span><span class="p">(</span><span class="n">ALL_DOMAINS</span><span class="p">)</span>
+<span class="n">all_dom_stats</span> <span class="o">=</span> <span class="n">ms</span><span class="o">.</span><span class="n">get_mesh_statistics</span><span class="p">()</span>
+</pre></div>
+</div>
+</section>
+<section id="get-mesh-statistics-table-information">
+<h2>Get mesh statistics table information<a class="headerlink" href="#get-mesh-statistics-table-information" title="Link to this heading">#</a></h2>
+<p>Get the mesh statistics table information in a form that can easily be used to
+generate the table in the report.</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">stat_table_rows</span> <span class="o">=</span> <span class="n">ms</span><span class="o">.</span><span class="n">get_table_rows</span><span class="p">()</span>
+</pre></div>
+</div>
+</section>
+<section id="generate-histograms">
+<h2>Generate histograms<a class="headerlink" href="#generate-histograms" title="Link to this heading">#</a></h2>
+<p>Generate histograms for all required mesh quality measures.</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">hist_var_list</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;Minimum Face Angle&quot;</span><span class="p">,</span> <span class="s2">&quot;Skewness&quot;</span><span class="p">]</span>
+<span class="n">hist_dict</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+<span class="k">for</span> <span class="n">var</span> <span class="ow">in</span> <span class="n">hist_var_list</span><span class="p">:</span>
+    <span class="n">file_name</span> <span class="o">=</span> <span class="s2">&quot;tg_hist_&quot;</span> <span class="o">+</span> <span class="n">var</span> <span class="o">+</span> <span class="s2">&quot;.png&quot;</span>
+    <span class="n">var_units</span> <span class="o">=</span> <span class="n">all_dom_stats</span><span class="p">[</span><span class="n">var</span><span class="p">][</span><span class="s2">&quot;Units&quot;</span><span class="p">]</span>
+    <span class="k">if</span> <span class="n">var_units</span> <span class="o">==</span> <span class="s2">&quot;rad&quot;</span><span class="p">:</span>
+        <span class="n">var_units</span> <span class="o">=</span> <span class="s2">&quot;deg&quot;</span>
+    <span class="n">ms</span><span class="o">.</span><span class="n">create_histogram</span><span class="p">(</span>
+        <span class="n">variable</span><span class="o">=</span><span class="n">var</span><span class="p">,</span> <span class="n">use_percentages</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">bin_units</span><span class="o">=</span><span class="n">var_units</span><span class="p">,</span> <span class="n">image_file</span><span class="o">=</span><span class="n">file_name</span><span class="p">,</span> <span class="n">show</span><span class="o">=</span><span class="kc">False</span>
+    <span class="p">)</span>
+    <span class="n">hist_dict</span><span class="p">[</span><span class="n">var</span><span class="p">]</span> <span class="o">=</span> <span class="n">file_name</span>
+</pre></div>
+</div>
+</section>
+<section id="quit-session">
+<h2>Quit session<a class="headerlink" href="#quit-session" title="Link to this heading">#</a></h2>
+<p>Quit the TurboGrid session as all of the relevant information has now been
+assembled.</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">turbogrid</span><span class="o">.</span><span class="n">quit</span><span class="p">()</span>
+</pre></div>
+</div>
+</section>
+<section id="set-up-jinja-library">
+<h2>Set up Jinja library<a class="headerlink" href="#set-up-jinja-library" title="Link to this heading">#</a></h2>
+<p>Set up the Jinja library with the relevant template and data.</p>
+<p>You must have a local (downloaded) copy of the report template
+<code class="docutils literal notranslate"><span class="pre">report_template.html</span></code>.
+This is located in the examples directory of the pyturbogrid source code. If
+you do not have the pyturbogrid source code available, the template can be
+downloaded from <a class="reference external" href="https://github.com/ansys/pyturbogrid/blob/main/examples/report_template.html">report_template.html</a>.</p>
+<p>The python command below assumes that the example is being executed by running
+the mesh_statistics_report.py script non-interactively and that the
+<code class="docutils literal notranslate"><span class="pre">report_template.html</span></code> file is located in the same directory as the script.
+Otherwise, <code class="docutils literal notranslate"><span class="pre">ospath.dirname(__file__)</span></code> must be replaced with the name of the
+folder that contains the <code class="docutils literal notranslate"><span class="pre">report_template.html</span></code> file.</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">environment</span> <span class="o">=</span> <span class="n">Environment</span><span class="p">(</span><span class="n">loader</span><span class="o">=</span><span class="n">FileSystemLoader</span><span class="p">(</span><span class="n">ospath</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="vm">__file__</span><span class="p">)))</span>
+<span class="n">html_template</span> <span class="o">=</span> <span class="n">environment</span><span class="o">.</span><span class="n">get_template</span><span class="p">(</span><span class="s2">&quot;report_template.html&quot;</span><span class="p">)</span>
+<span class="n">html_context</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s2">&quot;case_info&quot;</span><span class="p">:</span> <span class="n">case_info</span><span class="p">,</span>
+    <span class="s2">&quot;domain_count&quot;</span><span class="p">:</span> <span class="n">domain_count</span><span class="p">,</span>
+    <span class="s2">&quot;stat_table_rows&quot;</span><span class="p">:</span> <span class="n">stat_table_rows</span><span class="p">,</span>
+    <span class="s2">&quot;hist_dict&quot;</span><span class="p">:</span> <span class="n">hist_dict</span><span class="p">,</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</section>
+<section id="generate-report">
+<h2>Generate report<a class="headerlink" href="#generate-report" title="Link to this heading">#</a></h2>
+<p>Generate the HTML report.</p>
+<div class="highlight-Python notranslate"><div class="highlight"><pre><span></span><span class="n">filename</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;tg_report.html&quot;</span>
+<span class="n">content</span> <span class="o">=</span> <span class="n">html_template</span><span class="o">.</span><span class="n">render</span><span class="p">(</span><span class="n">html_context</span><span class="p">)</span>
+<span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;w&quot;</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s2">&quot;utf-8&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">message</span><span class="p">:</span>
+    <span class="n">message</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">content</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;... wrote </span><span class="si">{</span><span class="n">filename</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="sphx-glr-footer sphx-glr-footer-example docutils container" id="sphx-glr-download-examples-mesh-statistics-report-py">
+<div class="sphx-glr-download sphx-glr-download-jupyter docutils container">
+<p><a class="reference download internal" download="" href="../_downloads/0889aa552b50192a3821e0d167525fe5/mesh_statistics_report.ipynb"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Jupyter</span> <span class="pre">notebook:</span> <span class="pre">mesh_statistics_report.ipynb</span></code></a></p>
+</div>
+<div class="sphx-glr-download sphx-glr-download-python docutils container">
+<p><a class="reference download internal" download="" href="../_downloads/ad69d9062265edc6fdfef3dd74459dba/mesh_statistics_report.py"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">Python</span> <span class="pre">source</span> <span class="pre">code:</span> <span class="pre">mesh_statistics_report.py</span></code></a></p>
+</div>
+<div class="sphx-glr-download sphx-glr-download-zip docutils container">
+<p><a class="reference download internal" download="" href="../_downloads/a9bae4d646097fb09c91574656434286/mesh_statistics_report.zip"><code class="xref download docutils literal notranslate"><span class="pre">Download</span> <span class="pre">zipped:</span> <span class="pre">mesh_statistics_report.zip</span></code></a></p>
+</div>
+</div>
+<p class="sphx-glr-signature"><a class="reference external" href="https://sphinx-gallery.github.io">Gallery generated by Sphinx-Gallery</a></p>
+</section>
+</section>
+
+
+                </article>
+              
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="mbr_sweep_example.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">Multi blade row meshing example</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="multi_blade_row_batch_example.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">Multi blade row meshing example</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <dialog id="pst-secondary-sidebar-modal"></dialog>
+                <div id="pst-secondary-sidebar" class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+<div
+    id="pst-page-navigation-heading-2"
+    class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> On this page
+  </div>
+  <nav class="bd-toc-nav page-toc" aria-labelledby="pst-page-navigation-heading-2">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#report-for-rotor37">Report for rotor37</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#perform-required-imports">Perform required imports</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#set-up-a-turbogrid-session">Set up a TurboGrid session</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#determine-domains">Determine domains</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#set-up-case-details">Set up case details</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#create-meshstatistics-object">Create <code class="docutils literal notranslate"><span class="pre">MeshStatistics</span></code> object</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#calculate-and-store-mesh-statistics">Calculate and store mesh statistics</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#check-loaded-mesh-statistics">Check loaded mesh statistics</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#get-mesh-statistics-table-information">Get mesh statistics table information</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#generate-histograms">Generate histograms</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#quit-session">Quit session</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#set-up-jinja-library">Set up Jinja library</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#generate-report">Generate report</a></li>
+</ul>
+  </nav></div>
+
+  <div class="sidebar-secondary-item"> 
+<div class="tocsection editthispage">
+  <a href="https://github.com/ansys/pyturbogrid/edit/main/doc/source/examples/mesh_statistics_report.rst">
+    <i class="fa-solid fa-pencil"></i>
+       Edit
+    on GitHub  
+  </a>
+</div>
+
+</div>
+
+  <div class="sidebar-secondary-item">
+  <div role="note" aria-label="source link">
+    <ul class="this-page-menu">
+      <li><a href="../_sources/examples/mesh_statistics_report.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf"></script>
+<script defer src="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf"></script>
+
+
+  <!-- Include desired assets -->
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.7/require.min.js"></script>
+
+<script>
+// Passing the search options to the search.js file
+const SEARCH_OPTIONS = JSON.parse('{"keys": ["title", "text", "objectID"], "limit": 10, "threshold": 0.2}');
+const SEARCH_FILE = "../_static/search.json";
+const ADVANCE_SEARCH_PATH = "../search.html";
+const EXTRA_SOURCES = JSON.parse('""');
+</script>
+
+
+<script src="../_static/js/search.js"></script>
+
+  
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+
+  <p class="copyright">
+    
+      © Copyright (c) 2025 ANSYS, Inc. All rights reserved.
+      <br/>
+    
+  </p>
+</div>
+      
+        <div class="footer-item">
+
+  <p class="sphinx-version">
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.1.3.
+    <br/>
+  </p>
+</div>
+      
+    </div>
+  
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item"><p class="theme-version">
+  Built with the
+  <a href="https://sphinxdocs.ansys.com/version/stable/index.html"
+    >Ansys Sphinx Theme</a
+  >
+  1.5.3. <br />Last updated on
+  <span id="ast_build_date"></span>
+</p>
+<script>
+  var options = { day: "numeric", month: "long", year: "numeric" };
+  var ast_lastModifiedDate = new Date(document.lastModified);
+  var ast_build_date = ast_lastModifiedDate.toLocaleDateString("en-US", options);
+  document.getElementById("ast_build_date").innerHTML = ast_build_date;
+</script></div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>
