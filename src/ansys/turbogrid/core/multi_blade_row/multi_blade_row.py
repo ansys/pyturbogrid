@@ -97,6 +97,7 @@ class multi_blade_row:
     current_machine_sizing_strategy: MachineSizingStrategy = MachineSizingStrategy.NONE
     current_size_factor: float = 1.0
     tg_worker_instances = None
+    tg_worker_errors: dict[str, list[str]] = {}
 
     # An instance of TG is kept around to do certain tasks.
     # This is simpler than launching a new TG every time one of these tasks are to be done.
@@ -340,6 +341,8 @@ class multi_blade_row:
                 executor.submit(job, key, val) for key, val in self.tg_worker_instances.items()
             ]
             concurrent.futures.wait(futures)
+
+        # Collect errors from all
 
         self.init_style = InitStyle.TGInit
         self.tginit_path = tginit_path
@@ -1499,6 +1502,14 @@ class multi_blade_row:
             timings[tg_worker_name + "t4t5"] = round(t5 - t4)
             timings[tg_worker_name + "t5t6"] = round(t6 - t5)
             timings[tg_worker_name + "total"] = round(t6 - t2)
+            print(f"{tg_worker_name} !!! Error queue check !!!")
+            error_q: queue.Queue = tg_worker_instance.pytg.engine_incoming_error_queue
+            while error_q.empty() == False:
+                msg = error_q.get()
+                print(f"{tg_worker_name} !!! TG Error or Warning Message: {msg} !!!")
+                if tg_worker_name not in self.tg_worker_errors:
+                    self.tg_worker_errors[tg_worker_name] = []
+                self.tg_worker_errors[tg_worker_name].append(msg)
         except Exception as e:
             print(f"{tg_worker_instance} exception on __launch_instances__: {e}")
             print(f"{tg_worker_instance} traceback: {traceback.extract_tb(e.__traceback__)}")
