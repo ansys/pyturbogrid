@@ -341,8 +341,6 @@ class multi_blade_row:
             ]
             concurrent.futures.wait(futures)
 
-        # Collect errors from all
-
         self.init_style = InitStyle.TGInit
         self.tginit_path = tginit_path
 
