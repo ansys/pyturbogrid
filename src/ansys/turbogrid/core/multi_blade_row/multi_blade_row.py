@@ -1040,15 +1040,11 @@ class multi_blade_row:
         """
         Get any error messages from the individual TG worker instances.
         """
-        print("get_all_worker_errors")
         tg_worker_errors: dict[str, list[str]] = {}
         for tg_worker_name, tg_worker_instance in self.tg_worker_instances.items():
-            print(f"Getting errors for {tg_worker_name}")
             error_q: queue.Queue = tg_worker_instance.pytg.engine_incoming_error_queue
-            print(f"  error_q size {error_q.qsize()}")
             while error_q.empty() == False:
                 msg = error_q.get()
-                print(f"  error: {msg}")
                 if tg_worker_name not in tg_worker_errors:
                     tg_worker_errors[tg_worker_name] = []
                 tg_worker_errors[tg_worker_name].append(msg)
