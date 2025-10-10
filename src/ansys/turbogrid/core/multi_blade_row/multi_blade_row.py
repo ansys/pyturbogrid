@@ -97,7 +97,6 @@ class multi_blade_row:
     current_machine_sizing_strategy: MachineSizingStrategy = MachineSizingStrategy.NONE
     current_size_factor: float = 1.0
     tg_worker_instances = None
-    tg_worker_errors: dict[str, list[str]] = {}
 
     # An instance of TG is kept around to do certain tasks.
     # This is simpler than launching a new TG every time one of these tasks are to be done.
@@ -1039,6 +1038,24 @@ class multi_blade_row:
     def get_available_secondary_flow_path_meshes(self):
         return self.pyturbogrid_saas.getAvailableThetaMeshes()
 
+    def get_all_worker_errors(self) -> dict[str, list[str]]:
+        """
+        Get any error messages from the individual TG worker instances.
+        """
+        print("get_all_worker_errors")
+        tg_worker_errors: dict[str, list[str]] = {}
+        for tg_worker_name, tg_worker_instance in self.tg_worker_instances.items():
+            print(f"Getting errors for {tg_worker_name}")
+            error_q: queue.Queue = tg_worker_instance.pytg.engine_incoming_error_queue
+            print(f"  error_q size {error_q.qsize()}")
+            while error_q.empty() == False:
+                msg = error_q.get()
+                print(f"  error: {msg}")
+                if tg_worker_name not in tg_worker_errors:
+                    tg_worker_errors[tg_worker_name] = []
+                tg_worker_errors[tg_worker_name].append(msg)
+        return tg_worker_errors
+
     # Parallel launch routine for uninitiatlized TG sessions.
     # Useful for then setting certain parameters upfront without waiting for the init to happen.
     # Still requires the TGInit name for log file naming. Currently there is no way to change the log file name in-process.
@@ -1502,14 +1519,6 @@ class multi_blade_row:
             timings[tg_worker_name + "t4t5"] = round(t5 - t4)
             timings[tg_worker_name + "t5t6"] = round(t6 - t5)
             timings[tg_worker_name + "total"] = round(t6 - t2)
-            print(f"{tg_worker_name} !!! Error queue check !!!")
-            error_q: queue.Queue = tg_worker_instance.pytg.engine_incoming_error_queue
-            while error_q.empty() == False:
-                msg = error_q.get()
-                print(f"{tg_worker_name} !!! TG Error or Warning Message: {msg} !!!")
-                if tg_worker_name not in self.tg_worker_errors:
-                    self.tg_worker_errors[tg_worker_name] = []
-                self.tg_worker_errors[tg_worker_name].append(msg)
         except Exception as e:
             print(f"{tg_worker_instance} exception on __launch_instances__: {e}")
             print(f"{tg_worker_instance} traceback: {traceback.extract_tb(e.__traceback__)}")
