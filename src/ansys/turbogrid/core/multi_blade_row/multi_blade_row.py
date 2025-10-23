@@ -321,8 +321,15 @@ class multi_blade_row:
         tg_log_level: PyTurboGrid.TurboGridLogLevel = PyTurboGrid.TurboGridLogLevel.INFO,
     ):
         timings = {}
+        # There currently is a bug with TurboGrid on Linux, coming from WorkBench,
+        # when converting .x_b to .tin, which must happen. When this occurs in parallel,
+        # workbench often throws an error and the application behaves unpredictably.
+        # In that scenario, do __read_tginit__ in serial (max of 1 worker)
+        import platform
+
+        is_linux = platform.system() == "Linux"
         with concurrent.futures.ThreadPoolExecutor(
-            max_workers=len(self.tg_worker_instances)
+            max_workers=1 if is_linux else len(self.tg_worker_instances)
         ) as executor:
             job = partial(
                 self.__read_tginit__,
@@ -375,8 +382,15 @@ class multi_blade_row:
         timings = {}
         self.tg_worker_instances = {key: single_blade_row() for key in selected_brs}
         self.base_gsf = {key: 1.0 for key in selected_brs}
+        # There currently is a bug with TurboGrid on Linux, coming from WorkBench,
+        # when converting .x_b to .tin, which must happen. When this occurs in parallel,
+        # workbench often throws an error and the application behaves unpredictably.
+        # In that scenario, do __read_tginit__ in serial (max of 1 worker)
+        import platform
+
+        is_linux = platform.system() == "Linux"
         with concurrent.futures.ThreadPoolExecutor(
-            max_workers=len(self.tg_worker_instances)
+            max_workers=1 if is_linux else len(self.tg_worker_instances)
         ) as executor:
             job = partial(
                 self.__launch_instances_tginit__,
@@ -492,8 +506,15 @@ class multi_blade_row:
 
         self.tg_worker_instances = {key: single_blade_row() for key in self.all_blade_row_keys}
         self.base_gsf = {key: 1.0 for key in self.all_blade_row_keys}
+        # There currently is a bug with TurboGrid on Linux, coming from WorkBench,
+        # when converting .x_b to .tin, which must happen. When this occurs in parallel,
+        # workbench often throws an error and the application behaves unpredictably.
+        # In that scenario, do __read_tginit__ in serial (max of 1 worker)
+        import platform
+
+        is_linux = platform.system() == "Linux"
         with concurrent.futures.ThreadPoolExecutor(
-            max_workers=len(self.tg_worker_instances)
+            max_workers=1 if is_linux else len(self.tg_worker_instances)
         ) as executor:
             job = partial(self.__launch_instances__, self.ndf_file_name, tg_log_level)
             futures = [
@@ -670,6 +691,35 @@ class multi_blade_row:
             name: br.pytg.getAvailableDomains() for name, br in self.tg_worker_instances.items()
         }
 
+    def get_inlet_outlet_parametric_positions(self) -> dict:
+        import time
+
+        t0 = time.time()
+        positions = {
+            name: {
+                "inlet_hub": br.pytg.get_object_param(
+                    object="/GEOMETRY/INLET",
+                    param="Parametric Hub Location",
+                ),
+                "outlet_hub": br.pytg.get_object_param(
+                    object="/GEOMETRY/OUTLET",
+                    param="Parametric Hub Location",
+                ),
+                "inlet_shroud": br.pytg.get_object_param(
+                    object="/GEOMETRY/INLET",
+                    param="Parametric Shroud Location",
+                ),
+                "outlet_shroud": br.pytg.get_object_param(
+                    object="/GEOMETRY/OUTLET",
+                    param="Parametric Shroud Location",
+                ),
+            }
+            for name, br in self.tg_worker_instances.items()
+        }
+        t1 = time.time()
+        # print(f"get_inlet_outlet_parametric_positions profiling: {t1-t0:.2f} seconds")
+        return positions
+
     def set_inlet_outlet_parametric_positions(self, blade_row_name: str, inlet_hs=[], outlet_hs=[]):
         """
         Set the position of the inlet/outlet blocks within the blade row mesh for blade_row_name.
@@ -679,20 +729,19 @@ class multi_blade_row:
                 f"No blade row with name {blade_row_name}. Available names: {self.all_blade_row_keys}"
             )
         self.tg_worker_instances[blade_row_name].pytg.suspend(object="/TOPOLOGY SET")
-        if len(inlet_hs):
+        # Performance improvement: Only modify positions if get doesn't match set
+        # current_positions = get_inlet_outlet_parametric_positions()[blade_row_name]
+        if inlet_hs:
             self.tg_worker_instances[blade_row_name].pytg.set_obj_param(
                 object="/GEOMETRY/INLET",
                 param_val_pairs=f"Parametric Hub Location = {inlet_hs[0]}, Parametric Shroud Location = {inlet_hs[1]}",
             )
-        if len(outlet_hs):
+        if outlet_hs:
             self.tg_worker_instances[blade_row_name].pytg.set_obj_param(
                 object="/GEOMETRY/OUTLET",
                 param_val_pairs=f"Parametric Hub Location = {outlet_hs[0]}, Parametric Shroud Location = {outlet_hs[1]}",
             )
         self.tg_worker_instances[blade_row_name].pytg.unsuspend(object="/TOPOLOGY SET")
-
-        # Parametric Hub Location = 0.5
-        # Parametric Shroud Location = 0.5
 
     def set_machine_sizing_strategy(self, strategy: MachineSizingStrategy):
         """
@@ -781,7 +830,7 @@ class multi_blade_row:
             ]
             concurrent.futures.wait(futures)
 
-    def save_meshes(self, optional_prefix: str = None):
+    def save_meshes(self, optional_prefix: str = None) -> list[str]:
         """
         Write out the .def files representing the entire blade row.
         Blade rows that threw errors will not write meshes (check the logs.)
@@ -796,7 +845,8 @@ class multi_blade_row:
                 executor.submit(self.__save_mesh__, key, val, optional_prefix)
                 for key, val in self.tg_worker_instances.items()
             ]
-            concurrent.futures.wait(futures)
+            done, not_done = concurrent.futures.wait(futures)
+            return [f.result() for f in done]
 
     # Returns a dictionary of tg_worker_name : file name
     def save_states(self, optional_prefix: str = None) -> dict[str, str]:
@@ -1482,7 +1532,7 @@ class multi_blade_row:
             pass
         return ec
 
-    def __save_mesh__(self, tg_worker_name, tg_worker_instance, optional_prefix: str = None):
+    def __save_mesh__(self, tg_worker_name, tg_worker_instance, optional_prefix: str = None) -> str:
         """
         :meta private:
         """
@@ -1490,6 +1540,7 @@ class multi_blade_row:
         if optional_prefix:
             file_name = optional_prefix + file_name
         tg_worker_instance.pytg.save_mesh(file_name)
+        return file_name
 
     # Returns (worker name, file name)
     def __save_state__(self, tg_worker_name, tg_worker_instance, optional_prefix: str = None):
