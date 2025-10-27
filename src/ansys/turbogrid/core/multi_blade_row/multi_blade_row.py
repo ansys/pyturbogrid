@@ -1036,6 +1036,21 @@ class multi_blade_row:
     def get_available_secondary_flow_path_meshes(self):
         return self.pyturbogrid_saas.getAvailableThetaMeshes()
 
+    def get_all_worker_errors(self) -> dict[str, list[str]]:
+        """
+        Get any error messages from the individual TG worker instances.
+        This also removes them from the internal queues.
+        """
+        tg_worker_errors: dict[str, list[str]] = {}
+        for tg_worker_name, tg_worker_instance in self.tg_worker_instances.items():
+            error_q: queue.Queue = tg_worker_instance.pytg.engine_incoming_error_queue
+            while error_q.empty() == False:
+                msg = error_q.get()
+                if tg_worker_name not in tg_worker_errors:
+                    tg_worker_errors[tg_worker_name] = []
+                tg_worker_errors[tg_worker_name].append(msg)
+        return tg_worker_errors
+
     # Parallel launch routine for uninitiatlized TG sessions.
     # Useful for then setting certain parameters upfront without waiting for the init to happen.
     # Still requires the TGInit name for log file naming. Currently there is no way to change the log file name in-process.

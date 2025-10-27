@@ -94,22 +94,22 @@ doc = ["Pillow (>=9.0)", "PyGitHub (==2.7.0)", "PyYAML (==6.0.2)", "jupytext (==
 
 [[package]]
 name = "ansys-turbogrid-api"
-version = "0.5.1"
+version = "0.5.5"
 description = ""
 optional = false
 python-versions = ">=3.8"
 groups = ["main"]
 files = [
-    {file = "ansys_turbogrid_api-0.5.1-py310-none-any.whl", hash = "sha256:cfdb4d12089988a18c17d3fa3e42dffb444c81b6762eadff86dd633ec188c1bb"},
-    {file = "ansys_turbogrid_api-0.5.1-py311-none-any.whl", hash = "sha256:265bf5c9b8595b81770f369539cd5725cb41478bba4a5cd098b019f68bf1e5b3"},
-    {file = "ansys_turbogrid_api-0.5.1-py312-none-any.whl", hash = "sha256:b6a29327c44fc695c01e7fa1e3049257a232644316b63b1bcb93735e7dfaf352"},
-    {file = "ansys_turbogrid_api-0.5.1-py313-none-any.whl", hash = "sha256:76f4b3b592269d9a04413da8e2f20623e7b8f0d9352a52f6ca8f68c721c4f198"},
+    {file = "ansys_turbogrid_api-0.5.5-py310-none-any.whl", hash = "sha256:545f572c63be2ce4bb53df268da51ef63ae5390a67e36e08924f693960fa3ff4"},
+    {file = "ansys_turbogrid_api-0.5.5-py311-none-any.whl", hash = "sha256:035b306f2ebfc294b37de8011befbba250d738150d9ec9305b252d691d1bba35"},
+    {file = "ansys_turbogrid_api-0.5.5-py312-none-any.whl", hash = "sha256:4012ee241e156d9ccd017677ec7001055d707c29f7bd0803e8039ebb3889a1da"},
+    {file = "ansys_turbogrid_api-0.5.5-py313-none-any.whl", hash = "sha256:af2d2802eb16dc0c12547320fec94e526d4a2f15444700ad916535aebed1e32b"},
 ]
 
 [package.dependencies]
 ansys-platform-instancemanagement = ">=1.0,<2.0"
-pyvista = "0.46.0"
-toml = "0.10.2"
+pyvista = ">=0.45.0"
+toml = ">=0.10.0"
 
 [[package]]
 name = "anyio"
@@ -4794,4 +4794,4 @@ type = ["pytest-mypy"]
 [metadata]
 lock-version = "2.1"
 python-versions = ">=3.10,<4.0"
-content-hash = "e241e0547d38b302a26ae77ff21a530d32e6888c600458b86e65ef9141f4fe9d"
+content-hash = "02529db67e2ec2514ba7ca2e4a3c4ad1b61e062e5d21485fc6ee409fefd7c0a7"
