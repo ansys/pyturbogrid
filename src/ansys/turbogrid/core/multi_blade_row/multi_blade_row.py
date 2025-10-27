@@ -1039,6 +1039,7 @@ class multi_blade_row:
     def get_all_worker_errors(self) -> dict[str, list[str]]:
         """
         Get any error messages from the individual TG worker instances.
+        This also removes them from the internal queues.
         """
         tg_worker_errors: dict[str, list[str]] = {}
         for tg_worker_name, tg_worker_instance in self.tg_worker_instances.items():
