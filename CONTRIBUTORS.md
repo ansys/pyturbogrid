@@ -9,6 +9,7 @@
 * [Acohen-work](https://github.com/Acohen-work)
 * [jjoy-work](https://github.com/jjoy-work)
 * [Kathy Pippert](https://github.com/PipKat)
+* [Maira Gauges](https://github.com/ansmgauges)
 * [Maxime Rey](https://github.com/MaxJPRey)
 * [Revathy Venugopal](https://github.com/Revathyvenugopal162)
 * [Roberto Pastor Muela](https://github.com/RobPasMue)
