@@ -129,7 +129,7 @@ jobs:
           library-name: ${{ env.LIBRARY_NAME }}
           operating-system: ${{ matrix.os }}
           python-version: ${{ matrix.python-version }}
-
+          whitelist-license-check: paramiko
 
   smoke-tests:
     name: "Build wheelhouse and Test for ${{ matrix.os }} and Python ${{ matrix.python-version }}"
@@ -188,7 +188,7 @@ jobs:
   build-library:
     name: Build library
     needs: [wheelhouse, smoke-tests, docs-build]
-    runs-on: ubuntu-latest
+    runs-on: [ubuntu-latest, windows-latest]
     steps:
       - name: "Build library source and wheel artifacts"
         uses: ansys/actions/build-library@v10
