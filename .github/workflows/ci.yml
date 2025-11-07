@@ -188,10 +188,7 @@ jobs:
   build-library:
     name: Build library
     needs: [wheelhouse, smoke-tests, docs-build]
-    runs-on: ${{ matrix.os }}
-    strategy:
-      matrix:
-        os: [ubuntu-latest, windows-latest]    
+    runs-on: ubuntu-latest
     steps:
       - name: "Build library source and wheel artifacts"
         uses: ansys/actions/build-library@v10
