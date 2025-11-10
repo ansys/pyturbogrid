@@ -130,6 +130,7 @@ jobs:
           operating-system: ${{ matrix.os }}
           python-version: ${{ matrix.python-version }}
           whitelist-license-check: paramiko
+          target: test
 
   smoke-tests:
     name: "Build wheelhouse and Test for ${{ matrix.os }} and Python ${{ matrix.python-version }}"
@@ -147,6 +148,8 @@ jobs:
           operating-system: ${{ matrix.os }}
           python-version: ${{ matrix.python-version }}
           whitelist-license-check: paramiko
+          target: test
+
 
       - name: Login to GitHub Container Registry
         uses: docker/login-action@v3
