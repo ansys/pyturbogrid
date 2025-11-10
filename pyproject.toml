@@ -47,6 +47,7 @@ deepdiff = "^8.4.2"
 optional = true
 
 [tool.poetry.group.doc.dependencies]
+fabric = ">=3.2.2"
 ansys-sphinx-theme = ">=0.15.2"
 autodocsumm = ">=0.2.12"
 ipyvtklink = ">=0.2.3"
