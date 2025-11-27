@@ -1,0 +1,11 @@
+!======  ANSYS BladeEditor Export  ========
+Axis of Rotation: Z
+Number of Blade Sets: 39
+Number of Blades Per Set: 1
+Geometry Units: M
+Coordinate System Orientation: Righthanded
+Hub Data File: ../tests/STAC/R1/TS-3_hub.crv
+Shroud Data File: ../tests/STAC/R1/TS-3_shroud.crv
+Profile Data File: ../tests/STAC/R1/TS-3_profile.crv
+Blade Loft Direction: Spanwise
+
