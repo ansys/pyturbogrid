@@ -2927,14 +2927,14 @@ files = [
 
 [[package]]
 name = "panel"
-version = "1.8.3"
+version = "1.8.4"
 description = "The powerful data exploration & web app framework for Python."
 optional = false
 python-versions = ">=3.10"
 groups = ["doc"]
 files = [
-    {file = "panel-1.8.3-py3-none-any.whl", hash = "sha256:0e435406c608c382dd3378251d16db4d8189ca44ca508c281e1bfd6c80f47689"},
-    {file = "panel-1.8.3.tar.gz", hash = "sha256:192a25fa4afdb25c5d0bf00d3749bb1b3601f25cddb76492e355fa278f91fce8"},
+    {file = "panel-1.8.4-py3-none-any.whl", hash = "sha256:d0e0f316c78159c87544a403d4600f7f056a6cafdc035df5b13c9c8667c36c96"},
+    {file = "panel-1.8.4.tar.gz", hash = "sha256:c4d6e7e3a895d3a42b6b69ee30d3acc191580619a2d1b8cd18f7f6684246a67f"},
 ]
 
 [package.dependencies]
