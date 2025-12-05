@@ -1,0 +1,27 @@
+[
+  {
+    "name": "dev",
+    "version": "dev",
+    "url": "https://turbogrid.docs.pyansys.com/version/dev/"
+  },
+  {
+    "name": "0.5 (stable)",
+    "version": "0.5",
+    "url": "https://turbogrid.docs.pyansys.com/version/stable/"
+  },
+  {
+    "name": "0.4",
+    "version": "0.4",
+    "url": "https://turbogrid.docs.pyansys.com/version/0.4/"
+  },
+  {
+    "name": "0.0",
+    "version": "0.0",
+    "url": "https://turbogrid.docs.pyansys.com/version/0.0/"
+  },
+  {
+    "name": "Older version",
+    "version": "N/A",
+    "url": "https://turbogrid.docs.pyansys.com/version/"
+  }
+]
