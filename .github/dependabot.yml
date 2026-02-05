@@ -7,6 +7,8 @@ version: 2
 
 updates:
   - package-ecosystem: "pip"
+    cooldown:
+      default-days: 10 # Fallback cooldown if no specific rule applies
     directory: "/" # Location of package manifests
     insecure-external-code-execution: allow
     #registries:
@@ -25,6 +27,8 @@ updates:
       - "zlilek-work"
 
   - package-ecosystem: "github-actions"
+    cooldown:
+      default-days: 10 # Fallback cooldown if no specific rule applies
     directory: "/"
     schedule:
       interval: "daily"
