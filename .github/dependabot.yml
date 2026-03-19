@@ -66,26 +66,6 @@ updates:
       - "zlilek-work"      
     commit-message:
       prefix: "build(deps):"
-    cooldown:
-      default-days: 30
-      semver-major-days: 30
-      semver-minor-days: 30
-      semver-patch-days: 30
-      include:
-        - "*"
-      exclude:
-        - "ansys-*" # make sure this matches internal group patterns below
-    groups:
-      # Note: we need separate groups for simba-* and external dependencies for the auto-merge logic in .github/workflows/automation.yml
-      # internal-simba:
-      #   patterns:
-      #     - "ansys-simba-*"
-      internal:
-        patterns:
-          - "ansys-*"
-      external:
-        patterns:
-          - "*"
 
   - package-ecosystem: "github-actions"
     target-branch: "main"
