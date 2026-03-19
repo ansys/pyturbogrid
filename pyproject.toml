@@ -41,7 +41,7 @@ Jinja2 = ">=3.1.2"
 ansys-turbogrid-api = ">=0.5.5"
 # ansys-turbogrid-api = { path = "../ansys-api-turbogrid/", develop = true } # Uncomment this if you have access to a local repo
 pyyaml = "^6.0.2"
-deepdiff = "^8.4.2"
+deepdiff = "^8.6.2"
 
 [tool.poetry.group.doc]
 optional = true
