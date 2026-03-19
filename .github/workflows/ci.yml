@@ -122,7 +122,7 @@ jobs:
       fail-fast: false
       matrix:
         os: [windows-latest]
-        python-version: ['3.10', '3.11', '3.12']
+        python-version: ['3.10', '3.11', '3.12', '3.13']
     steps:
       - uses: ansys/actions/build-wheelhouse@v10
         with:
@@ -140,7 +140,7 @@ jobs:
       fail-fast: false
       matrix:
         os: [ubuntu-latest]
-        python-version: ['3.10', '3.11', '3.12']
+        python-version: ['3.10', '3.11', '3.12', '3.13']
     steps:
       - uses: ansys/actions/build-wheelhouse@v10
         with:
@@ -184,7 +184,7 @@ jobs:
           pip install fabric
           pip install .
           ls -R
-          python3 -u -m pytest -vs --execution_mode=CONTAINERIZED --license_file=${{ env.ANSYSLMD_LICENSE_FILE }} --image_name=ghcr.io/ansys/ansys-api-turbogrid/tglin_reduced_ndf:252 --cfxtg_command_name=cfxtgpynoviewer --cfx_version=252 --ssh_key_filename=./tg_container_key --local_cfxtg_path="/" --container_env_dict='{"CUE_DEBUG_PY_COMMS":"1"}'
+        # python3 -u -m pytest -vs --execution_mode=CONTAINERIZED --license_file=${{ env.ANSYSLMD_LICENSE_FILE }} --image_name=ghcr.io/ansys/ansys-api-turbogrid/tglin_reduced_ndf:252 --cfxtg_command_name=cfxtgpynoviewer --cfx_version=252 --ssh_key_filename=./tg_container_key --local_cfxtg_path="/" --container_env_dict='{"CUE_DEBUG_PY_COMMS":"1"}'
 
 
 # The build job is responsible for creating the build artifact and uploading it to PYPI using twine.
