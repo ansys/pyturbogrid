@@ -94,16 +94,14 @@ changelog = ["PyYAML (>=6.0.3)", "sphinx-design (>=0.6.0)"]
 
 [[package]]
 name = "ansys-turbogrid-api"
-version = "0.5.5"
-description = ""
+version = "0.7.4"
+description = "A python wrapper for Ansys TurboGrid Service"
 optional = false
-python-versions = ">=3.8"
+python-versions = "<4.0,>=3.10"
 groups = ["main"]
 files = [
-    {file = "ansys_turbogrid_api-0.5.5-py310-none-any.whl", hash = "sha256:545f572c63be2ce4bb53df268da51ef63ae5390a67e36e08924f693960fa3ff4"},
-    {file = "ansys_turbogrid_api-0.5.5-py311-none-any.whl", hash = "sha256:035b306f2ebfc294b37de8011befbba250d738150d9ec9305b252d691d1bba35"},
-    {file = "ansys_turbogrid_api-0.5.5-py312-none-any.whl", hash = "sha256:4012ee241e156d9ccd017677ec7001055d707c29f7bd0803e8039ebb3889a1da"},
-    {file = "ansys_turbogrid_api-0.5.5-py313-none-any.whl", hash = "sha256:af2d2802eb16dc0c12547320fec94e526d4a2f15444700ad916535aebed1e32b"},
+    {file = "ansys_turbogrid_api-0.7.4-py3-none-any.whl", hash = "sha256:972d260d44fff7a5893b0382395355443c00611dd19aa4483d9cd21fd02c114c"},
+    {file = "ansys_turbogrid_api-0.7.4.tar.gz", hash = "sha256:79211a64f1050f9271ca075e233a34cc3671b5e0a3b7cbcefd7d7321a182d9d2"},
 ]
 
 [package.dependencies]
@@ -4455,7 +4453,7 @@ version = "6.5.5"
 description = "Tornado is a Python web framework and asynchronous networking library, originally developed at FriendFeed."
 optional = false
 python-versions = ">=3.9"
-groups = ["dev", "doc"]
+groups = ["doc"]
 files = [
     {file = "tornado-6.5.5-cp39-abi3-macosx_10_9_universal2.whl", hash = "sha256:487dc9cc380e29f58c7ab88f9e27cdeef04b2140862e5076a66fb6bb68bb1bfa"},
     {file = "tornado-6.5.5-cp39-abi3-macosx_10_9_x86_64.whl", hash = "sha256:65a7f1d46d4bb41df1ac99f5fcb685fb25c7e61613742d5108b010975a9a6521"},
