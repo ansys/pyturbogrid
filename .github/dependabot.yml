@@ -1,41 +1,107 @@
 version: 2
-#registries:
-#  python-azure:
-#    type: python-index
-#    url: https://pkgs.dev.azure.com/pyansys/_packaging/pyansys/pypi/simple/
-#    token: ${{ secrets.PYANSYS_PYPI_PRIVATE_READ_PAT }}
+
+registries:
+  # ghcr: # access to Ansys docker containers
+  #   type: docker-registry
+  #   url: https://ghcr.io
+  #   username: ${{ secrets.PYANSYS_CI_BOT_USERNAME }}
+  #   password: ${{ secrets.PYANSYS_CI_BOT_TOKEN }}
+  # private Azure Artifacts feed for python/poetry need both registries with/out guid in url
+  # https://github.com/dependabot/dependabot-core/issues/4780
+  python-pyansys-private-pypi:
+    type: python-index
+    url: https://pkgs.dev.azure.com/pyansys/_packaging/pyansys/pypi/simple/
+    username: dependabot@ansys.com
+    password: ${{ secrets.PYANSYS_PYPI_PRIVATE_PAT }}
+    replaces-base: true
+  python-pyansys-private-pypi-guid:
+    type: python-index
+    url: https://pkgs.dev.azure.com/pyansys/_packaging/705e121a-9631-49f5-8aaf-c7142856f923/pypi/simple/
+    username: dependabot@ansys.com
+    password: ${{ secrets.PYANSYS_PYPI_PRIVATE_PAT }}
+    replaces-base: true
+  github-ansys-internal:
+    type: git
+    url: https://github.com
+    username: ${{ secrets.PYANSYS_CI_BOT_USERNAME }}
+    password: ${{ secrets.PYANSYS_CI_BOT_TOKEN }}
 
 updates:
-  - package-ecosystem: "pip"
-    cooldown:
-      default-days: 10 # Fallback cooldown if no specific rule applies
-    directory: "/" # Location of package manifests
-    insecure-external-code-execution: allow
-    #registries:
-    #  - python-azure
-    schedule:
-      interval: "daily"
-    assignees:
-      - "pyansys-ci-bot"
-    labels:
-      - "maintenance"
-      - "dependencies"
-    ignore:
-      - dependency-name: "ansys-turbogrid-api"
-    reviewers: 
-      - "acohen-work"
-      - "zlilek-work"
+  # - package-ecosystem: "docker" # See documentation for possible values
+  #   target-branch: "main"
+  #   registries:
+  #     - ghcr
+  #   directories:
+  #     - "/docker/*/"
+  #   schedule:
+  #     interval: daily
+  #   commit-message:
+  #     prefix: "chore(docker):"
+  #   groups:
+  #     docker:
+  #       patterns:
+  #         - "*"
 
-  - package-ecosystem: "github-actions"
-    cooldown:
-      default-days: 10 # Fallback cooldown if no specific rule applies
+  # Set as pip, but it is for poetry.
+  # See: https://docs.github.com/en/code-security/dependabot/dependabot-version-updates/configuration-options-for-the-dependabot.yml-file#package-ecosystem
+  # Registries entry required for pip private registries
+  # https://docs.github.com/en/code-security/dependabot/dependabot-version-updates/configuration-options-for-the-dependabot.yml-file#insecure-external-code-execution
+  - package-ecosystem: "pip"
+    target-branch: "main"
+    versioning-strategy: "increase"
     directory: "/"
     schedule:
       interval: "daily"
-    assignees:
-      - "pyansys-ci-bot"
+      timezone: "America/New_York"
+      time: "19:00"
+    registries:
+      - python-pyansys-private-pypi
+      - python-pyansys-private-pypi-guid
+    insecure-external-code-execution: allow
+    labels:
+      - "maintenance"
+      - "dependencies"
+    reviewers: 
+      - "acohen-work"
+      - "zlilek-work"      
+    commit-message:
+      prefix: "build(deps):"
+    cooldown:
+      default-days: 30
+      semver-major-days: 30
+      semver-minor-days: 30
+      semver-patch-days: 30
+      include:
+        - "*"
+      exclude:
+        - "ansys-*" # make sure this matches internal group patterns below
+    groups:
+      # Note: we need separate groups for simba-* and external dependencies for the auto-merge logic in .github/workflows/automation.yml
+      # internal-simba:
+      #   patterns:
+      #     - "ansys-simba-*"
+      internal:
+        patterns:
+          - "ansys-*"
+      external:
+        patterns:
+          - "*"
+
+  - package-ecosystem: "github-actions"
+    target-branch: "main"
+    directory: "/"
+    schedule:
+      interval: "daily"
+    registries:
+      - github-ansys-internal
     labels:
       - "maintenance"
     reviewers: 
-      - "acohen-work"  
-      - "zlilek-work"
+      - "acohen-work"
+      - "zlilek-work"      
+    commit-message:
+      prefix: "chore(actions):"
+    groups:
+      actions:
+        patterns:
+          - "*"

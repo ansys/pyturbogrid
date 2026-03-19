@@ -26,6 +26,14 @@
   description: Anything related to an incoming release
   color: ffffff
 
-- name: testing
-  description: Anything related to tests
-  color: BFE4D6
+- name: "autorelease: pending"
+  description: Autorelease pending with release-please - the initial state of the Release PR before it is merged
+  color: 00a6ed
+
+- name: "autorelease: snapshot"
+  description: Autorelease snapshot with release-please - special state for snapshot version bumps
+  color: ffb02e
+
+- name: "autorelease: tagged"
+  description: Autorelease tagged with release-please - the Release PR has been merged and the release has been tagged in GitHub
+  color: cdc4d6

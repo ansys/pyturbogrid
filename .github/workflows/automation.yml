@@ -1,0 +1,75 @@
+# This workflow automates the approval and merging of Dependabot and Release-Please bot PRs.
+# It approves PRs and enables auto-merge, when appropriate.
+
+# https://docs.github.com/en/code-security/dependabot/working-with-dependabot/automating-dependabot-with-github-actions#approve-a-pull-request
+# https://docs.github.com/en/code-security/dependabot/working-with-dependabot/automating-dependabot-with-github-actions#enable-auto-merge-on-a-pull-request
+
+name: Automation of bot PRs
+
+on:
+  pull_request:
+    paths:
+      - "pyproject.toml"
+      - "poetry.lock"
+      - ".release-please-manifest.json"
+      - "CHANGELOG.md"
+      - "docker/**/Dockerfile"
+      - ".github/workflows/**"
+    branches:
+      - main
+      - releases/release-26.1
+
+permissions:
+    contents: write
+    pull-requests: write
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number }}
+  cancel-in-progress: false
+
+jobs:
+  bot-automation:
+    runs-on: ubuntu-latest
+    if: github.event.pull_request.user.login == 'dependabot[bot]' || github.event.pull_request.user.login == 'ansys-internal-release-please[bot]'
+    env:
+      PR_URL: ${{ github.event.pull_request.html_url }}
+      GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      PR_NUMBER: ${{ github.event.pull_request.number }}
+      ACTOR: ${{ github.event.pull_request.user.login }}
+    steps:
+      - uses: actions/checkout@v6
+      - name: Debug printouts
+        run: |
+          echo "Actor: \"$ACTOR\""
+          echo "Pull request URL: \"$PR_URL\""
+          echo "Pull request number: \"$PR_NUMBER\""
+          echo "Token: \"$GH_TOKEN\""
+      - name: Dependabot metadata
+        # https://github.com/dependabot/fetch-metadata
+        id: metadata
+        if: github.event.pull_request.user.login == 'dependabot[bot]'
+        uses: dependabot/fetch-metadata@v2
+        with:
+          github-token: "${{ secrets.GITHUB_TOKEN }}"
+      - name: Dependabot debug printouts
+        if: github.event.pull_request.user.login == 'dependabot[bot]'
+        run: |
+          echo "Dependency group: \"${{ steps.metadata.outputs.dependency-group }}\""
+          echo "Dependency names: \"${{ steps.metadata.outputs.dependency-names }}\""
+          echo "Update type: \"${{ steps.metadata.outputs.update-type }}\""
+      - name: Approve PR
+        env:
+          DEP_GROUP: ${{ steps.metadata.outputs.dependency-group }}
+          DEP_NAMES: ${{ steps.metadata.outputs.dependency-names }}
+          UPDATE_TYPE: ${{ steps.metadata.outputs.update-type }}
+        run: |
+          if [ "$ACTOR" == "pyansys-ci-bot" ]; then
+            echo "Actor is the pyansys-ci-bot (used to release-please on Ansys org repos)"
+          else
+            echo "Actor is Dependabot"
+          fi
+          review_requests=$(gh pr view "$PR_NUMBER" --json reviewRequests --jq '.reviewRequests[].login')
+          echo "Approving PR and enabling auto-merge as review was requested."
+          gh pr review --approve "$PR_URL"
+        # gh pr merge --auto --squash "$PR_URL"
+
