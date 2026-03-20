@@ -33,7 +33,6 @@ from typing import Optional
 
 from ansys.turbogrid.api import pyturbogrid_core
 
-from ansys.turbogrid.core.launcher.container_helpers import get_open_port
 from ansys.turbogrid.core.launcher.deploy_tg_container import deployed_tg_container
 
 
@@ -260,6 +259,8 @@ def launch_turbogrid_container(
 
     # The path to cfxtg_command is standardized by the container, so just replace the command name.
     # This allows image developers to write custom cfxtg commands.
+    from ansys.turbogrid.core.launcher.container_helpers import get_open_port
+
     ftp_port = get_open_port()
     socket_port = get_open_port()
     cfxtg_command: str = cfxtg_command_name
