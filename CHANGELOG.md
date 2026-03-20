@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.5.6](https://github.com/ansys/pyturbogrid/compare/v0.5.5...v0.5.6) (2026-03-20)
+
+
+### Bug Fixes
+
+* Move a from statement into a method to not expose including fabric ([b1c8f46](https://github.com/ansys/pyturbogrid/commit/b1c8f466d94784040aee3077ec24aaf610ca1c36))
+
 ## [0.5.5](https://github.com/ansys/pyturbogrid/compare/v0.5.4...v0.5.5) (2026-03-19)
 
 
