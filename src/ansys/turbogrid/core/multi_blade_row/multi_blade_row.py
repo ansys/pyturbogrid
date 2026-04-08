@@ -43,7 +43,6 @@ from typing import Optional, Tuple
 
 from ansys.turbogrid.api.pyturbogrid_core import PyTurboGrid
 
-from ansys.turbogrid.core.launcher.container_helpers import container_helpers
 from ansys.turbogrid.core.launcher.launcher import launch_turbogrid, launch_turbogrid_container
 from ansys.turbogrid.core.mesh_statistics import mesh_statistics
 from ansys.turbogrid.core.multi_blade_row.single_blade_row import single_blade_row
@@ -277,6 +276,7 @@ class multi_blade_row:
             self.turbogrid_location_type
             == PyTurboGrid.TurboGridLocationType.TURBOGRID_RUNNING_CONTAINER
         ):
+            from ansys.turbogrid.core.launcher.container_helpers import container_helpers
 
             container = container_helpers.get_container_connection(
                 self.pyturbogrid_saas_execution_control.ftp_port,
@@ -359,6 +359,7 @@ class multi_blade_row:
             self.turbogrid_location_type
             == PyTurboGrid.TurboGridLocationType.TURBOGRID_RUNNING_CONTAINER
         ):
+            from ansys.turbogrid.core.launcher.container_helpers import container_helpers
 
             container = container_helpers.get_container_connection(
                 self.pyturbogrid_saas_execution_control.ftp_port,
@@ -465,6 +466,8 @@ class multi_blade_row:
                 self.turbogrid_location_type
                 == PyTurboGrid.TurboGridLocationType.TURBOGRID_RUNNING_CONTAINER
             ):
+                from ansys.turbogrid.core.launcher.container_helpers import container_helpers
+
                 pyturbogrid_instance.block_each_message = True
                 # print(
                 #     f"get_container_connection {tg_execution_control.ftp_port} {self.tg_container_launch_settings['ssh_key_filename']}"
@@ -1147,6 +1150,8 @@ class multi_blade_row:
                 self.turbogrid_location_type
                 == PyTurboGrid.TurboGridLocationType.TURBOGRID_RUNNING_CONTAINER
             ):
+                from ansys.turbogrid.core.launcher.container_helpers import container_helpers
+
                 # print(
                 #     f"get_container_connection {tg_worker_instance.tg_execution_control.ftp_port} {self.tg_container_launch_settings['ssh_key_filename']}"
                 # )
@@ -1235,6 +1240,8 @@ class multi_blade_row:
                 # print(
                 #     f"get_container_connection {tg_worker_instance.tg_execution_control.ftp_port} {self.tg_container_launch_settings['ssh_key_filename']}"
                 # )
+                from ansys.turbogrid.core.launcher.container_helpers import container_helpers
+
                 container = container_helpers.get_container_connection(
                     tg_worker_instance.tg_execution_control.ftp_port,
                     self.tg_container_launch_settings["ssh_key_filename"],
@@ -1341,6 +1348,8 @@ class multi_blade_row:
                 # print(
                 #     f"get_container_connection {tg_worker_instance.tg_execution_control.ftp_port} {self.tg_container_launch_settings['ssh_key_filename']}"
                 # )
+                from ansys.turbogrid.core.launcher.container_helpers import container_helpers
+
                 container = container_helpers.get_container_connection(
                     tg_worker_instance.tg_execution_control.ftp_port,
                     self.tg_container_launch_settings["ssh_key_filename"],
@@ -1466,6 +1475,8 @@ class multi_blade_row:
                 # print(
                 #     f"get_container_connection {tg_worker_instance.tg_execution_control.ftp_port} {self.tg_container_launch_settings['ssh_key_filename']}"
                 # )
+                from ansys.turbogrid.core.launcher.container_helpers import container_helpers
+
                 container = container_helpers.get_container_connection(
                     tg_worker_instance.tg_execution_control.ftp_port,
                     self.tg_container_launch_settings["ssh_key_filename"],
