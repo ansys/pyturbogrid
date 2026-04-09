@@ -1,5 +1,18 @@
 # Changelog
 
+## [0.5.7](https://github.com/ansys/pyturbogrid/compare/v0.5.6...v0.5.7) (2026-04-09)
+
+
+### Bug Fixes
+
+* Move imports into methods so as not to require fabric ([#375](https://github.com/ansys/pyturbogrid/issues/375)) ([90a7155](https://github.com/ansys/pyturbogrid/commit/90a7155be2d9c6c0db805dcd1ce55ac77dc8442c))
+
+
+### Build System
+
+* **deps:** Bump deepdiff from 8.6.1 to 8.6.2 ([#362](https://github.com/ansys/pyturbogrid/issues/362)) ([c575150](https://github.com/ansys/pyturbogrid/commit/c57515025e59373e359dfab0c2690ec23f5a12be))
+* **deps:** Bump docker/login-action from 3 to 4 ([#360](https://github.com/ansys/pyturbogrid/issues/360)) ([915e6e6](https://github.com/ansys/pyturbogrid/commit/915e6e6dee3b7072a61086dfe5a61d0759168f35))
+
 ## [0.5.6](https://github.com/ansys/pyturbogrid/compare/v0.5.5...v0.5.6) (2026-03-20)
 
 
