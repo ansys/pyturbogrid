@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.5.8](https://github.com/ansys/pyturbogrid/compare/v0.5.7...v0.5.8) (2026-04-14)
+
+
+### Build System
+
+* **deps:** Bump panel from 1.8.7 to 1.8.10 ([#366](https://github.com/ansys/pyturbogrid/issues/366)) ([c992f95](https://github.com/ansys/pyturbogrid/commit/c992f959723e436b9efd3b6033554dbfaef5f907))
+
 ## [0.5.7](https://github.com/ansys/pyturbogrid/compare/v0.5.6...v0.5.7) (2026-04-09)
 
 
