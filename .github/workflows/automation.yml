@@ -33,7 +33,7 @@ jobs:
     if: github.event.pull_request.user.login == 'dependabot[bot]' || github.event.pull_request.user.login == 'ansys-internal-release-please[bot]'
     env:
       PR_URL: ${{ github.event.pull_request.html_url }}
-      GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      GH_TOKEN: ${{ secrets.PYANSYS_CI_BOT_TOKEN }}
       PR_NUMBER: ${{ github.event.pull_request.number }}
       ACTOR: ${{ github.event.pull_request.user.login }}
     steps:
@@ -63,13 +63,12 @@ jobs:
           DEP_NAMES: ${{ steps.metadata.outputs.dependency-names }}
           UPDATE_TYPE: ${{ steps.metadata.outputs.update-type }}
         run: |
-          if [ "$ACTOR" == "pyansys-ci-bot" ]; then
-            echo "Actor is the pyansys-ci-bot (used to release-please on Ansys org repos)"
-          else
-            echo "Actor is Dependabot"
-          fi
           review_requests=$(gh pr view "$PR_NUMBER" --json reviewRequests --jq '.reviewRequests[].login')
           echo "Approving PR and enabling auto-merge as review was requested."
           gh pr review --approve "$PR_URL"
-        # gh pr merge --auto --squash "$PR_URL"
+          if [ "$ACTOR" == "dependabot[bot]" ]; then
+            echo "Actor is Dependabot, auto merging..."
+            gh pr merge --auto --squash "$PR_URL"
+          fi
+
 
