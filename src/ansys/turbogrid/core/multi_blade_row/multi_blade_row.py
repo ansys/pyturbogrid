@@ -833,7 +833,7 @@ class multi_blade_row:
             ]
             concurrent.futures.wait(futures)
 
-    def save_meshes(self, optional_prefix: str = None) -> list[str]:
+    def save_meshes(self, optional_prefix: str = None, file_format="def") -> list[str]:
         """
         Write out the .def files representing the entire blade row.
         Blade rows that threw errors will not write meshes (check the logs.)
@@ -845,7 +845,7 @@ class multi_blade_row:
             max_workers=len(self.tg_worker_instances)
         ) as executor:
             futures = [
-                executor.submit(self.__save_mesh__, key, val, optional_prefix)
+                executor.submit(self.__save_mesh__, key, val, optional_prefix, file_format)
                 for key, val in self.tg_worker_instances.items()
             ]
             done, not_done = concurrent.futures.wait(futures)
@@ -974,7 +974,7 @@ class multi_blade_row:
         self.cached_blade_mesh_surfaces_stats = mesh_stats
         for item in result_list:
             threadsafe_queue.put(item)
-        print(f"number of passage meshes: {len(result_list)}")
+        # print(f"number of passage meshes: {len(result_list)}")
         # Add theta mesh surfaces
         self.cached_sfp_mesh_surfaces = {}
         sfps = self.get_available_secondary_flow_path_meshes()
@@ -1558,11 +1558,13 @@ class multi_blade_row:
             pass
         return ec
 
-    def __save_mesh__(self, tg_worker_name, tg_worker_instance, optional_prefix: str = None) -> str:
+    def __save_mesh__(
+        self, tg_worker_name, tg_worker_instance, optional_prefix: str = None, file_format="def"
+    ) -> str:
         """
         :meta private:
         """
-        file_name: str = tg_worker_name + ".def"
+        file_name: str = tg_worker_name + "." + file_format
         if optional_prefix:
             file_name = optional_prefix + file_name
         tg_worker_instance.pytg.save_mesh(file_name)
