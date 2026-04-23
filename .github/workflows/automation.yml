@@ -48,7 +48,7 @@ jobs:
         # https://github.com/dependabot/fetch-metadata
         id: metadata
         if: github.event.pull_request.user.login == 'dependabot[bot]'
-        uses: dependabot/fetch-metadata@v2
+        uses: dependabot/fetch-metadata@v3
         with:
           github-token: "${{ secrets.PYANSYS_CI_BOT_TOKEN }}"
       - name: Dependabot debug printouts
