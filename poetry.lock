@@ -294,18 +294,18 @@ files = [
 
 [[package]]
 name = "autodocsumm"
-version = "0.2.14"
+version = "0.2.15"
 description = "Extended sphinx autodoc including automatic autosummaries"
 optional = false
 python-versions = ">=3.7"
 groups = ["doc"]
 files = [
-    {file = "autodocsumm-0.2.14-py3-none-any.whl", hash = "sha256:3bad8717fc5190802c60392a7ab04b9f3c97aa9efa8b3780b3d81d615bfe5dc0"},
-    {file = "autodocsumm-0.2.14.tar.gz", hash = "sha256:2839a9d4facc3c4eccd306c08695540911042b46eeafcdc3203e6d0bab40bc77"},
+    {file = "autodocsumm-0.2.15-py3-none-any.whl", hash = "sha256:dbe6fabcaeae4540748ea9b3443eb76c2692e063d44f004f67c424610a5aca9a"},
+    {file = "autodocsumm-0.2.15.tar.gz", hash = "sha256:eaf431e7a5a39e41a215311173c8b95e83859059df1ccf3b79c64bf3d5582b3c"},
 ]
 
 [package.dependencies]
-Sphinx = ">=4.0,<9.0"
+Sphinx = ">=4.0,<10.0"
 
 [[package]]
 name = "babel"
@@ -4847,4 +4847,4 @@ type = ["pytest-mypy"]
 [metadata]
 lock-version = "2.1"
 python-versions = ">=3.10,<4.0"
-content-hash = "7a5dd363afba922c7b14f251b228f5ee0239ce70a16c2776279fde3c130b4039"
+content-hash = "5bb5873dfeac843acda570adf7c387da79cec5a6881835f980f51c85e2720111"

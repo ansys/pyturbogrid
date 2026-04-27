@@ -49,7 +49,7 @@ optional = true
 [tool.poetry.group.doc.dependencies]
 fabric = ">=3.2.2"
 ansys-sphinx-theme = ">=0.15.2"
-autodocsumm = ">=0.2.12"
+autodocsumm = ">=0.2.15"
 ipyvtklink = ">=0.2.3"
 jupyter_sphinx = ">=0.5.3"
 jupytext = ">=1.16.1"
