@@ -36,7 +36,7 @@ priority = "supplemental"
 [tool.poetry.dependencies]
 python = ">=3.10,<4.0"
 matplotlib = ">=3.5.1"
-importlib-metadata = ">=4.0"
+importlib-metadata = ">=9.0.0"
 Jinja2 = ">=3.1.2"
 ansys-turbogrid-api = ">=0.5.5"
 # ansys-turbogrid-api = { path = "../ansys-api-turbogrid/", develop = true } # Uncomment this if you have access to a local repo
