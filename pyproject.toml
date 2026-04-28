@@ -70,7 +70,7 @@ optional = true
 [tool.poetry.group.test.dependencies]
 fabric = ">=3.2.2"
 matplotlib = ">=3.10.9"
-pytest = ">=8.1.1"
+pytest = ">=9.0.3"
 pytest-cov = ">=7.1.0"
 pytest-xdist = ">=3.6.0"
 
