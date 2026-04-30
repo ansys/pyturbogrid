@@ -1,5 +1,22 @@
 # Changelog
 
+## [0.6.1](https://github.com/ansys/pyturbogrid/compare/v0.6.0...v0.6.1) (2026-04-30)
+
+
+### Build System
+
+* **deps:** Bump autodocsumm from 0.2.14 to 0.2.15 ([#374](https://github.com/ansys/pyturbogrid/issues/374)) ([78af23e](https://github.com/ansys/pyturbogrid/commit/78af23ecab2af464a3da91404dbd8212b990e25b))
+* **deps:** Bump deepdiff from 8.6.2 to 9.0.0 ([#385](https://github.com/ansys/pyturbogrid/issues/385)) ([f9f6448](https://github.com/ansys/pyturbogrid/commit/f9f6448b0e7a3e3d59cf211fc5aa584136adfa83))
+* **deps:** Bump fabric from 3.2.2 to 3.2.3 ([#388](https://github.com/ansys/pyturbogrid/issues/388)) ([01736b6](https://github.com/ansys/pyturbogrid/commit/01736b69f4dcf2a884ec8c4414b5bf8eb8f7a263))
+* **deps:** Bump importlib-metadata from 8.7.1 to 9.0.0 ([#371](https://github.com/ansys/pyturbogrid/issues/371)) ([c41e081](https://github.com/ansys/pyturbogrid/commit/c41e08171f0d7605c884e146102b10896139e20b))
+* **deps:** Bump matplotlib from 3.10.8 to 3.10.9 ([#387](https://github.com/ansys/pyturbogrid/issues/387)) ([eeb974c](https://github.com/ansys/pyturbogrid/commit/eeb974ce5d0ddcbc5756121cf1b09dc862f2e3a6))
+* **deps:** Bump nbconvert from 7.17.0 to 7.17.1 ([#378](https://github.com/ansys/pyturbogrid/issues/378)) ([4045241](https://github.com/ansys/pyturbogrid/commit/40452416823bca4b168d62d996abe60aacf3df30))
+* **deps:** Bump notebook from 7.5.4 to 7.5.5 ([#368](https://github.com/ansys/pyturbogrid/issues/368)) ([2658cce](https://github.com/ansys/pyturbogrid/commit/2658cce0e3a5f06d4aa2bdd227137843dea97b49))
+* **deps:** Bump notebook from 7.5.5 to 7.5.6 ([#390](https://github.com/ansys/pyturbogrid/issues/390)) ([d9c93ac](https://github.com/ansys/pyturbogrid/commit/d9c93ac3f2c035208959ada251994dfcddd3d93e))
+* **deps:** Bump pytest from 9.0.2 to 9.0.3 ([#389](https://github.com/ansys/pyturbogrid/issues/389)) ([c5be059](https://github.com/ansys/pyturbogrid/commit/c5be059d2755e9a20ce7ed895ce528a7e0ac6844))
+* **deps:** Bump pytest-cov from 7.0.0 to 7.1.0 ([#372](https://github.com/ansys/pyturbogrid/issues/372)) ([a06ae32](https://github.com/ansys/pyturbogrid/commit/a06ae320c22a998fe49ee84465096ec7cba2100c))
+* **deps:** Bump sphinx-gallery from 0.20.0 to 0.21.0 ([#386](https://github.com/ansys/pyturbogrid/issues/386)) ([6050822](https://github.com/ansys/pyturbogrid/commit/6050822f2e116cd16d4406166708245a8e76abdc))
+
 ## [0.6.0](https://github.com/ansys/pyturbogrid/compare/v0.5.7...v0.6.0) (2026-04-21)
 
 
