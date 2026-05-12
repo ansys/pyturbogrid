@@ -2039,14 +2039,14 @@ files = [
 
 [[package]]
 name = "jupytext"
-version = "1.19.1"
+version = "1.19.2"
 description = "Jupyter notebooks as Markdown documents, Julia, Python or R scripts"
 optional = false
 python-versions = ">=3.9"
 groups = ["doc"]
 files = [
-    {file = "jupytext-1.19.1-py3-none-any.whl", hash = "sha256:d8975035155d034bdfde5c0c37891425314b7ea8d3a6c4b5d18c294348714cd9"},
-    {file = "jupytext-1.19.1.tar.gz", hash = "sha256:82587c07e299173c70ed5e8ec7e75183edf1be289ed518bab49ad0d4e3d5f433"},
+    {file = "jupytext-1.19.2-py3-none-any.whl", hash = "sha256:8a31e896c7e9215841783aade24336e945543057e1c2d7f00b22f9e870348688"},
+    {file = "jupytext-1.19.2.tar.gz", hash = "sha256:da6198a42406a09142b6b26ebc46a3ec7077f525222a8f12b1811a0e289a2216"},
 ]
 
 [package.dependencies]
@@ -4847,4 +4847,4 @@ type = ["pytest-mypy"]
 [metadata]
 lock-version = "2.1"
 python-versions = ">=3.10,<4.0"
-content-hash = "c9440bad342ccb82fb62d048e47d1e5b812c8d84f21194b5120e14a97cdf72c3"
+content-hash = "413308236c41937ff9f2dee01b6dde2403ebb3ad48546f7bc5f16653c4748591"
