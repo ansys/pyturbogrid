@@ -772,13 +772,41 @@ class multi_blade_row:
             raise Exception(f"MachineSizingStrategy {strategy.name} not supported")
         return True
 
+    def set_machine_global_and_base_size_factors(
+        self, size_factors: dict[str, float], size_factor: float
+    ):
+        """
+        Manual setting for machine-wide and per-blade-row sizings
+
+        """
+        # print(
+        #     f"set_machine_global_and_base_size_factors: global {size_factor} per-row {size_factors} current global {self.current_size_factor} current per-row {self.base_gsf}"
+        # )
+        if self.base_gsf == size_factors and size_factor == self.current_size_factor:
+            return False
+
+        if self.base_gsf != size_factors:
+            self.base_gsf = size_factors
+
+        if size_factor != self.current_size_factor:
+            self.current_size_factor = size_factor
+
+        with concurrent.futures.ThreadPoolExecutor(
+            max_workers=len(self.tg_worker_instances)
+        ) as executor:
+            job = partial(self.__set_gsf__, self.current_size_factor)
+            futures = [
+                executor.submit(job, key, val) for key, val in self.tg_worker_instances.items()
+            ]
+            concurrent.futures.wait(futures)
+        return True
+
     def set_machine_base_size_factors(self, size_factors: dict[str, float]):
         """
         Manual setting for per-blade-row sizings, and set the machine size factor to 1.0.
 
         """
-        # print(f"set_machine_base_size_factors {size_factors}")
-        # Check sizes here!
+        # print(f"set_machine_base_size_factors {size_factors} current {self.base_gsf}")
         if self.base_gsf == size_factors:
             return False
         else:
@@ -799,8 +827,9 @@ class multi_blade_row:
         Set the entire machine's size factor. Higher means more (and smaller) elements.
 
         """
-        # print(f"set_machine_size_factor base {self.base_gsf} factor {size_factor}")
-
+        # print(
+        #     f"set_machine_size_factor base {self.base_gsf} factor {size_factor} current {self.current_size_factor}"
+        # )
         if size_factor == self.current_size_factor:
             return False
         else:
