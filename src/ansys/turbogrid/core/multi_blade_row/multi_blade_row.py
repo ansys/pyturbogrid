@@ -267,6 +267,7 @@ class multi_blade_row:
         tg_log_level: PyTurboGrid.TurboGridLogLevel = PyTurboGrid.TurboGridLogLevel.INFO,
         blade_rows_to_mesh: list[str] = None,
     ):
+        print(f"init_blank_tginit {tginit_path} {tg_log_level} {blade_rows_to_mesh}")
         # import pprint
         tginit_name = os.path.basename(tginit_path)
         tginit_base_path = PurePath(tginit_path).parent.as_posix()
@@ -350,6 +351,7 @@ class multi_blade_row:
         tg_log_level: PyTurboGrid.TurboGridLogLevel = PyTurboGrid.TurboGridLogLevel.INFO,
         blade_rows_to_mesh: list[str] = None,
     ):
+        print(f"init_from_tginit {tginit_path=}")
         # import pprint
         tginit_name = os.path.basename(tginit_path)
         tginit_base_path = PurePath(tginit_path).parent.as_posix()
@@ -840,7 +842,7 @@ class multi_blade_row:
         The assembly can be opened directly in CFX-Pre (Meshes contain some topology.)
 
         """
-        # print(f"save_meshes")
+        print(f"save_meshes")
         with concurrent.futures.ThreadPoolExecutor(
             max_workers=len(self.tg_worker_instances)
         ) as executor:
@@ -868,6 +870,21 @@ class multi_blade_row:
             ]
             done, not_done = concurrent.futures.wait(futures)
             return {future.result()[0]: future.result()[1] for future in done}
+        
+    def get_turbo_mesh_assembly(self) -> dict[str, any]:
+        """
+        Get the mesh data in a dictionary format for each blade row.
+
+        """
+        with concurrent.futures.ThreadPoolExecutor(
+            max_workers=len(self.tg_worker_instances)
+        ) as executor:
+            futures = [
+                executor.submit(self.__get_turbo_mesh_assembly__, key, val)
+                for key, val in self.tg_worker_instances.items()
+            ]
+            done, not_done = concurrent.futures.wait(futures)
+            return {f.result()[0]: f.result()[1] for f in done}
 
     def get_mesh_statistics_reporters(self) -> dict[str, any]:
         from ansys.turbogrid.core.mesh_statistics import mesh_statistics
@@ -1557,7 +1574,18 @@ class multi_blade_row:
         except:
             pass
         return ec
-
+    
+    def __get_turbo_mesh_assembly__( self, tg_worker_name, tg_worker_instance) -> tuple[str, dict[str, any]]:
+        """
+        :meta private:
+        """
+        turbo_data = {}
+        try:
+            turbo_data = tg_worker_instance.pytg.getTurboDomainData(prefix=tg_worker_name)
+        except:
+            pass
+        return (tg_worker_name, turbo_data)
+    
     def __save_mesh__(
         self, tg_worker_name, tg_worker_instance, optional_prefix: str = None, file_format="def"
     ) -> str:
@@ -1567,7 +1595,8 @@ class multi_blade_row:
         file_name: str = tg_worker_name + "." + file_format
         if optional_prefix:
             file_name = optional_prefix + file_name
-        tg_worker_instance.pytg.save_mesh(file_name)
+        print(f"Saving mesh for {tg_worker_name} to {file_name}")
+        tg_worker_instance.pytg.save_mesh(file_name,tg_worker_name)
         return file_name
 
     # Returns (worker name, file name)
