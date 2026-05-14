@@ -38,7 +38,7 @@ python = ">=3.10,<4.0"
 matplotlib = ">=3.10.9"
 importlib-metadata = ">=9.0.0"
 Jinja2 = ">=3.1.2"
-ansys-turbogrid-api = ">=0.5.5"
+ansys-turbogrid-api = ">=0.7.5"
 # ansys-turbogrid-api = { path = "../ansys-api-turbogrid/", develop = true } # Uncomment this if you have access to a local repo
 pyyaml = "^6.0.2"
 deepdiff = "^9.0.0"
