@@ -1596,7 +1596,7 @@ class multi_blade_row:
         file_name: str = tg_worker_name + "." + file_format
         if optional_prefix:
             file_name = optional_prefix + file_name
-        tg_worker_instance.pytg.save_mesh(file_name)
+        tg_worker_instance.pytg.save_mesh(file_name,tg_worker_name)
         return file_name
 
     # Returns (worker name, file name)
