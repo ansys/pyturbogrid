@@ -1,5 +1,18 @@
 # Changelog
 
+## [0.7.0](https://github.com/ansys/pyturbogrid/compare/v0.6.1...v0.7.0) (2026-05-15)
+
+
+### Features
+
+* Save_mesh with region prefix for S1447119 ([#393](https://github.com/ansys/pyturbogrid/issues/393)) ([4e45cf5](https://github.com/ansys/pyturbogrid/commit/4e45cf59dfed7290b131bfc814ee809c02b551f8))
+
+
+### Build System
+
+* **deps:** Bump ansys-turbogrid-api from 0.7.4 to 0.7.5 ([#395](https://github.com/ansys/pyturbogrid/issues/395)) ([4d463bc](https://github.com/ansys/pyturbogrid/commit/4d463bc415bca70945277551fb4db79badb82f24))
+* **deps:** Bump deepdiff from 9.0.0 to 9.1.0 ([#396](https://github.com/ansys/pyturbogrid/issues/396)) ([e60cbe0](https://github.com/ansys/pyturbogrid/commit/e60cbe03ee74c5b62c716449333cdfee1a4f51aa))
+
 ## [0.6.1](https://github.com/ansys/pyturbogrid/compare/v0.6.0...v0.6.1) (2026-05-12)
 
 
