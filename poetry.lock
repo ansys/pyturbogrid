@@ -69,21 +69,21 @@ tests = ["ansys-api-platform-instancemanagement (==1.0.0)", "grpcio-health-check
 
 [[package]]
 name = "ansys-sphinx-theme"
-version = "1.7.1"
+version = "1.8.0"
 description = "A theme devised by ANSYS, Inc. for Sphinx documentation."
 optional = false
 python-versions = "<4,>=3.10"
 groups = ["doc"]
 files = [
-    {file = "ansys_sphinx_theme-1.7.1-py3-none-any.whl", hash = "sha256:43c88dd8ad4ba13a82b632070fea04a92bc19687eec99ac93c144e1bb02de6f9"},
-    {file = "ansys_sphinx_theme-1.7.1.tar.gz", hash = "sha256:e0e120d57918633bf20b60270be195bef63dfea2ada3f844b3b0ae1e6e8a5046"},
+    {file = "ansys_sphinx_theme-1.8.0-py3-none-any.whl", hash = "sha256:09f7291999eb46cf010cfda0b20c36aa9e4a2796e8721efcda93978cba499cf3"},
+    {file = "ansys_sphinx_theme-1.8.0.tar.gz", hash = "sha256:cc10b3cfbf742602a1cef6c3606227392d7bf8417d2f1561928ab791e852823c"},
 ]
 
 [package.dependencies]
 importlib-metadata = ">=4.0"
 Jinja2 = ">=3.1.2"
 pdf2image = ">=1.17.0"
-pydata-sphinx-theme = ">=0.15.4,<0.17"
+pydata-sphinx-theme = ">=0.15.4,<0.18"
 PyYAML = ">=6.0"
 Sphinx = ">=6.1.0"
 
@@ -4970,4 +4970,4 @@ type = ["pytest-mypy"]
 [metadata]
 lock-version = "2.1"
 python-versions = ">=3.10,<4.0"
-content-hash = "620514ac31be26e5691415815ba4135cb32ae764f523d4bf1c9619e70bf9a7cb"
+content-hash = "03b794085ceafed3cd5fb87053a2589c2d0d0608c43ff35a5a901cc60c615452"
