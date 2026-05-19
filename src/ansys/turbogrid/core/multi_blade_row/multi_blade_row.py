@@ -1612,6 +1612,7 @@ class multi_blade_row:
         try:
             turbo_data = tg_worker_instance.pytg.getTurboDomainData(prefix=tg_worker_name)
         except:
+            print(f"{tg_worker_instance} exception on __get_turbo_mesh_assembly__")
             pass
         return (tg_worker_name, turbo_data)
     
