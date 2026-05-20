@@ -38,21 +38,21 @@ python = ">=3.10,<4.0"
 matplotlib = ">=3.10.9"
 importlib-metadata = ">=9.0.0"
 Jinja2 = ">=3.1.2"
-ansys-turbogrid-api = ">=0.5.5"
+ansys-turbogrid-api = ">=0.7.5"
 # ansys-turbogrid-api = { path = "../ansys-api-turbogrid/", develop = true } # Uncomment this if you have access to a local repo
 pyyaml = "^6.0.2"
-deepdiff = "^9.0.0"
+deepdiff = "^9.1.0"
 
 [tool.poetry.group.doc]
 optional = true
 
 [tool.poetry.group.doc.dependencies]
 fabric = ">=3.2.3"
-ansys-sphinx-theme = ">=0.15.2"
+ansys-sphinx-theme = ">=1.8.0"
 autodocsumm = ">=0.2.15"
 ipyvtklink = ">=0.2.3"
 jupyter_sphinx = ">=0.5.3"
-jupytext = ">=1.19.2"
+jupytext = ">=1.19.3"
 nbconvert = ">=7.17.1"
 nbsphinx = ">=0.9.3"
 notebook = ">=7.5.6"
