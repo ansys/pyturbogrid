@@ -901,7 +901,7 @@ class multi_blade_row:
             done, not_done = concurrent.futures.wait(futures)
             return {future.result()[0]: future.result()[1] for future in done}
         
-    def get_turbo_mesh_assembly(self) -> dict[str, any]:
+    def get_turbo_domain_assembly(self) -> dict[str, any]:
         """
         Get the mesh data in a dictionary format for each blade row.
 
@@ -910,7 +910,7 @@ class multi_blade_row:
             max_workers=len(self.tg_worker_instances)
         ) as executor:
             futures = [
-                executor.submit(self.__get_turbo_mesh_assembly__, key, val)
+                executor.submit(self.__get_turbo_domain_assembly__, key, val)
                 for key, val in self.tg_worker_instances.items()
             ]
             done, not_done = concurrent.futures.wait(futures)
@@ -1607,7 +1607,7 @@ class multi_blade_row:
             pass
         return ec
     
-    def __get_turbo_mesh_assembly__( self, tg_worker_name, tg_worker_instance) -> tuple[str, dict[str, any]]:
+    def __get_turbo_domain_assembly__( self, tg_worker_name, tg_worker_instance) -> tuple[str, dict[str, any]]:
         """
         :meta private:
         """
@@ -1615,7 +1615,7 @@ class multi_blade_row:
         try:
             turbo_data = tg_worker_instance.pytg.getTurboDomainData(prefix=tg_worker_name)
         except:
-            print(f"{tg_worker_instance} exception on __get_turbo_mesh_assembly__")
+            print(f"{tg_worker_instance} exception on __get_turbo_domain_assembly__")
             pass
         return (tg_worker_name, turbo_data)
     
