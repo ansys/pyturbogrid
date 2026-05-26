@@ -161,6 +161,7 @@ class multi_blade_row:
             turbogrid_location_type=self.turbogrid_location_type,
             port=self.pyturbogrid_saas_port,
             additional_kw_args=self.tg_kw_args,
+            # additional_args_str="-debug",
         )
         # print(f"MBR self.pyturbogrid_saas {self.pyturbogrid_saas}")
         self.init_style = InitStyle.NO_INIT
@@ -1144,7 +1145,8 @@ class multi_blade_row:
             tg_worker_instance.pytg = launch_turbogrid(
                 log_level=tg_log_level,
                 log_filename_suffix=f"{log_prefix}_{tginit_file_name}_{tg_worker_name}",
-                additional_kw_args=self.tg_kw_args,
+                additional_kw_args=self.tg_kw_args,                
+                # additional_args_str="-debug",
                 turbogrid_path=self.turbogrid_path,
                 turbogrid_location_type=self.turbogrid_location_type,
                 port=tg_port,
@@ -1271,7 +1273,8 @@ class multi_blade_row:
             tg_worker_instance.pytg = launch_turbogrid(
                 log_level=tg_log_level,
                 log_filename_suffix=f"{log_prefix}_{tginit_file_name}_{tg_worker_name}",
-                additional_kw_args=self.tg_kw_args,
+                additional_kw_args=self.tg_kw_args,                
+                # additional_args_str="-debug",
                 turbogrid_path=self.turbogrid_path,
                 turbogrid_location_type=self.turbogrid_location_type,
                 port=tg_port,
