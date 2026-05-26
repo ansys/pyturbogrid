@@ -268,7 +268,6 @@ class multi_blade_row:
         tg_log_level: PyTurboGrid.TurboGridLogLevel = PyTurboGrid.TurboGridLogLevel.INFO,
         blade_rows_to_mesh: list[str] = None,
     ):
-        print(f"init_blank_tginit {tginit_path} {tg_log_level} {blade_rows_to_mesh}")
         # import pprint
         tginit_name = os.path.basename(tginit_path)
         tginit_base_path = PurePath(tginit_path).parent.as_posix()
@@ -352,7 +351,6 @@ class multi_blade_row:
         tg_log_level: PyTurboGrid.TurboGridLogLevel = PyTurboGrid.TurboGridLogLevel.INFO,
         blade_rows_to_mesh: list[str] = None,
     ):
-        print(f"init_from_tginit {tginit_path=}")
         # import pprint
         tginit_name = os.path.basename(tginit_path)
         tginit_base_path = PurePath(tginit_path).parent.as_posix()
@@ -872,7 +870,6 @@ class multi_blade_row:
         The assembly can be opened directly in CFX-Pre (Meshes contain some topology.)
 
         """
-        print(f"save_meshes")
         with concurrent.futures.ThreadPoolExecutor(
             max_workers=len(self.tg_worker_instances)
         ) as executor:
