@@ -898,7 +898,7 @@ class multi_blade_row:
             ]
             done, not_done = concurrent.futures.wait(futures)
             return {future.result()[0]: future.result()[1] for future in done}
-        
+
     def get_turbo_domain_assembly(self) -> dict[str, any]:
         """
         Get the mesh data in a dictionary format for each blade row.
@@ -1143,7 +1143,7 @@ class multi_blade_row:
             tg_worker_instance.pytg = launch_turbogrid(
                 log_level=tg_log_level,
                 log_filename_suffix=f"{log_prefix}_{tginit_file_name}_{tg_worker_name}",
-                additional_kw_args=self.tg_kw_args,                
+                additional_kw_args=self.tg_kw_args,
                 # additional_args_str="-debug",
                 turbogrid_path=self.turbogrid_path,
                 turbogrid_location_type=self.turbogrid_location_type,
@@ -1271,7 +1271,7 @@ class multi_blade_row:
             tg_worker_instance.pytg = launch_turbogrid(
                 log_level=tg_log_level,
                 log_filename_suffix=f"{log_prefix}_{tginit_file_name}_{tg_worker_name}",
-                additional_kw_args=self.tg_kw_args,                
+                additional_kw_args=self.tg_kw_args,
                 # additional_args_str="-debug",
                 turbogrid_path=self.turbogrid_path,
                 turbogrid_location_type=self.turbogrid_location_type,
@@ -1604,8 +1604,10 @@ class multi_blade_row:
         except:
             pass
         return ec
-    
-    def __get_turbo_domain_assembly__( self, tg_worker_name, tg_worker_instance) -> tuple[str, dict[str, any]]:
+
+    def __get_turbo_domain_assembly__(
+        self, tg_worker_name, tg_worker_instance
+    ) -> tuple[str, dict[str, any]]:
         """
         :meta private:
         """
@@ -1616,7 +1618,7 @@ class multi_blade_row:
             print(f"{tg_worker_instance} exception on __get_turbo_domain_assembly__")
             pass
         return (tg_worker_name, turbo_data)
-    
+
     def __save_mesh__(
         self, tg_worker_name, tg_worker_instance, optional_prefix: str = None, file_format="def"
     ) -> str:
