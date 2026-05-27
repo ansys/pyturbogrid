@@ -69,14 +69,14 @@ tests = ["ansys-api-platform-instancemanagement (==1.0.0)", "grpcio-health-check
 
 [[package]]
 name = "ansys-sphinx-theme"
-version = "1.8.1"
+version = "1.8.2"
 description = "A theme devised by ANSYS, Inc. for Sphinx documentation."
 optional = false
 python-versions = "<4,>=3.10"
 groups = ["doc"]
 files = [
-    {file = "ansys_sphinx_theme-1.8.1-py3-none-any.whl", hash = "sha256:3fb47969df735857f3ed60c60acdf2c8a59275a7dc353a9e8c990b97b937741e"},
-    {file = "ansys_sphinx_theme-1.8.1.tar.gz", hash = "sha256:ddddd52adabda99dcb33b67d90f4480931fe2c82ab7c3da579931c0784556d02"},
+    {file = "ansys_sphinx_theme-1.8.2-py3-none-any.whl", hash = "sha256:cdc2553586700c3b5e9a594ccfa3255fdb6aefd7fc4431494f4c847754bf7718"},
+    {file = "ansys_sphinx_theme-1.8.2.tar.gz", hash = "sha256:73570863d8a4f5f723826723f44cf5666c4e9b443dbc66fd3640f12d4241b7c4"},
 ]
 
 [package.dependencies]
@@ -5029,4 +5029,4 @@ type = ["pytest-mypy"]
 [metadata]
 lock-version = "2.1"
 python-versions = ">=3.10,<4.0"
-content-hash = "0f8134aa6a41b3b61f971f7f8756e2ee627fa79f62d1cc9fe31cc5bbe94960d8"
+content-hash = "71a1d12dd091806554e40555262904cd33eff64e76c52b86319f2dada531a7a6"
