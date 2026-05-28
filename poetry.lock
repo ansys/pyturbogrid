@@ -3080,14 +3080,14 @@ files = [
 
 [[package]]
 name = "panel"
-version = "1.9.1"
+version = "1.9.2"
 description = "The powerful data exploration & web app framework for Python."
 optional = false
 python-versions = ">=3.10"
 groups = ["doc"]
 files = [
-    {file = "panel-1.9.1-py3-none-any.whl", hash = "sha256:19c5a61772ebfa7c37a86af7a1208cccc3fb4bc1416123fb305fb9beec197a08"},
-    {file = "panel-1.9.1.tar.gz", hash = "sha256:2e06294f9dcea6690c600fbcc8610976ca8a0b1531d1a49086267e1760075417"},
+    {file = "panel-1.9.2-py3-none-any.whl", hash = "sha256:7099ad4334c305d7e2654d46945d3117e63379f15d0b8635e67f3f825dbccd9b"},
+    {file = "panel-1.9.2.tar.gz", hash = "sha256:ede8daa7a2515a2f3b49f19ed9aff75fcef48d6d8c3b9df3a4ebf26a551a0407"},
 ]
 
 [package.dependencies]
@@ -5029,4 +5029,4 @@ type = ["pytest-mypy"]
 [metadata]
 lock-version = "2.1"
 python-versions = ">=3.10,<4.0"
-content-hash = "71a1d12dd091806554e40555262904cd33eff64e76c52b86319f2dada531a7a6"
+content-hash = "7e2db4debb325ebe987ec66ffcc6902c49c39d5ecbedc07ead9ede35299a445f"
