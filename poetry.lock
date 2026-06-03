@@ -94,14 +94,14 @@ changelog = ["PyYAML (>=6.0.3)", "sphinx-design (>=0.6.0)"]
 
 [[package]]
 name = "ansys-turbogrid-api"
-version = "0.7.5"
+version = "0.8.0"
 description = "A python wrapper for Ansys TurboGrid Service"
 optional = false
 python-versions = "<4.0,>=3.10"
 groups = ["main"]
 files = [
-    {file = "ansys_turbogrid_api-0.7.5-py3-none-any.whl", hash = "sha256:86b5bd29e4419da60667c587f4daa9ccd6434ca002ddac602d586427dc376af0"},
-    {file = "ansys_turbogrid_api-0.7.5.tar.gz", hash = "sha256:8983b8f7052d5eaa933296d0ba8af4ab72df11faa13d3019d50ed2461df01ce6"},
+    {file = "ansys_turbogrid_api-0.8.0-py3-none-any.whl", hash = "sha256:ed366e294e28941547237364255b6636962f2133dbca6f062ebfb38455d24208"},
+    {file = "ansys_turbogrid_api-0.8.0.tar.gz", hash = "sha256:be1d176ef344dad5c0129d4d9c7b602172293956535560f075ec363d08bafe82"},
 ]
 
 [package.dependencies]
@@ -3080,14 +3080,14 @@ files = [
 
 [[package]]
 name = "panel"
-version = "1.9.1"
+version = "1.9.3"
 description = "The powerful data exploration & web app framework for Python."
 optional = false
 python-versions = ">=3.10"
 groups = ["doc"]
 files = [
-    {file = "panel-1.9.1-py3-none-any.whl", hash = "sha256:19c5a61772ebfa7c37a86af7a1208cccc3fb4bc1416123fb305fb9beec197a08"},
-    {file = "panel-1.9.1.tar.gz", hash = "sha256:2e06294f9dcea6690c600fbcc8610976ca8a0b1531d1a49086267e1760075417"},
+    {file = "panel-1.9.3-py3-none-any.whl", hash = "sha256:46e8d82541b7ae47d2c2393dd746800b95fa7ad8eb545cc39ab5f366ba00a664"},
+    {file = "panel-1.9.3.tar.gz", hash = "sha256:4d7de30561e31674451ade5f029cddbec6156fd30f3e4cfd7da82f6ecfcbb98f"},
 ]
 
 [package.dependencies]
@@ -5029,4 +5029,4 @@ type = ["pytest-mypy"]
 [metadata]
 lock-version = "2.1"
 python-versions = ">=3.10,<4.0"
-content-hash = "71a1d12dd091806554e40555262904cd33eff64e76c52b86319f2dada531a7a6"
+content-hash = "4964c01c7d108d036c15aef811cf8978f47b7a26200711ca8387981d30610065"
