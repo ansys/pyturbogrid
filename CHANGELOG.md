@@ -1,5 +1,21 @@
 # Changelog
 
+## [0.8.0](https://github.com/ansys/pyturbogrid/compare/v0.7.0...v0.8.0) (2026-06-03)
+
+
+### Features
+
+* Get_turbo_domain_assembly from multi_blade_row ([#403](https://github.com/ansys/pyturbogrid/issues/403)) ([ea693a0](https://github.com/ansys/pyturbogrid/commit/ea693a0ad3a353652052346497814aa55d53bb44))
+
+
+### Build System
+
+* **deps:** Bump ansys-sphinx-theme from 1.8.1 to 1.8.2 ([#404](https://github.com/ansys/pyturbogrid/issues/404)) ([4d3a91b](https://github.com/ansys/pyturbogrid/commit/4d3a91b14d63e1ece4252973a98be4cc0037ad2c))
+* **deps:** Bump ansys-turbogrid-api from 0.7.5 to 0.8.0 ([#407](https://github.com/ansys/pyturbogrid/issues/407)) ([30d062c](https://github.com/ansys/pyturbogrid/commit/30d062ce036aa843bef80e89f95b6346ad804aaf))
+* **deps:** Bump panel from 1.9.0 to 1.9.1 ([#401](https://github.com/ansys/pyturbogrid/issues/401)) ([112df8e](https://github.com/ansys/pyturbogrid/commit/112df8e227e434c60c8e189f01eea558aeccd500))
+* **deps:** Bump panel from 1.9.1 to 1.9.2 ([#405](https://github.com/ansys/pyturbogrid/issues/405)) ([faa1119](https://github.com/ansys/pyturbogrid/commit/faa1119890a11521d33441a28f5237feb5d57963))
+* **deps:** Bump panel from 1.9.2 to 1.9.3 ([#406](https://github.com/ansys/pyturbogrid/issues/406)) ([2e20dab](https://github.com/ansys/pyturbogrid/commit/2e20dab9139fd90b4e1f47d5f16c85326a334dbf))
+
 ## [0.7.0](https://github.com/ansys/pyturbogrid/compare/v0.6.1...v0.7.0) (2026-05-21)
 
 
