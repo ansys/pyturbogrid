@@ -94,14 +94,14 @@ changelog = ["PyYAML (>=6.0.3)", "sphinx-design (>=0.6.0)"]
 
 [[package]]
 name = "ansys-turbogrid-api"
-version = "0.7.5"
+version = "0.8.0"
 description = "A python wrapper for Ansys TurboGrid Service"
 optional = false
 python-versions = "<4.0,>=3.10"
 groups = ["main"]
 files = [
-    {file = "ansys_turbogrid_api-0.7.5-py3-none-any.whl", hash = "sha256:86b5bd29e4419da60667c587f4daa9ccd6434ca002ddac602d586427dc376af0"},
-    {file = "ansys_turbogrid_api-0.7.5.tar.gz", hash = "sha256:8983b8f7052d5eaa933296d0ba8af4ab72df11faa13d3019d50ed2461df01ce6"},
+    {file = "ansys_turbogrid_api-0.8.0-py3-none-any.whl", hash = "sha256:ed366e294e28941547237364255b6636962f2133dbca6f062ebfb38455d24208"},
+    {file = "ansys_turbogrid_api-0.8.0.tar.gz", hash = "sha256:be1d176ef344dad5c0129d4d9c7b602172293956535560f075ec363d08bafe82"},
 ]
 
 [package.dependencies]
@@ -5029,4 +5029,4 @@ type = ["pytest-mypy"]
 [metadata]
 lock-version = "2.1"
 python-versions = ">=3.10,<4.0"
-content-hash = "7e2db4debb325ebe987ec66ffcc6902c49c39d5ecbedc07ead9ede35299a445f"
+content-hash = "1c2d42f8a40c7b3d3774a0cf3316d8773892f6636a2981bc4608ec594c2bd896"
