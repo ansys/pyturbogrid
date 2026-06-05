@@ -863,6 +863,33 @@ class multi_blade_row:
             ]
             concurrent.futures.wait(futures)
 
+    # { BR_NAME : {CCL_OBJ : "a=b, c=b"}}
+    def set_br_state(self, set_obj_param_list={str: [(str, str)]}):
+        print(f"set_br_state set_obj_param_list {set_obj_param_list}")
+        with concurrent.futures.ThreadPoolExecutor(
+            max_workers=len(self.tg_worker_instances)
+        ) as executor:
+            job = partial(self.__set_params__)
+            futures = [
+                executor.submit(job, self.tg_worker_instances[key], val)
+                for key, val in set_obj_param_list.items()
+            ]
+            concurrent.futures.wait(futures)
+
+    # { BR_NAME : {CCL_OBJ : ["a", "b"]}}
+    def get_br_state(self, get_obj_param_dict={str: {str: list[str]}}):
+        print(f"get_br_state get_obj_param_dict {get_obj_param_dict}")
+        with concurrent.futures.ThreadPoolExecutor(
+            max_workers=len(self.tg_worker_instances)
+        ) as executor:
+            job = partial(self.__get_params__)
+            futures = [
+                executor.submit(job, self.tg_worker_instances[key], val, key)
+                for key, val in get_obj_param_dict.items()
+            ]
+            done, not_done = concurrent.futures.wait(futures)
+            return dict(f.result() for f in done)
+
     def save_meshes(self, optional_prefix: str = None, file_format="def") -> list[str]:
         """
         Write out the .def files representing the entire blade row.
@@ -1687,3 +1714,29 @@ class multi_blade_row:
             variable=target_statistic, bin_divisions=custom_bin_limits, bin_units=bin_units
         )
         threadsafe_dict[tg_worker_name] = ms_hd
+
+    def __set_params__(self, tg_worker_instance, param_list: list[tuple[str, str]]):
+        """
+        :meta private:
+        """
+        tg_worker_instance.pytg.suspend(object="/GEOMETRY/MACHINE DATA")
+
+        for obj, param_val_pair in param_list:
+            tg_worker_instance.pytg.set_obj_param(object=obj, param_val_pairs=param_val_pair)
+
+        tg_worker_instance.pytg.unsuspend(object="/GEOMETRY/MACHINE DATA")
+
+    def __get_params__(self, tg_worker_instance, param_list: dict[str, list[str]], br_name: str):
+        from ansys.turbogrid.api.CCL.ccl_object_db import CCLObjectDB
+        from ansys.turbogrid.api.CCL.ccl_object import CCLObject
+
+        object_db = CCLObjectDB(tg_worker_instance.pytg)
+
+        out_dict = {}
+        for ccl_obj_path, param_list in param_list.items():
+            ccl_obj: CCLObject = object_db.get_object_by_path(ccl_obj_path)
+            ccl_results = out_dict.setdefault(ccl_obj_path, {})
+            for param in param_list:
+                ccl_results[param] = ccl_obj.get_value(param)
+
+        return br_name, out_dict
