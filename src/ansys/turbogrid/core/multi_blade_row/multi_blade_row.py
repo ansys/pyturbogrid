@@ -1727,8 +1727,8 @@ class multi_blade_row:
         tg_worker_instance.pytg.unsuspend(object="/GEOMETRY/MACHINE DATA")
 
     def __get_params__(self, tg_worker_instance, param_list: dict[str, list[str]], br_name: str):
-        from ansys.turbogrid.api.CCL.ccl_object_db import CCLObjectDB
         from ansys.turbogrid.api.CCL.ccl_object import CCLObject
+        from ansys.turbogrid.api.CCL.ccl_object_db import CCLObjectDB
 
         object_db = CCLObjectDB(tg_worker_instance.pytg)
 
