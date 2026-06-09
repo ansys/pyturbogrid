@@ -865,7 +865,7 @@ class multi_blade_row:
 
     # { BR_NAME : {CCL_OBJ : "a=b, c=b"}}
     def set_br_state(self, set_obj_param_list={str: [(str, str)]}):
-        print(f"set_br_state set_obj_param_list {set_obj_param_list}")
+        # print(f"set_br_state set_obj_param_list {set_obj_param_list}")
         with concurrent.futures.ThreadPoolExecutor(
             max_workers=len(self.tg_worker_instances)
         ) as executor:
@@ -878,7 +878,7 @@ class multi_blade_row:
 
     # { BR_NAME : {CCL_OBJ : ["a", "b"]}}
     def get_br_state(self, get_obj_param_dict={str: {str: list[str]}}):
-        print(f"get_br_state get_obj_param_dict {get_obj_param_dict}")
+        # print(f"get_br_state get_obj_param_dict {get_obj_param_dict}")
         with concurrent.futures.ThreadPoolExecutor(
             max_workers=len(self.tg_worker_instances)
         ) as executor:
@@ -1016,6 +1016,19 @@ class multi_blade_row:
         # print("show")
         p.show(None)
 
+    def get_primary_boundary_surface_dict(self) -> dict[str, dict[str, any]]:
+        results = {}
+        lock = threading.Lock()
+        with concurrent.futures.ThreadPoolExecutor(
+            max_workers=len(self.tg_worker_instances)
+        ) as executor:
+            job = partial(self.__write_boundary_polys__, results, lock)
+            futures = [
+                executor.submit(job, val, key) for key, val in self.tg_worker_instances.items()
+            ]
+            concurrent.futures.wait(futures)
+        return results
+
     def get_machine_boundary_surfaces(self) -> queue.Queue:
 
         # cache the surfaces based on an identical mesh stats readout
@@ -1032,20 +1045,14 @@ class multi_blade_row:
 
         # print("Mesh statistics have changed, regenerating...")
 
-        result_list = []
-        list_lock = threading.Lock()
-        with concurrent.futures.ThreadPoolExecutor(
-            max_workers=len(self.tg_worker_instances)
-        ) as executor:
-            job = partial(self.__write_boundary_polys__, result_list, list_lock)
-            futures = [executor.submit(job, val) for key, val in self.tg_worker_instances.items()]
-            concurrent.futures.wait(futures)
+        result_list = self.get_primary_boundary_surface_dict()
 
         threadsafe_queue: queue.Queue = queue.Queue()
         self.cached_blade_mesh_surfaces = result_list
         self.cached_blade_mesh_surfaces_stats = mesh_stats
-        for item in result_list:
-            threadsafe_queue.put(item)
+        for row_dict in result_list:
+            for row_mesh in row_dict:
+                threadsafe_queue.put(row_mesh)
         # print(f"number of passage meshes: {len(result_list)}")
         # Add theta mesh surfaces
         self.cached_sfp_mesh_surfaces = {}
@@ -1685,14 +1692,14 @@ class multi_blade_row:
         tg_worker_instance.pytg.wait_engine_ready()
 
     def __write_boundary_polys__(
-        self, result_list: list, list_lock: threading.Lock, tg_worker_instance
+        self, result_list: list, list_lock: threading.Lock, tg_worker_instance, br_name
     ):
         """
         :meta private:
         """
-        for b_m in tg_worker_instance.pytg.getBoundaryGeometry():
-            with list_lock:
-                result_list.append(b_m)
+        boundaries = tg_worker_instance.pytg.getBoundaryGeometry()
+        with list_lock:
+            result_list[br_name] = boundaries
 
     def __compile_mesh_statistics__(
         self, threadsafe_dict: dict[str, any], tg_worker_name, tg_worker_instance
