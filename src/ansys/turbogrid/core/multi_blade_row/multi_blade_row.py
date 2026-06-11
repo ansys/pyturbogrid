@@ -914,7 +914,7 @@ class multi_blade_row:
             done, not_done = concurrent.futures.wait(futures)
             return {f.result()[0]: f.result()[1] for f in done}
 
-    def get_turbo_coordinate_boundary_points(self) -> dict[str, any]:
+    def get_turbo_coordinates_boundary_points(self) -> dict[str, any]:
         """
         Get the mesh boundary points in a dictionary format for each blade row.
 
@@ -923,7 +923,7 @@ class multi_blade_row:
             max_workers=len(self.tg_worker_instances)
         ) as executor:
             futures = [
-                executor.submit(self.__get_turbo_coordinate_boundary_points__, key, val)
+                executor.submit(self.__get_turbo_coordinates_boundary_points__, key, val)
                 for key, val in self.tg_worker_instances.items()
             ]
             done, not_done = concurrent.futures.wait(futures)
