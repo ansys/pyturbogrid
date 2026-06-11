@@ -914,6 +914,21 @@ class multi_blade_row:
             done, not_done = concurrent.futures.wait(futures)
             return {f.result()[0]: f.result()[1] for f in done}
 
+    def get_turbo_coordinate_boundary_points(self) -> dict[str, any]:
+        """
+        Get the mesh boundary points in a dictionary format for each blade row.
+
+        """
+        with concurrent.futures.ThreadPoolExecutor(
+            max_workers=len(self.tg_worker_instances)
+        ) as executor:
+            futures = [
+                executor.submit(self.__get_turbo_coordinate_boundary_points__, key, val)
+                for key, val in self.tg_worker_instances.items()
+            ]
+            done, not_done = concurrent.futures.wait(futures)
+            return {f.result()[0]: f.result()[1] for f in done}
+
     def get_mesh_statistics_reporters(self) -> dict[str, any]:
         from ansys.turbogrid.core.mesh_statistics import mesh_statistics
 
@@ -1618,6 +1633,20 @@ class multi_blade_row:
             print(f"{tg_worker_instance} exception on __get_turbo_domain_assembly__")
             pass
         return (tg_worker_name, turbo_data)
+
+    def __get_turbo_coordinates_boundary_points__(
+        self, tg_worker_name, tg_worker_instance
+    ) -> tuple[str, dict[str, any]]:
+        """
+        :meta private:
+        """
+        boundary_points_data = {}
+        try:
+            boundary_points_data = tg_worker_instance.pytg.getTurboCoordinatesBoundaryPoints()
+        except:
+            print(f"{tg_worker_instance} exception on __get_turbo_coordinates_boundary_points__")
+            pass
+        return (tg_worker_name, boundary_points_data)
 
     def __save_mesh__(
         self, tg_worker_name, tg_worker_instance, optional_prefix: str = None, file_format="def"
