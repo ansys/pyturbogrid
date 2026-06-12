@@ -1029,6 +1029,19 @@ class multi_blade_row:
             concurrent.futures.wait(futures)
         return results
 
+    def get_turbo_surfaces_at_k_dict(self, br_k_dict: dict) -> dict[str, dict[str, any]]:
+        results = {}
+        lock = threading.Lock()
+        with concurrent.futures.ThreadPoolExecutor(
+            max_workers=len(self.tg_worker_instances)
+        ) as executor:
+            job = partial(self.__write_turbo_surfaces_polys__, results, lock, br_k_dict)
+            futures = [
+                executor.submit(job, val, key) for key, val in self.tg_worker_instances.items()
+            ]
+            concurrent.futures.wait(futures)
+        return results
+
     def get_machine_boundary_surfaces(self) -> queue.Queue:
 
         # cache the surfaces based on an identical mesh stats readout
@@ -1698,6 +1711,16 @@ class multi_blade_row:
         :meta private:
         """
         boundaries = tg_worker_instance.pytg.getBoundaryGeometry()
+        with list_lock:
+            result_list[br_name] = boundaries
+
+    def __write_turbo_surfaces_polys__(
+        self, result_list: list, list_lock: threading.Lock, br_k_dict, tg_worker_instance, br_name
+    ):
+        """
+        :meta private:
+        """
+        boundaries = tg_worker_instance.pytg.getTurboSurfaceAtK(br_k_dict[br_name])
         with list_lock:
             result_list[br_name] = boundaries
 
