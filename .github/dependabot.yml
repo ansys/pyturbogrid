@@ -61,7 +61,7 @@ updates:
     labels:
       - "maintenance"
       - "dependencies"
-    reviewers: 
+    assignees: 
       - "acohen-work"
       - "zlilek-work"      
     commit-message:
@@ -76,7 +76,7 @@ updates:
       - github-ansys-internal
     labels:
       - "maintenance"
-    reviewers: 
+    assignees: 
       - "acohen-work"
       - "zlilek-work"      
     commit-message:
