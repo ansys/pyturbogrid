@@ -1644,7 +1644,9 @@ class multi_blade_row:
         try:
             boundary_points_data = tg_worker_instance.pytg.getTurboCoordinatesBoundaryPoints()
         except Exception as e:
-            print(f"{tg_worker_instance} exception on __get_turbo_coordinates_boundary_points__: {e}")
+            print(
+                f"{tg_worker_instance} exception on __get_turbo_coordinates_boundary_points__: {e}"
+            )
             pass
         return (tg_worker_name, boundary_points_data)
 
