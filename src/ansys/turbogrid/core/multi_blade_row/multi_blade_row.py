@@ -928,7 +928,7 @@ class multi_blade_row:
             ]
             done, not_done = concurrent.futures.wait(futures)
             return {f.result()[0]: f.result()[1] for f in done}
-        
+
     def get_turbo_coordinates_BM_boundary_points(self) -> dict[str, any]:
         """
         Get the Turbo Transform boundary points in a dictionary format for each blade row.
@@ -1648,7 +1648,7 @@ class multi_blade_row:
             print(f"{tg_worker_instance} exception on __get_turbo_domain_assembly__")
             pass
         return (tg_worker_name, turbo_data)
-    
+
     def __get_turbo_coordinates_BM_boundary_curves__(
         self, tg_worker_name, tg_worker_instance
     ) -> tuple[str, dict[str, any]]:
@@ -1664,7 +1664,7 @@ class multi_blade_row:
             )
             pass
         return (tg_worker_name, boundary_curves_data)
-    
+
     def __get_turbo_coordinates_BM_boundary_points__(
         self, tg_worker_name, tg_worker_instance
     ) -> tuple[str, dict[str, any]]:
