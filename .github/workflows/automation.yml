@@ -37,7 +37,7 @@ jobs:
       PR_NUMBER: ${{ github.event.pull_request.number }}
       ACTOR: ${{ github.event.pull_request.user.login }}
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
       - name: Debug printouts
         run: |
           echo "Actor: \"$ACTOR\""
