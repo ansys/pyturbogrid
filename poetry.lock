@@ -94,14 +94,14 @@ changelog = ["PyYAML (>=6.0.3)", "sphinx-design (>=0.6.0)"]
 
 [[package]]
 name = "ansys-turbogrid-api"
-version = "0.8.0"
+version = "0.9.0"
 description = "A python wrapper for Ansys TurboGrid Service"
 optional = false
 python-versions = "<4.0,>=3.10"
 groups = ["main"]
 files = [
-    {file = "ansys_turbogrid_api-0.8.0-py3-none-any.whl", hash = "sha256:ed366e294e28941547237364255b6636962f2133dbca6f062ebfb38455d24208"},
-    {file = "ansys_turbogrid_api-0.8.0.tar.gz", hash = "sha256:be1d176ef344dad5c0129d4d9c7b602172293956535560f075ec363d08bafe82"},
+    {file = "ansys_turbogrid_api-0.9.0-py3-none-any.whl", hash = "sha256:7f499e5a8ea00fd03948aea547db3d05e30969709c6a4f9c83fcbbf75a7db963"},
+    {file = "ansys_turbogrid_api-0.9.0.tar.gz", hash = "sha256:17413126f02999536074f1ede016719888da14f7de9d42ce47eca07ad4401cab"},
 ]
 
 [package.dependencies]
@@ -3613,14 +3613,14 @@ diagrams = ["jinja2", "railroad-diagrams"]
 
 [[package]]
 name = "pytest"
-version = "9.0.3"
+version = "9.1.0"
 description = "pytest: simple powerful testing with Python"
 optional = false
 python-versions = ">=3.10"
 groups = ["test"]
 files = [
-    {file = "pytest-9.0.3-py3-none-any.whl", hash = "sha256:2c5efc453d45394fdd706ade797c0a81091eccd1d6e4bccfcd476e2b8e0ab5d9"},
-    {file = "pytest-9.0.3.tar.gz", hash = "sha256:b86ada508af81d19edeb213c681b1d48246c1a91d304c6c81a427674c17eb91c"},
+    {file = "pytest-9.1.0-py3-none-any.whl", hash = "sha256:8ebb0e7888bdf2bdfc602ec51f8f62d50200af37356c74e503c79a94f5c81f32"},
+    {file = "pytest-9.1.0.tar.gz", hash = "sha256:41dd9148c08072446394cefd3d79701701335a9f4cae69ba92e39f6c7f5c061c"},
 ]
 
 [package.dependencies]
@@ -5029,4 +5029,4 @@ type = ["pytest-mypy"]
 [metadata]
 lock-version = "2.1"
 python-versions = ">=3.10,<4.0"
-content-hash = "d257a5b93ac31ada87f1386bca074a23dcc4a11ed912579de20b351260f5fe76"
+content-hash = "07b00c99fb6f2cbea87e6b123e35925e96869b76b72597db81f965ae0c7ab267"
