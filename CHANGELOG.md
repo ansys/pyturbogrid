@@ -1,5 +1,24 @@
 # Changelog
 
+## [0.9.0](https://github.com/ansys/pyturbogrid/compare/v0.8.0...v0.9.0) (2026-06-18)
+
+
+### Features
+
+* Get_turbo_coordinates_boundary_points in multi_blade_row ([#413](https://github.com/ansys/pyturbogrid/issues/413)) ([cb7e58c](https://github.com/ansys/pyturbogrid/commit/cb7e58c19947a799487756353b3836214f482699))
+
+
+### Bug Fixes
+
+* Add direct CCL setter and getter functions ([#411](https://github.com/ansys/pyturbogrid/issues/411)) ([81475ad](https://github.com/ansys/pyturbogrid/commit/81475ade5d8028704df1713bb84e8f66e72e9528))
+
+
+### Build System
+
+* **deps:** Bump ansys-turbogrid-api from 0.8.0 to 0.9.0 ([#415](https://github.com/ansys/pyturbogrid/issues/415)) ([577060e](https://github.com/ansys/pyturbogrid/commit/577060ea6f229fb683f43efc4bc4325b775e999c))
+* **deps:** Bump notebook from 7.5.6 to 7.5.7 ([#409](https://github.com/ansys/pyturbogrid/issues/409)) ([14e1936](https://github.com/ansys/pyturbogrid/commit/14e193685c37eb58403ff269d595bf50fa6c3491))
+* **deps:** Bump pytest from 9.0.3 to 9.1.0 ([#414](https://github.com/ansys/pyturbogrid/issues/414)) ([fed5fde](https://github.com/ansys/pyturbogrid/commit/fed5fde467c69d491bee63b8273965ddc583680f))
+
 ## [0.8.0](https://github.com/ansys/pyturbogrid/compare/v0.7.0...v0.8.0) (2026-06-03)
 
 
