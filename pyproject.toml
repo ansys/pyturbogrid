@@ -4,7 +4,7 @@ build-backend = "poetry.core.masonry.api"
 
 [tool.poetry]
 name = "ansys-turbogrid-core"
-version = "0.8.0"
+version = "0.9.0"
 description = "A python wrapper for Ansys TurboGrid"
 readme = "README.rst"
 license = "MIT"
@@ -48,14 +48,14 @@ optional = true
 
 [tool.poetry.group.doc.dependencies]
 fabric = ">=3.2.3"
-ansys-sphinx-theme = ">=1.8.2"
+ansys-sphinx-theme = ">=1.9.0"
 autodocsumm = ">=0.2.15"
 ipyvtklink = ">=0.2.3"
 jupyter_sphinx = ">=0.5.3"
 jupytext = ">=1.19.3"
 nbconvert = ">=7.17.1"
 nbsphinx = ">=0.9.3"
-notebook = ">=7.5.7"
+notebook = ">=7.6.0"
 numpydoc = ">=1.7.0"
 panel = ">=1.9.3"
 Sphinx = "==8.1.3"

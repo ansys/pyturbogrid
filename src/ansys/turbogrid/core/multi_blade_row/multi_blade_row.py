@@ -863,6 +863,33 @@ class multi_blade_row:
             ]
             concurrent.futures.wait(futures)
 
+    # { BR_NAME : {CCL_OBJ : "a=b, c=b"}}
+    def set_br_state(self, set_obj_param_list={str: [(str, str)]}):
+        # print(f"set_br_state set_obj_param_list {set_obj_param_list}")
+        with concurrent.futures.ThreadPoolExecutor(
+            max_workers=len(self.tg_worker_instances)
+        ) as executor:
+            job = partial(self.__set_params__)
+            futures = [
+                executor.submit(job, self.tg_worker_instances[key], val)
+                for key, val in set_obj_param_list.items()
+            ]
+            concurrent.futures.wait(futures)
+
+    # { BR_NAME : {CCL_OBJ : ["a", "b"]}}
+    def get_br_state(self, get_obj_param_dict={str: {str: list[str]}}):
+        # print(f"get_br_state get_obj_param_dict {get_obj_param_dict}")
+        with concurrent.futures.ThreadPoolExecutor(
+            max_workers=len(self.tg_worker_instances)
+        ) as executor:
+            job = partial(self.__get_params__)
+            futures = [
+                executor.submit(job, self.tg_worker_instances[key], val, key)
+                for key, val in get_obj_param_dict.items()
+            ]
+            done, not_done = concurrent.futures.wait(futures)
+            return dict(f.result() for f in done)
+
     def save_meshes(self, optional_prefix: str = None, file_format="def") -> list[str]:
         """
         Write out the .def files representing the entire blade row.
@@ -1019,6 +1046,32 @@ class multi_blade_row:
         # print("show")
         p.show(None)
 
+    def get_primary_boundary_surface_dict(self) -> dict[str, dict[str, any]]:
+        results = {}
+        lock = threading.Lock()
+        with concurrent.futures.ThreadPoolExecutor(
+            max_workers=len(self.tg_worker_instances)
+        ) as executor:
+            job = partial(self.__write_boundary_polys__, results, lock)
+            futures = [
+                executor.submit(job, val, key) for key, val in self.tg_worker_instances.items()
+            ]
+            concurrent.futures.wait(futures)
+        return results
+
+    def get_turbo_surfaces_at_k_dict(self, br_k_dict: dict) -> dict[str, dict[str, any]]:
+        results = {}
+        lock = threading.Lock()
+        with concurrent.futures.ThreadPoolExecutor(
+            max_workers=len(self.tg_worker_instances)
+        ) as executor:
+            job = partial(self.__write_turbo_surfaces_polys__, results, lock, br_k_dict)
+            futures = [
+                executor.submit(job, val, key) for key, val in self.tg_worker_instances.items()
+            ]
+            concurrent.futures.wait(futures)
+        return results
+
     def get_machine_boundary_surfaces(self) -> queue.Queue:
 
         # cache the surfaces based on an identical mesh stats readout
@@ -1035,20 +1088,14 @@ class multi_blade_row:
 
         # print("Mesh statistics have changed, regenerating...")
 
-        result_list = []
-        list_lock = threading.Lock()
-        with concurrent.futures.ThreadPoolExecutor(
-            max_workers=len(self.tg_worker_instances)
-        ) as executor:
-            job = partial(self.__write_boundary_polys__, result_list, list_lock)
-            futures = [executor.submit(job, val) for key, val in self.tg_worker_instances.items()]
-            concurrent.futures.wait(futures)
+        result_list = self.get_primary_boundary_surface_dict()
 
         threadsafe_queue: queue.Queue = queue.Queue()
         self.cached_blade_mesh_surfaces = result_list
         self.cached_blade_mesh_surfaces_stats = mesh_stats
-        for item in result_list:
-            threadsafe_queue.put(item)
+        for row_dict in result_list:
+            for row_mesh in row_dict:
+                threadsafe_queue.put(row_mesh)
         # print(f"number of passage meshes: {len(result_list)}")
         # Add theta mesh surfaces
         self.cached_sfp_mesh_surfaces = {}
@@ -1722,14 +1769,24 @@ class multi_blade_row:
         tg_worker_instance.pytg.wait_engine_ready()
 
     def __write_boundary_polys__(
-        self, result_list: list, list_lock: threading.Lock, tg_worker_instance
+        self, result_list: list, list_lock: threading.Lock, tg_worker_instance, br_name
     ):
         """
         :meta private:
         """
-        for b_m in tg_worker_instance.pytg.getBoundaryGeometry():
-            with list_lock:
-                result_list.append(b_m)
+        boundaries = tg_worker_instance.pytg.getBoundaryGeometry()
+        with list_lock:
+            result_list[br_name] = boundaries
+
+    def __write_turbo_surfaces_polys__(
+        self, result_list: list, list_lock: threading.Lock, br_k_dict, tg_worker_instance, br_name
+    ):
+        """
+        :meta private:
+        """
+        boundaries = tg_worker_instance.pytg.getTurboSurfaceAtK(br_k_dict[br_name])
+        with list_lock:
+            result_list[br_name] = boundaries
 
     def __compile_mesh_statistics__(
         self, threadsafe_dict: dict[str, any], tg_worker_name, tg_worker_instance
@@ -1751,3 +1808,29 @@ class multi_blade_row:
             variable=target_statistic, bin_divisions=custom_bin_limits, bin_units=bin_units
         )
         threadsafe_dict[tg_worker_name] = ms_hd
+
+    def __set_params__(self, tg_worker_instance, param_list: list[tuple[str, str]]):
+        """
+        :meta private:
+        """
+        tg_worker_instance.pytg.suspend(object="/GEOMETRY/MACHINE DATA")
+
+        for obj, param_val_pair in param_list:
+            tg_worker_instance.pytg.set_obj_param(object=obj, param_val_pairs=param_val_pair)
+
+        tg_worker_instance.pytg.unsuspend(object="/GEOMETRY/MACHINE DATA")
+
+    def __get_params__(self, tg_worker_instance, param_list: dict[str, list[str]], br_name: str):
+        from ansys.turbogrid.api.CCL.ccl_object import CCLObject
+        from ansys.turbogrid.api.CCL.ccl_object_db import CCLObjectDB
+
+        object_db = CCLObjectDB(tg_worker_instance.pytg)
+
+        out_dict = {}
+        for ccl_obj_path, param_list in param_list.items():
+            ccl_obj: CCLObject = object_db.get_object_by_path(ccl_obj_path)
+            ccl_results = out_dict.setdefault(ccl_obj_path, {})
+            for param in param_list:
+                ccl_results[param] = ccl_obj.get_value(param)
+
+        return br_name, out_dict
