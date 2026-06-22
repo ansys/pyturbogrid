@@ -28,6 +28,7 @@
 # or multiple rows in parallel.
 """Module for working on a multi blade row turbomachinery case using PyTurboGrid instances in parallel."""
 
+import atexit
 import concurrent.futures
 from enum import IntEnum
 from functools import partial
@@ -165,10 +166,11 @@ class multi_blade_row:
         )
         # print(f"MBR self.pyturbogrid_saas {self.pyturbogrid_saas}")
         self.init_style = InitStyle.NO_INIT
+        atexit.register(self.quit)
 
     def __del__(self):
         self.quit()
-
+    
     def quit(self):
         """This method will quit all TG instances."""
         # debug printout for here and for container helpers
