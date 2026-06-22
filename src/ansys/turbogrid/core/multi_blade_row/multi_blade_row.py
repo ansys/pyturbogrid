@@ -170,7 +170,7 @@ class multi_blade_row:
 
     def __del__(self):
         self.quit()
-    
+
     def quit(self):
         """This method will quit all TG instances."""
         # debug printout for here and for container helpers
