@@ -14,3 +14,4 @@
 * [Revathy Venugopal](https://github.com/Revathyvenugopal162)
 * [Roberto Pastor Muela](https://github.com/RobPasMue)
 * [Sarah Wilson](https://github.com/swilson-work)
+* [Sébastien Morais](https://github.com/SMoraisAnsys)
