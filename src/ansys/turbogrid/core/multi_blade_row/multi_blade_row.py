@@ -915,8 +915,7 @@ class multi_blade_row:
             max_workers=len(self.tg_worker_instances)
         ) as executor:
             futures = [
-                executor.submit(__suspend__, val)
-                for key, val in self.tg_worker_instances.items()
+                executor.submit(__suspend__, val) for key, val in self.tg_worker_instances.items()
             ]
             done, not_done = concurrent.futures.wait(futures)
             for f in done:
@@ -931,13 +930,12 @@ class multi_blade_row:
             max_workers=len(self.tg_worker_instances)
         ) as executor:
             futures = [
-                executor.submit(__unsuspend__, val)
-                for key, val in self.tg_worker_instances.items()
+                executor.submit(__unsuspend__, val) for key, val in self.tg_worker_instances.items()
             ]
             done, not_done = concurrent.futures.wait(futures)
             for f in done:
                 f.result()
-            
+
     def save_meshes(self, optional_prefix: str = None, file_format="def") -> list[str]:
         """
         Write out the .def files representing the entire blade row.
