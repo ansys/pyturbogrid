@@ -318,6 +318,9 @@ class multi_blade_row:
             ]
             concurrent.futures.wait(futures)
 
+        if os.getenv("TMM_PROFILING", "").lower() in ("1", "true", "yes", "on"):
+            print(f"init_blank_tginit: {timings}")
+
     def read_tginit_into_blank(
         self,
         tginit_path: str,
@@ -343,6 +346,9 @@ class multi_blade_row:
                 executor.submit(job, key, val) for key, val in self.tg_worker_instances.items()
             ]
             concurrent.futures.wait(futures)
+
+        if os.getenv("TMM_PROFILING", "").lower() in ("1", "true", "yes", "on"):
+            print(f"read_tginit_into_blank: {timings}")
 
         self.init_style = InitStyle.TGInit
         self.tginit_path = tginit_path
@@ -697,6 +703,15 @@ class multi_blade_row:
             name: br.pytg.getAvailableDomains() for name, br in self.tg_worker_instances.items()
         }
 
+    def get_valid_topology_choices(self) -> dict[str, list[str]]:
+        """
+        Gets the valid topology choices for each blade row.
+        """
+        return {
+            name: br.pytg.query_valid_topology_choices()
+            for name, br in self.tg_worker_instances.items()
+        }
+
     def get_inlet_outlet_parametric_positions(self) -> dict:
         import time
 
@@ -891,6 +906,35 @@ class multi_blade_row:
             ]
             done, not_done = concurrent.futures.wait(futures)
             return dict(f.result() for f in done)
+
+    def suspend_br_scheduler(self, scheduler_object_path: str):
+        def __suspend__(worker):
+            worker.pytg.suspend(object=scheduler_object_path)
+
+        with concurrent.futures.ThreadPoolExecutor(
+            max_workers=len(self.tg_worker_instances)
+        ) as executor:
+            futures = [
+                executor.submit(__suspend__, val) for key, val in self.tg_worker_instances.items()
+            ]
+            done, not_done = concurrent.futures.wait(futures)
+            for f in done:
+                f.result()
+
+    def unsuspend_br_scheduler(self, scheduler_object_path: str):
+
+        def __unsuspend__(worker):
+            worker.pytg.unsuspend(object=scheduler_object_path)
+
+        with concurrent.futures.ThreadPoolExecutor(
+            max_workers=len(self.tg_worker_instances)
+        ) as executor:
+            futures = [
+                executor.submit(__unsuspend__, val) for key, val in self.tg_worker_instances.items()
+            ]
+            done, not_done = concurrent.futures.wait(futures)
+            for f in done:
+                f.result()
 
     def save_meshes(self, optional_prefix: str = None, file_format="def") -> list[str]:
         """
@@ -1233,8 +1277,8 @@ class multi_blade_row:
             t2 = time.time()
             tg_worker_instance.pytg.block_each_message = True
 
-            timings[tg_worker_name + "t0t1"] = round(t1 - t0)
-            timings[tg_worker_name + "t1t2"] = round(t2 - t1)
+            # timings[tg_worker_name + "t0t1"] = round(t1 - t0)
+            # timings[tg_worker_name + "t1t2"] = round(t2 - t1)
             timings[tg_worker_name + "total"] = round(t2 - t0)
         except Exception as e:
             print(f"{tg_worker_instance} exception on __launch_instances_blank__: {e}")
@@ -1590,10 +1634,10 @@ class multi_blade_row:
         tg_worker_instance,
     ):
         try:
+            t0 = time.time()
             tginit_name = os.path.basename(tginit_file_path)
             tginit_path = os.path.dirname(tginit_file_path)
             tginit_file_name, tginit_file_extension = os.path.splitext(tginit_name)
-            t2 = time.time()
             if (
                 self.turbogrid_location_type
                 == PyTurboGrid.TurboGridLocationType.TURBOGRID_RUNNING_CONTAINER
@@ -1618,14 +1662,7 @@ class multi_blade_row:
                 )
                 # print(f"files transferred")
 
-            t3 = time.time()
-            tg_worker_instance.pytg.set_obj_param(
-                object="/GEOMETRY/INLET", param_val_pairs="Opening Mode = Parametric"
-            )
-            tg_worker_instance.pytg.set_obj_param(
-                object="/GEOMETRY/OUTLET", param_val_pairs="Opening Mode = Parametric"
-            )
-            t4 = time.time()
+            t1 = time.time()
             tg_worker_instance.pytg.read_tginit(
                 path=(
                     tginit_file_path
@@ -1637,20 +1674,10 @@ class multi_blade_row:
                 autoregions=True,
                 includemesh=False,
             )
-            t5 = time.time()
-            # tg_worker_instance.pytg.set_obj_param(
-            #     object="/TOPOLOGY SET", param_val_pairs="ATM Stop After Main Layers=True"
-            # )
-            tg_worker_instance.pytg.unsuspend(object="/TOPOLOGY SET")
-            t6 = time.time()
-            # av_bg_face_area = tg_worker_instance.pytg.query_average_background_face_area()
-            # print(f"{tg_worker_name=} {av_bg_face_area=}")
-            end_time = time.time()
-            timings[tg_worker_name + "t2t3"] = round(t3 - t2)
-            timings[tg_worker_name + "t3t4"] = round(t4 - t3)
-            timings[tg_worker_name + "t4t5"] = round(t5 - t4)
-            timings[tg_worker_name + "t5t6"] = round(t6 - t5)
-            timings[tg_worker_name + "total"] = round(t6 - t2)
+            t2 = time.time()
+            timings[tg_worker_name + "container"] = round(t1 - t0)
+            timings[tg_worker_name + "read_tginit"] = round(t2 - t1)
+            timings[tg_worker_name + "total"] = round(t2 - t0)
         except Exception as e:
             print(f"{tg_worker_instance} exception on __launch_instances__: {e}")
             print(f"{tg_worker_instance} traceback: {traceback.extract_tb(e.__traceback__)}")
@@ -1815,12 +1842,8 @@ class multi_blade_row:
         """
         :meta private:
         """
-        tg_worker_instance.pytg.suspend(object="/GEOMETRY/MACHINE DATA")
-
         for obj, param_val_pair in param_list:
             tg_worker_instance.pytg.set_obj_param(object=obj, param_val_pairs=param_val_pair)
-
-        tg_worker_instance.pytg.unsuspend(object="/GEOMETRY/MACHINE DATA")
 
     def __get_params__(self, tg_worker_instance, param_list: dict[str, list[str]], br_name: str):
         from ansys.turbogrid.api.CCL.ccl_object import CCLObject
