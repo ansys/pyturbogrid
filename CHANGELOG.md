@@ -1,5 +1,19 @@
 # Changelog
 
+## [0.9.1](https://github.com/ansys/pyturbogrid/compare/v0.9.0...v0.9.1) (2026-06-29)
+
+
+### Bug Fixes
+
+* Improve ctrl-c exit ([#423](https://github.com/ansys/pyturbogrid/issues/423)) ([fa73c11](https://github.com/ansys/pyturbogrid/commit/fa73c11e223c5b8d10fd3f76aa4be4ebceda5508))
+
+
+### Build System
+
+* **deps:** Bump ansys-sphinx-theme from 1.8.2 to 1.9.0 ([#418](https://github.com/ansys/pyturbogrid/issues/418)) ([e9ede0a](https://github.com/ansys/pyturbogrid/commit/e9ede0ab4b25c9970651430be4db47e02fe51e33))
+* **deps:** Bump ansys-turbogrid-api from 0.9.0 to 0.9.1 ([#425](https://github.com/ansys/pyturbogrid/issues/425)) ([082f5f4](https://github.com/ansys/pyturbogrid/commit/082f5f4e0e0e9434077931a22a91607960fc82d1))
+* **deps:** Bump notebook from 7.5.7 to 7.6.0 ([#417](https://github.com/ansys/pyturbogrid/issues/417)) ([8e330d4](https://github.com/ansys/pyturbogrid/commit/8e330d4bb86a9ec78dfbb601e1f6730ba35ddfec))
+
 ## [0.9.0](https://github.com/ansys/pyturbogrid/compare/v0.8.0...v0.9.0) (2026-06-18)
 
 
