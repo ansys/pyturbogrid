@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.9.2](https://github.com/ansys/pyturbogrid/compare/v0.9.1...v0.9.2) (2026-07-20)
+
+
+### Build System
+
+* **deps:** Bump ansys-turbogrid-api from 0.9.1 to 0.10.0 ([#429](https://github.com/ansys/pyturbogrid/issues/429)) ([652b906](https://github.com/ansys/pyturbogrid/commit/652b9065c89d783ddff5be835f37dd85a76282eb))
+
 ## [0.9.1](https://github.com/ansys/pyturbogrid/compare/v0.9.0...v0.9.1) (2026-06-29)
 
 
