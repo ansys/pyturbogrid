@@ -62,7 +62,7 @@ updates:
       - "maintenance"
       - "dependencies"
     assignees: 
-      - "acohen-work"
+      - "Acohen-work"
       - "zlilek-work"      
     commit-message:
       prefix: "build(deps):"
@@ -77,7 +77,7 @@ updates:
     labels:
       - "maintenance"
     assignees: 
-      - "acohen-work"
+      - "Acohen-work"
       - "zlilek-work"      
     commit-message:
       prefix: "chore(actions):"
