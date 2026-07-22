@@ -113,6 +113,8 @@ class multi_blade_row:
     log_prefix: str
 
     # Consider passing in the filename (whether ndf or tginit) as initializing as raii
+    # Note that if saas_server is false, many functionalities will not be possible
+    # and many methods will throw an exception. Only for advanced usage.
     def __init__(
         self,
         turbogrid_location_type=PyTurboGrid.TurboGridLocationType.TURBOGRID_INSTALL,
@@ -121,6 +123,7 @@ class multi_blade_row:
         tg_kw_args={},
         log_prefix: str = "",
         log_level=PyTurboGrid.TurboGridLogLevel.INFO,
+        saas_server: bool = True,
     ):
         """
         Initialize the MBR object
@@ -154,16 +157,18 @@ class multi_blade_row:
                 self.tg_container_launch_settings["container_env_dict"],
             )
             self.pyturbogrid_saas_port = self.pyturbogrid_saas_execution_control.socket_port
-
-        self.pyturbogrid_saas = launch_turbogrid(
-            log_level=log_level,
-            log_filename_suffix=self.log_prefix + "_saas",
-            turbogrid_path=self.turbogrid_path,
-            turbogrid_location_type=self.turbogrid_location_type,
-            port=self.pyturbogrid_saas_port,
-            additional_kw_args=self.tg_kw_args,
-            # additional_args_str="-debug",
-        )
+        if saas_server:
+            self.pyturbogrid_saas = launch_turbogrid(
+                log_level=log_level,
+                log_filename_suffix=self.log_prefix + "_saas",
+                turbogrid_path=self.turbogrid_path,
+                turbogrid_location_type=self.turbogrid_location_type,
+                port=self.pyturbogrid_saas_port,
+                additional_kw_args=self.tg_kw_args,
+                # additional_args_str="-debug",
+            )
+        else:
+            self.pyturbogrid_saas = None
         # print(f"MBR self.pyturbogrid_saas {self.pyturbogrid_saas}")
         self.init_style = InitStyle.NO_INIT
         atexit.register(self.quit)
