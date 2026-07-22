@@ -1,5 +1,14 @@
 # Changelog
 
+## [0.9.3](https://github.com/ansys/pyturbogrid/compare/v0.9.2...v0.9.3) (2026-07-22)
+
+
+### Build System
+
+* **deps:** Bump ansys-turbogrid-api from 0.10.0 to 0.10.1 ([#436](https://github.com/ansys/pyturbogrid/issues/436)) ([93159de](https://github.com/ansys/pyturbogrid/commit/93159defa99f3b96eb16f2bc5e5c9317272c9248))
+* **deps:** Bump jupytext from 1.19.3 to 1.19.5 ([#433](https://github.com/ansys/pyturbogrid/issues/433)) ([f7390ed](https://github.com/ansys/pyturbogrid/commit/f7390ed6b1c129d2710fbfe4d2e680a6396d79ba))
+* **deps:** Bump notebook from 7.6.0 to 7.6.1 ([#435](https://github.com/ansys/pyturbogrid/issues/435)) ([714f712](https://github.com/ansys/pyturbogrid/commit/714f7128bfc489f7641700be5d1b2c7f984b5e06))
+
 ## [0.9.2](https://github.com/ansys/pyturbogrid/compare/v0.9.1...v0.9.2) (2026-07-20)
 
 
