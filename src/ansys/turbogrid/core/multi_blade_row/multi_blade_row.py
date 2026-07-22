@@ -143,21 +143,21 @@ class multi_blade_row:
         self.turbogrid_path = turbogrid_path
         self.tg_kw_args = tg_kw_args
         self.log_prefix = log_prefix
-        if (
-            self.turbogrid_location_type
-            == PyTurboGrid.TurboGridLocationType.TURBOGRID_RUNNING_CONTAINER
-        ):
-            self.pyturbogrid_saas_execution_control = launch_turbogrid_container(
-                self.tg_container_launch_settings["cfxtg_command_name"],
-                self.tg_container_launch_settings["image_name"],
-                self.tg_container_launch_settings["container_name"],
-                self.tg_container_launch_settings["cfx_version"],
-                self.tg_container_launch_settings["license_file"],
-                self.tg_container_launch_settings["keep_stopped_containers"],
-                self.tg_container_launch_settings["container_env_dict"],
-            )
-            self.pyturbogrid_saas_port = self.pyturbogrid_saas_execution_control.socket_port
         if saas_server:
+            if (
+                self.turbogrid_location_type
+                == PyTurboGrid.TurboGridLocationType.TURBOGRID_RUNNING_CONTAINER
+            ):
+                self.pyturbogrid_saas_execution_control = launch_turbogrid_container(
+                    self.tg_container_launch_settings["cfxtg_command_name"],
+                    self.tg_container_launch_settings["image_name"],
+                    self.tg_container_launch_settings["container_name"],
+                    self.tg_container_launch_settings["cfx_version"],
+                    self.tg_container_launch_settings["license_file"],
+                    self.tg_container_launch_settings["keep_stopped_containers"],
+                    self.tg_container_launch_settings["container_env_dict"],
+                )
+                self.pyturbogrid_saas_port = self.pyturbogrid_saas_execution_control.socket_port
             self.pyturbogrid_saas = launch_turbogrid(
                 log_level=log_level,
                 log_filename_suffix=self.log_prefix + "_saas",
@@ -169,6 +169,7 @@ class multi_blade_row:
             )
         else:
             self.pyturbogrid_saas = None
+            self.pyturbogrid_saas_execution_control = None
         # print(f"MBR self.pyturbogrid_saas {self.pyturbogrid_saas}")
         self.init_style = InitStyle.NO_INIT
         atexit.register(self.quit)
