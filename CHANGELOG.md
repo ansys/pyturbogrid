@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.9.4](https://github.com/ansys/pyturbogrid/compare/v0.9.3...v0.9.4) (2026-07-24)
+
+
+### Bug Fixes
+
+* Make mrb's saas optional (for tmm) ([#434](https://github.com/ansys/pyturbogrid/issues/434)) ([884529b](https://github.com/ansys/pyturbogrid/commit/884529b1eacfb2d3de18fd868f708dd562ac7266))
+
 ## [0.9.3](https://github.com/ansys/pyturbogrid/compare/v0.9.2...v0.9.3) (2026-07-22)
 
 
