@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.9.5](https://github.com/ansys/pyturbogrid/compare/v0.9.4...v0.9.5) (2026-08-21)
+
+
+### Build System
+
+* **deps:** Bump notebook from 7.6.1 to 7.6.2 ([#444](https://github.com/ansys/pyturbogrid/issues/444)) ([a276720](https://github.com/ansys/pyturbogrid/commit/a27672089423e9e1c24fe22edaaf8a1c592f2562))
+
 ## [0.9.4](https://github.com/ansys/pyturbogrid/compare/v0.9.3...v0.9.4) (2026-07-24)
 
 
