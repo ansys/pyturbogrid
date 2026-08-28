@@ -1,5 +1,20 @@
 # Changelog
 
+## [0.9.5](https://github.com/ansys/pyturbogrid/compare/v0.9.4...v0.9.5) (2026-08-28)
+
+
+### Bug Fixes
+
+* Pin private release to v10 ([63d6027](https://github.com/ansys/pyturbogrid/commit/63d602790dabd5d02ff4c56c5b128007755c1576))
+
+
+### Build System
+
+* **deps:** Bump importlib-metadata from 9.0.0 to 9.0.1 ([#452](https://github.com/ansys/pyturbogrid/issues/452)) ([6227caf](https://github.com/ansys/pyturbogrid/commit/6227cafdf8409cc2a33e388585f56d4b4c035eb0))
+* **deps:** Bump notebook from 7.6.1 to 7.6.2 ([#444](https://github.com/ansys/pyturbogrid/issues/444)) ([a276720](https://github.com/ansys/pyturbogrid/commit/a27672089423e9e1c24fe22edaaf8a1c592f2562))
+* **deps:** Bump panel from 1.9.3 to 1.9.4 ([#449](https://github.com/ansys/pyturbogrid/issues/449)) ([cba89a1](https://github.com/ansys/pyturbogrid/commit/cba89a12e4a9a09ec659de466c05b8d474a485f5))
+* **deps:** Bump sphinx-autoapi from 3.7.0 to 3.8.1 ([#451](https://github.com/ansys/pyturbogrid/issues/451)) ([ed7c34e](https://github.com/ansys/pyturbogrid/commit/ed7c34e2c8f2831c8184e7eb85e6cfff33b353ef))
+
 ## [0.9.4](https://github.com/ansys/pyturbogrid/compare/v0.9.3...v0.9.4) (2026-07-24)
 
 
