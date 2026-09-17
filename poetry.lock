@@ -4364,14 +4364,14 @@ rtd = ["ipython", "myst-nb", "sphinx", "sphinx-book-theme", "sphinx-examples"]
 
 [[package]]
 name = "sphinx-gallery"
-version = "0.21.0"
+version = "0.22.0"
 description = "A Sphinx extension that builds an HTML gallery of examples from any set of Python scripts."
 optional = false
 python-versions = ">=3.10"
 groups = ["doc"]
 files = [
-    {file = "sphinx_gallery-0.21.0-py3-none-any.whl", hash = "sha256:f37bea4012f1cd7439c7782081e4259945207cf179e79b81330a6db3b18bca8b"},
-    {file = "sphinx_gallery-0.21.0.tar.gz", hash = "sha256:72a7734ad9100878345b8b65c249148cc0f1cd0e274adf3e3900214e4c2c5bee"},
+    {file = "sphinx_gallery-0.22.0-py3-none-any.whl", hash = "sha256:2adea49f00b5a5a65f4a0141bb6a5bd0b9c2f0e76ca1483477424e2295584ad4"},
+    {file = "sphinx_gallery-0.22.0.tar.gz", hash = "sha256:03392d30e3a561b493e728c776799238b484c1648b2ed1a04182831ae8d7d7ce"},
 ]
 
 [package.dependencies]
@@ -4380,10 +4380,10 @@ sphinx = ">=6"
 
 [package.extras]
 animations = ["sphinxcontrib-video"]
-dev = ["absl-py", "graphviz", "intersphinx-registry", "ipython", "joblib", "jupyterlite-sphinx (>=0.17.1)", "lxml", "matplotlib", "mypy", "numpy", "packaging", "plotly", "pydata-sphinx-theme", "pytest", "pytest-coverage", "seaborn", "sphinx-design", "sphinxcontrib-video", "statsmodels", "types-docutils", "types-pillow", "types-pygments"]
+dev = ["absl-py", "graphviz", "intersphinx-registry", "ipython", "joblib", "jupyterlite-sphinx (>=0.17.1)", "lxml", "matplotlib", "numpy", "packaging", "plotly", "pydata-sphinx-theme", "pytest", "pytest-coverage", "seaborn", "sphinx-design", "sphinxcontrib-video", "statsmodels", "threadpoolctl", "ty"]
 jupyterlite = ["jupyterlite-sphinx"]
 parallel = ["joblib"]
-recommender = ["numpy"]
+recommender = ["numpy", "threadpoolctl"]
 show-api-usage = ["graphviz"]
 show-memory = ["memory-profiler"]
 
@@ -5013,4 +5013,4 @@ type = ["pytest-mypy"]
 [metadata]
 lock-version = "2.1"
 python-versions = ">=3.10,<4.0"
-content-hash = "d69bec080bc021672a4e83466f71d4db7612104fc58b6932920698c693fa7d13"
+content-hash = "716e8a5e0f65f67022e99a4e9e42e14bdbfa8f75badd742e2416f5304899de01"
