@@ -1,0 +1,6 @@
+get\_domain\_label
+==================
+
+.. currentmodule:: ansys.turbogrid.core.mesh_statistics.mesh_statistics
+
+.. automethod:: MeshStatistics.get_domain_label
