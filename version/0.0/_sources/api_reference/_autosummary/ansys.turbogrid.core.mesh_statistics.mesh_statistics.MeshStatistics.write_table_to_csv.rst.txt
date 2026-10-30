@@ -1,0 +1,6 @@
+write\_table\_to\_csv
+=====================
+
+.. currentmodule:: ansys.turbogrid.core.mesh_statistics.mesh_statistics
+
+.. automethod:: MeshStatistics.write_table_to_csv
