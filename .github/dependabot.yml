@@ -47,6 +47,8 @@ updates:
   # Registries entry required for pip private registries
   # https://docs.github.com/en/code-security/dependabot/dependabot-version-updates/configuration-options-for-the-dependabot.yml-file#insecure-external-code-execution
   - package-ecosystem: "pip"
+    cooldown:
+      default-days: 10 # Fallback cooldown if no specific rule applies
     target-branch: "main"
     versioning-strategy: "increase"
     directory: "/"
@@ -68,6 +70,8 @@ updates:
       prefix: "build(deps):"
 
   - package-ecosystem: "github-actions"
+    cooldown:
+      default-days: 10 # Fallback cooldown if no specific rule applies
     target-branch: "main"
     directory: "/"
     schedule:
