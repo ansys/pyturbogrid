@@ -1,0 +1,52 @@
+﻿MeshStatistics
+==============
+
+.. currentmodule:: ansys.turbogrid.core.mesh_statistics.mesh_statistics
+
+.. autoclass:: MeshStatistics
+
+   
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+      :toctree:
+   
+      
+      
+      MeshStatistics.create_histogram
+      
+      
+      MeshStatistics.get_domain_label
+      
+      
+      MeshStatistics.get_mesh_statistics
+      
+      
+      MeshStatistics.get_table_as_text
+      
+      
+      MeshStatistics.get_table_rows
+      
+      
+      MeshStatistics.update_mesh_statistics
+      
+      
+      MeshStatistics.write_table_to_csv
+      
+   
+   
+
+   
+   
+   .. rubric:: Attributes
+
+   .. autosummary::
+      :toctree:
+   
+      MeshStatistics.current_domain
+      MeshStatistics.interface
+      MeshStatistics.mesh_vars
+   
+   
