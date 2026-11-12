@@ -331,7 +331,20 @@ class multi_blade_row:
         self,
         tginit_path: str,
         tg_log_level: PyTurboGrid.TurboGridLogLevel = PyTurboGrid.TurboGridLogLevel.INFO,
+        *,
+        autoregions: bool = True,
+        secondary: list[str] | None = None,
+        include_secondary: bool = True,
     ):
+        """Import selected rows in parallel into existing workers.
+
+        ``autoregions=False`` retains caller-controlled openings. ``secondary``
+        is forwarded only when supplied; an empty list follows TurboGrid's
+        existing selection semantics and does not mean import skipping.
+        Use ``include_secondary=False`` to import primary geometry only.
+        """
+        if not include_secondary and secondary is not None:
+            raise ValueError("Cannot select secondary paths with include_secondary=False")
         timings = {}
         # There currently is a bug with TurboGrid on Linux, coming from WorkBench,
         # when converting .x_b to .tin, which must happen. When this occurs in parallel,
@@ -347,11 +360,15 @@ class multi_blade_row:
                 self.__read_tginit__,
                 tginit_path,
                 timings,
+                autoregions=autoregions,
+                secondary=secondary,
+                include_secondary=include_secondary,
             )
             futures = [
                 executor.submit(job, key, val) for key, val in self.tg_worker_instances.items()
             ]
-            concurrent.futures.wait(futures)
+            for future in futures:
+                future.result()
 
         if os.getenv("TMM_PROFILING", "").lower() in ("1", "true", "yes", "on"):
             print(f"read_tginit_into_blank: {timings}")
@@ -674,7 +691,8 @@ class multi_blade_row:
                 executor.submit(self.__disable_lma__, val)
                 for key, val in self.tg_worker_instances.items()
             ]
-            concurrent.futures.wait(futures)
+            for future in futures:
+                future.result()
 
     def set_number_of_blade_sets(self, blade_row_name: str, number_of_blade_sets: int):
         """
@@ -897,7 +915,33 @@ class multi_blade_row:
                 executor.submit(job, self.tg_worker_instances[key], val)
                 for key, val in set_obj_param_list.items()
             ]
-            concurrent.futures.wait(futures)
+            for future in futures:
+                future.result()
+
+    def perform_br_actions(self, actions: dict[str, list[tuple[str, str]]]) -> None:
+        """Run row-keyed ``(action, arguments)`` sequences concurrently.
+
+        Actions remain ordered within each row. Wait for every dispatched row
+        before returning or propagating a worker error, so callers may safely
+        release temporary action inputs after this call.
+        """
+        unknown = set(actions) - set(self.tg_worker_instances)
+        if unknown:
+            raise ValueError(f"Unknown blade rows for actions: {sorted(unknown)}")
+
+        def perform(worker: single_blade_row, row_actions: list[tuple[str, str]]) -> None:
+            for action, arguments in row_actions:
+                worker.pytg.perform_action(action, arguments)
+
+        with concurrent.futures.ThreadPoolExecutor(
+            max_workers=len(self.tg_worker_instances)
+        ) as executor:
+            futures = [
+                executor.submit(perform, self.tg_worker_instances[row], row_actions)
+                for row, row_actions in actions.items()
+            ]
+            for future in futures:
+                future.result()
 
     # { BR_NAME : {CCL_OBJ : ["a", "b"]}}
     def get_br_state(self, get_obj_param_dict={str: {str: list[str]}}):
@@ -1047,7 +1091,8 @@ class multi_blade_row:
             futures = [
                 executor.submit(job, key, val) for key, val in self.tg_worker_instances.items()
             ]
-            concurrent.futures.wait(futures)
+            for future in futures:
+                future.result()
         return all_mesh_stats
 
     def get_mesh_statistics_histogram_data(
@@ -1108,7 +1153,8 @@ class multi_blade_row:
             futures = [
                 executor.submit(job, val, key) for key, val in self.tg_worker_instances.items()
             ]
-            concurrent.futures.wait(futures)
+            for future in futures:
+                future.result()
         return results
 
     def get_turbo_surfaces_at_k_dict(self, br_k_dict: dict) -> dict[str, dict[str, any]]:
@@ -1638,6 +1684,10 @@ class multi_blade_row:
         timings,
         tg_worker_name,
         tg_worker_instance,
+        *,
+        autoregions: bool = True,
+        secondary: list[str] | None = None,
+        include_secondary: bool = True,
     ):
         try:
             t0 = time.time()
@@ -1669,6 +1719,8 @@ class multi_blade_row:
                 # print(f"files transferred")
 
             t1 = time.time()
+            # One empty value emits "secondary=" (select none); [] emits no selector (all).
+            secondary_selection = secondary if include_secondary else [""]
             tg_worker_instance.pytg.read_tginit(
                 path=(
                     tginit_file_path
@@ -1677,8 +1729,9 @@ class multi_blade_row:
                     else tginit_file_name
                 ),
                 bladerow=tg_worker_name,
-                autoregions=True,
+                autoregions=autoregions,
                 includemesh=False,
+                **({"secondary": secondary_selection} if secondary_selection is not None else {}),
             )
             t2 = time.time()
             timings[tg_worker_name + "container"] = round(t1 - t0)
@@ -1687,6 +1740,7 @@ class multi_blade_row:
         except Exception as e:
             print(f"{tg_worker_instance} exception on __launch_instances__: {e}")
             print(f"{tg_worker_instance} traceback: {traceback.extract_tb(e.__traceback__)}")
+            raise
 
     # Sets this TG's sf to self.base_gsf[tg_worker_name] * size_factor
     def __set_gsf__(self, size_factor, tg_worker_name, tg_worker_instance):
