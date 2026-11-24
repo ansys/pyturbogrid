@@ -40,7 +40,7 @@ importlib-metadata = ">=9.0.1"
 Jinja2 = ">=3.1.2"
 ansys-turbogrid-api = ">=0.10.1"
 # ansys-turbogrid-api = { path = "../ansys-api-turbogrid/", develop = true } # Uncomment this if you have access to a local repo
-pyyaml = "^6.0.2"
+pyyaml = "^6.0.4"
 deepdiff = "^9.1.0"
 
 [tool.poetry.group.doc]
