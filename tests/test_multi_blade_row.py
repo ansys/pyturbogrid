@@ -69,36 +69,32 @@ def test_multi_blade_row_basic(pytestconfig):
         tg_kw_args=json.loads(pytestconfig.getoption("tg_kw_args")),
     )
 
-    machine.init_from_ndf(
-        ndf_path=f"{install_path}/tests/ndf/AxialFanMultiRow.ndf",
-        # use_existing_tginit_cad=True,
-    )
+    try:
+        machine.init_from_ndf(
+            ndf_path=f"{install_path}/tests/ndf/AxialFanMultiRow.ndf",
+            # use_existing_tginit_cad=True,
+        )
 
-    # This is a planned point-data initialization file format
-    # machine.init_from_tgmachine(f"{dir_path}/~.TGMachine")
-    # blade_rows = machine.get_blade_row_names()
-    print(f"Average Face Area Before: {machine.get_average_base_face_areas()}")
-    before_canonical = {"bladerow1": 0.007804461, "bladerow2": 0.004956871}
-    before_canonical_2 = {"bladerow1": 0.007804943, "bladerow2": 0.004956871}
-    before_canonical_252_container = {"bladerow1": 0.007804869, "bladerow2": 0.004956871}
-    assert (
-        machine.get_average_base_face_areas() == before_canonical
-        or machine.get_average_base_face_areas() == before_canonical_2
-        or machine.get_average_base_face_areas() == before_canonical_252_container
-    )
-    machine.set_machine_sizing_strategy(MachineSizingStrategy.MIN_FACE_AREA)
-    print(f"Average Face Area After: {machine.get_average_base_face_areas()}")
+        # This is a planned point-data initialization file format
+        # machine.init_from_tgmachine(f"{dir_path}/~.TGMachine")
+        # blade_rows = machine.get_blade_row_names()
+        significant_figures = 3
+        before_areas = machine.get_average_base_face_areas()
+        print(f"Average Face Area Before: {before_areas}")
+        before_canonical = {"bladerow1": "0.00780", "bladerow2": "0.00496"}
+        assert {
+            row: f"{area:#.{significant_figures}g}" for row, area in before_areas.items()
+        } == before_canonical
 
-    after_canonical_pre_252 = {"bladerow1": 0.005001607, "bladerow2": 0.004956871}
-    after_canonical_252 = {"bladerow1": 0.005001606, "bladerow2": 0.004956871}
-    after_canonical_post_252 = {"bladerow1": 0.005001909, "bladerow2": 0.004956871}
-    after_canonical_252_container = {"bladerow1": 0.005001862, "bladerow2": 0.004956871}
-    assert (
-        machine.get_average_base_face_areas() == after_canonical_pre_252
-        or machine.get_average_base_face_areas() == after_canonical_252
-        or machine.get_average_base_face_areas() == after_canonical_post_252
-        or machine.get_average_base_face_areas() == after_canonical_252_container
-    )
+        machine.set_machine_sizing_strategy(MachineSizingStrategy.MIN_FACE_AREA)
+        after_areas = machine.get_average_base_face_areas()
+        print(f"Average Face Area After: {after_areas}")
+        after_canonical = {"bladerow1": "0.00500", "bladerow2": "0.00496"}
+        assert {
+            row: f"{area:#.{significant_figures}g}" for row, area in after_areas.items()
+        } == after_canonical
+    finally:
+        machine.quit()
 
 
 def test_multi_blade_row_tgmachine(pytestconfig):

@@ -1,8 +1,11 @@
-# Copyright (C) 2026 ANSYS, Inc. and/or its affiliates.
+# Copyright (C) 2023 - 2026 ANSYS, Inc. and/or its affiliates.
 # SPDX-License-Identifier: MIT
+#
 
 """Server-free tests for MBR dispatch barriers, row routing and worker failures."""
 
+import subprocess
+import sys
 from threading import Barrier, Event
 from types import SimpleNamespace
 from unittest.mock import Mock
@@ -18,6 +21,59 @@ def machine():
     mbr.tg_worker_instances = {row: SimpleNamespace(pytg=Mock()) for row in ("A", "B", "C")}
     yield mbr
     mbr.quit()
+
+
+def test_quit_closes_workers_in_parallel_and_is_repeatable(machine):
+    barrier = Barrier(3)
+    completed = []
+    workers = [worker.pytg for worker in machine.tg_worker_instances.values()]
+
+    def quit_worker():
+        barrier.wait(timeout=3)
+        completed.append(True)
+
+    for worker in workers:
+        worker.quit.side_effect = quit_worker
+
+    machine.quit()
+    machine.quit()
+
+    for worker in workers:
+        worker.quit.assert_called_once_with()
+    assert len(completed) == len(workers)
+
+
+def test_at_exit_closes_workers_and_saas_without_a_thread_pool(tmp_path):
+    closed_file = tmp_path / "closed.txt"
+    script = """
+import sys
+from types import SimpleNamespace
+from ansys.turbogrid.core.multi_blade_row.multi_blade_row import multi_blade_row
+
+class Client:
+    def __init__(self, name):
+        self.name = name
+
+    def quit(self):
+        with open(sys.argv[1], "a", encoding="utf-8") as f:
+            f.write(self.name + "\\n")
+
+machine = multi_blade_row(saas_server=False)
+machine.tg_worker_instances = {
+    name: SimpleNamespace(pytg=Client(name)) for name in ("A", "B")
+}
+machine.pyturbogrid_saas = Client("saas")
+"""
+    result = subprocess.run(
+        [sys.executable, "-c", script, str(closed_file)],
+        capture_output=True,
+        text=True,
+        timeout=30,
+        check=True,
+    )
+
+    assert result.stderr == ""
+    assert closed_file.read_text(encoding="utf-8").splitlines() == ["A", "B", "saas"]
 
 
 def test_actions_overlap_across_rows_but_preserve_each_rows_order(machine):

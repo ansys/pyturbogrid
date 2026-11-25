@@ -172,9 +172,14 @@ class multi_blade_row:
             self.pyturbogrid_saas_execution_control = None
         # print(f"MBR self.pyturbogrid_saas {self.pyturbogrid_saas}")
         self.init_style = InitStyle.NO_INIT
-        atexit.register(self.quit)
+        atexit.register(self._quit_at_exit)
 
     def __del__(self):
+        self._quit_at_exit()
+
+    def _quit_at_exit(self):
+        """Close without starting threads during interpreter shutdown."""
+        self.quit_tg_workers(parallel=False)
         self.quit()
 
     def quit(self):
@@ -192,16 +197,21 @@ class multi_blade_row:
                 del self.pyturbogrid_saas_execution_control
         self.pyturbogrid_saas = None
 
-    def quit_tg_workers(self):
+    def quit_tg_workers(self, parallel: bool = True):
+        """Quit worker instances, optionally without using threads."""
         if self.tg_worker_instances:
-            with concurrent.futures.ThreadPoolExecutor(
-                max_workers=len(self.tg_worker_instances)
-            ) as executor:
-                futures = [
-                    executor.submit(self.__quit__, val)
-                    for key, val in self.tg_worker_instances.items()
-                ]
-                concurrent.futures.wait(futures)
+            if parallel:
+                with concurrent.futures.ThreadPoolExecutor(
+                    max_workers=len(self.tg_worker_instances)
+                ) as executor:
+                    futures = [
+                        executor.submit(self.__quit__, val)
+                        for key, val in self.tg_worker_instances.items()
+                    ]
+                    concurrent.futures.wait(futures)
+            else:
+                for worker in self.tg_worker_instances.values():
+                    self.__quit__(worker)
         self.tg_worker_instances = None
 
     def save_state(self) -> dict[str, any]:
