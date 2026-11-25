@@ -34,6 +34,9 @@ from ansys.turbogrid.core.launcher import launcher
 
 
 def test_turbogrid_version():
+    assert launcher.TurboGridVersion(27.2) == launcher.TurboGridVersion.version_27R2
+    assert launcher.TurboGridVersion("27.2") == launcher.TurboGridVersion.version_27R2
+    assert launcher.TurboGridVersion("27.2.0") == launcher.TurboGridVersion.version_27R2
     assert launcher.TurboGridVersion(23.2) == launcher.TurboGridVersion.version_23R2
     assert launcher.TurboGridVersion("23.2") == launcher.TurboGridVersion.version_23R2
     assert launcher.TurboGridVersion("23.2.0") == launcher.TurboGridVersion.version_23R2
@@ -45,7 +48,10 @@ def test_turbogrid_version():
         print(launcher.TurboGridVersion("bad value"))
 
 
-def test_turbogrid_exe_paths():
+def test_turbogrid_exe_paths(monkeypatch):
+    for version in launcher.TurboGridVersion:
+        monkeypatch.delenv("AWP_ROOT" + str(version).replace(".", "")[:-1], raising=False)
+    monkeypatch.delenv("PYTURBOGRID_TURBOGRID_ROOT", raising=False)
     vars_to_restore = {
         "AWP_ROOT232": os.environ.get("AWP_ROOT232", None),
         "AWP_ROOT241": os.environ.get("AWP_ROOT241", None),
@@ -93,6 +99,22 @@ def test_turbogrid_exe_paths():
                 os.environ[var] = value
             elif var in os.environ:
                 del os.environ[var]
+
+
+def test_latest_installed_version_prefers_27r2(monkeypatch, tmp_path):
+    for version in launcher.TurboGridVersion:
+        monkeypatch.delenv("AWP_ROOT" + str(version).replace(".", "")[:-1], raising=False)
+    monkeypatch.delenv("PYTURBOGRID_TURBOGRID_ROOT", raising=False)
+    older = tmp_path / "v271"
+    newest = tmp_path / "v272"
+    monkeypatch.setenv("AWP_ROOT271", str(older))
+    monkeypatch.setenv("AWP_ROOT272", str(newest))
+    executable = "cfxtg.exe" if platform.system() == "Windows" else "cfxtg"
+    assert launcher.get_latest_ansys_version() == "27.2.0"
+    assert launcher.get_turbogrid_exe_path() == newest / "TurboGrid" / "bin" / executable
+    assert launcher.get_turbogrid_exe_path(product_version="27.1") == (
+        older / "TurboGrid" / "bin" / executable
+    )
 
 
 def test_launch_turbogrid():
