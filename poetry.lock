@@ -2169,14 +2169,14 @@ files = [
 
 [[package]]
 name = "jupytext"
-version = "1.19.6"
+version = "1.19.7"
 description = "Jupyter notebooks as Markdown documents, Julia, Python or R scripts"
 optional = false
 python-versions = ">=3.9"
 groups = ["doc"]
 files = [
-    {file = "jupytext-1.19.6-py3-none-any.whl", hash = "sha256:eb725d66841f1a91707bdcf4703b194a53151a060ecb3fd31d78139cc9ec090a"},
-    {file = "jupytext-1.19.6.tar.gz", hash = "sha256:ba1d143bb3751e054d3164376b148ee8fa74e1a860fc9411e1da93ff588b8a17"},
+    {file = "jupytext-1.19.7-py3-none-any.whl", hash = "sha256:bbd4724f403841b4f3c439b64fcfb0a674b874e0e0ae02f2a23b7ba77382ada2"},
+    {file = "jupytext-1.19.7.tar.gz", hash = "sha256:5d440c437d7784edee1b2ff3a652420164c30f110cd8441189dfc2df766fde68"},
 ]
 
 [package.dependencies]
@@ -2188,11 +2188,11 @@ pyyaml = "*"
 tomli = {version = "*", markers = "python_version < \"3.11\""}
 
 [package.extras]
-dev = ["autopep8", "black", "flake8", "gitpython", "ipykernel", "isort", "jupyter-fs[fs] (>=1.0)", "jupyter-server (!=2.11)", "marimo (>=0.17.6,<=0.19.4)", "nbconvert", "pre-commit", "pytest", "pytest-asyncio", "pytest-cov (>=2.6.1)", "pytest-randomly", "pytest-xdist", "sphinx", "sphinx-gallery (>=0.8)"]
+dev = ["autopep8", "black", "flake8", "gitpython", "ipykernel", "isort", "jupyter-fs[fs] (>=1.0)", "jupyter-server (!=2.11)", "marimo (==0.25.2) ; python_version >= \"3.10\"", "nbconvert", "pre-commit", "pytest", "pytest-asyncio", "pytest-cov (>=2.6.1)", "pytest-randomly", "pytest-xdist", "sphinx", "sphinx-gallery (>=0.8)"]
 docs = ["myst-parser", "sphinx", "sphinx-copybutton", "sphinx-rtd-theme"]
 test = ["pytest", "pytest-asyncio", "pytest-randomly", "pytest-xdist"]
 test-cov = ["black", "ipykernel", "jupyter-server (!=2.11)", "nbconvert", "pytest", "pytest-asyncio", "pytest-cov (>=2.6.1)", "pytest-randomly", "pytest-xdist"]
-test-external = ["autopep8", "black", "flake8", "gitpython", "ipykernel", "isort", "jupyter-fs[fs] (>=1.0)", "jupyter-server (!=2.11)", "marimo (>=0.17.6,<=0.19.4)", "nbconvert", "pre-commit", "pytest", "pytest-asyncio", "pytest-randomly", "pytest-xdist", "sphinx", "sphinx-gallery (>=0.8)"]
+test-external = ["autopep8", "black", "flake8", "gitpython", "ipykernel", "isort", "jupyter-fs[fs] (>=1.0)", "jupyter-server (!=2.11)", "marimo (==0.25.2) ; python_version >= \"3.10\"", "nbconvert", "pre-commit", "pytest", "pytest-asyncio", "pytest-randomly", "pytest-xdist", "sphinx", "sphinx-gallery (>=0.8)"]
 test-functional = ["black", "pytest", "pytest-asyncio", "pytest-randomly", "pytest-xdist"]
 test-integration = ["black", "ipykernel", "jupyter-server (!=2.11)", "nbconvert", "pytest", "pytest-asyncio", "pytest-randomly", "pytest-xdist"]
 test-ui = ["bash-kernel"]
@@ -5013,4 +5013,4 @@ type = ["pytest-mypy"]
 [metadata]
 lock-version = "2.1"
 python-versions = ">=3.10,<4.0"
-content-hash = "f773412739e5f6921d39f6733b06c7e739491fb09f48c7886408f7c220481d9e"
+content-hash = "275b69a50da98b9c67ec8d6a882ac54f72aae7d34e077fc2449b127bd61ae834"
